@@ -3,8 +3,8 @@ Best practices and workflow for genome annotation
 
 ## Project Outline
 1. Base Strategies
-  1. RNAseq based transcript assembly
-    * Splice aligners
+1. RNAseq based transcript assembly
+  *Splice aligners
       1. STAR
       2. Hisat2
     * Assemblers
