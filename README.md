@@ -2,6 +2,12 @@
 Best practices and workflow for genome annotation
 
 ## Project Outline
+The annotation problem is broken down into two fundamental parts: 
+1. transcript assembly
+2. functional classification and gene symbol assignment
+
+Both are crucial to producing an annotated set of transcript and gene models, and functional information is often used to inform transcript assembly.
+
 - Base Strategies
 - RNAseq based transcript assembly
   - Splice aligners
