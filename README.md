@@ -19,7 +19,7 @@ Best practices and workflow for genome annotation
       - ComparativeAugustus (CGP)
 - Method integration
   - Mikado
-  - EvidenceModeler (?)
+  - EvidenceModeler
 - Performance evaluation
   - NCBI genome and annotation benchmarks
     - human
