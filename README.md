@@ -52,4 +52,4 @@ Both are crucial to producing an annotated set of transcript and gene models, an
     - Maker2
     - Braker2
     - Cesar2.0
-    - Snakemake pipelines to pass inputs/outputs between tools
+  - Snakemake pipelines to pass inputs/outputs between tools
