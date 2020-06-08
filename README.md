@@ -41,6 +41,7 @@ Both are crucial to producing an annotated set of transcript and gene models, an
     - percenttranscripts recovered as function of percent correct bases threshold
     - recall
     - precision
+    - F1 score
     - false negative rate
     - expression correlations with benchmark genes
     - comparison of DE testing to benchmark
