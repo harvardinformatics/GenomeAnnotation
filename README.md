@@ -20,7 +20,7 @@ Best practices and workflow for genome annotation
 - Method integration
   - Mikado
   - EvidenceModeler (?)
-- Performance Evaluation
+- Performance evaluation
   - NCBI genome and annotation benchmarks
     - human
     - mouse
