@@ -4,19 +4,19 @@ Best practices and workflow for genome annotation
 ## Project Outline
 1. Base Strategies
 1. RNAseq based transcript assembly
-  *Splice aligners
-      1. STAR
-      2. Hisat2
-    * Assemblers
-      1. Class2
-      2. Stringtie
-      3. Scallop
-  2. RNAseq plus *ab initio* trainining
+  1.Splice aligners
+    1. STAR
+    1. Hisat2
+  1. Assemblers
+    1. Class2
+    1.Stringtie
+    1.Scallop
+  1. RNAseq plus *ab initio* trainining
     1. MAKER2
-    2. BRAKER2
-  3. Genome alignment-based
+    1. BRAKER2
+  1. Genome alignment-based
       1. CESAR
-      2. ComparativeAugustus (CGP)
+      1. ComparativeAugustus (CGP)
 
 2. Method integration
   * Mikado
