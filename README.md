@@ -46,3 +46,10 @@ Both are crucial to producing an annotated set of transcript and gene models, an
     - expression correlations with benchmark genes
     - comparison of DE testing to benchmark
     - conditional on same orthologous gene symbol assignment
+- Workflow architecture
+  - singularity containers for difficult to build tools
+    - Comparative Augustus (CGP)
+    - Maker2
+    - Braker2
+    - Cesar2.0
+    - Snakemake pipelines to pass inputs/outputs between tools
