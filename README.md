@@ -4,9 +4,9 @@ The objective of this project is to evaluate the performance of alternative pipe
 ## Data
 We perform annotation for 3 heliconine butterflies, *Heliconius erato*, *Bombyx mori*, and *Danaus plexippus*. We use the genome (and annotation) for *Heliconius melpomene* as a high-quality reference genome, and the anchor for the whole genome alignment used by some tools. We downloaded the cactus hal file for heliconines published by [Edelman *et al.* (2019)](https://science.sciencemag.org/content/366/6465/594). We extracted the four heliconine genomes from the hal file with hal2maf version 2.1, using the following cmd:
    
-   ```bash
+```bash
    hal2maf finalAssemblies_highQual_1kbFilter_161101.hal 4speciesset_finalAssemblies_highQual_1kbFilter_161101.hal --refGenome HmelRef --noAncestors --noDupes --targetGenomes HmelRef,Bmor,HeraRef,Dple 
-    ```
+```
 
 The annotation problem is broken down into two fundamental parts: 
 1. transcript assembly
