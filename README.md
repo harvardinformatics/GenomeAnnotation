@@ -17,7 +17,7 @@ Our objectives are to:
     * [Braker2](https://github.com/Gaius-Augustus/BRAKER)
     * [Funannotate](https://github.com/nextgenusfs/funannotate)
     * [Comparative Augustus](https://github.com/Gaius-Augustus/Augustus)
-    * [Comparative Annotation Toolkit (CAT)](https://github.com/ComparativeGenomicsToolkit/Comparative-Annotation-Toolkit)(
+    * [Comparative Annotation Toolkit (CAT)](https://github.com/ComparativeGenomicsToolkit/Comparative-Annotation-Toolkit)
 
 * Assess benefits of integrating RNA-seq data
 * Assess the relative performance of standard pipelines (above) with integrators that take inputs from multiple sources
