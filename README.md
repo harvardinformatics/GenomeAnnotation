@@ -8,36 +8,33 @@ We perform annotation for 3 heliconine butterflies, *Heliconius erato*, *Bombyx 
    hal2maf finalAssemblies_highQual_1kbFilter_161101.hal 4speciesset_finalAssemblies_highQual_1kbFilter_161101.hal --refGenome HmelRef --noAncestors --noDupes --targetGenomes HmelRef,Bmor,HeraRef,Dple 
 ```
 
-The annotation problem is broken down into two fundamental parts: 
-1. transcript assembly
-2. functional classification and gene symbol assignment
+Some tools and pipelines presented here integrate RNA-seq data, either as splice site hints, ESTs or transcript models directly inferred from read alignments. Thus,for each species we downloaded paired-end RNA-seq data from the [NCBI Sequence Read Archive (SRA)](https://www.ncbi.nlm.nih.gov/sra).
 
-Both are crucial to producing an annotated set of transcript and gene models, and functional information is often used to inform transcript assembly.
+## Objectives and strategy
+Our objectives are to:
+* Compare the performance of purportedly full annotation pipelines
+    * [Maker2](https://www.yandell-lab.org/software/maker.html)
+    * [Braker2](https://github.com/Gaius-Augustus/BRAKER)
+    * [Funannotate](https://github.com/nextgenusfs/funannotate)
+    * [Comparative Augustus](https://github.com/Gaius-Augustus/Augustus)
+    * [Comparative Annotation Toolkit (CAT)](https://github.com/ComparativeGenomicsToolkit/Comparative-Annotation-Toolkit)(
 
-- Base Strategies
-- RNAseq based transcript assembly
-  - Splice aligners
-    - STAR
-    - Hisat2
-  - Assemblers
-    - Class2
-    - Stringtie
-    - Scallop
-  - RNAseq plus *ab initio* trainining
-    - MAKER2
-    - BRAKER2
-  - Genome alignment-based
-      - CESAR
-      - ComparativeAugustus (CGP)
-- Method integration
-  - Mikado
-  - EvidenceModeler
-- Performance evaluation
+* Assess benefits of integrating RNA-seq data
+* Assess the relative performance of standard pipelines (above) with integrators that take inputs from multiple sources
+    * [Mikado](https://github.com/EI-CoreBioinformatics/mikado)
+    * [EvidenceModeler](https://evidencemodeler.github.io/)
+
+* Assess whether transferring annotation information from another genome improves genome annotation
+    * Add annotation transfers from [CESAR](https://github.com/hillerlab/CESAR) to pipelines and integrators 
+
+* Enhance reproducibility and ease of deployment on HPC clusters of top performing pipelines by providing
+    * Snakemake pipelines
+    * Singularity containers
+
+## Methods
+
+## Performance evaluation
   - NCBI genome and annotation benchmarks
-    - human
-    - mouse
-    - fly
-    - zebrafish
   - Sensitivity to method choice
     - best combination of tools
     - quality trimming RNA-seq reads
@@ -52,10 +49,3 @@ Both are crucial to producing an annotated set of transcript and gene models, an
     - expression correlations with benchmark genes
     - comparison of DE testing to benchmark
     - conditional on same orthologous gene symbol assignment
-- Workflow architecture
-  - singularity containers for difficult to build tools
-    - Comparative Augustus (CGP)
-    - Maker2
-    - Braker2
-    - Cesar2.0
-  - Snakemake pipelines to pass inputs/outputs between tools
