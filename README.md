@@ -2,11 +2,8 @@
 The objective of this project is to evaluate the performance of alternative pipelines for performing genome annotation, with an end goal of providing best practice workflows for those seeking to annotate novel genomes, or update annotations to those that already have a draft annotation. We evaluate both methods that directly use comparative information summarized in whole-genome alignments, as well as single-genome annotation tools that employ some combination of homology information obtained from protein sequences, splice hints obtained from RNA-seq data, and ab initio prediction.  
 
 ## Data
-We perform annotation for 3 heliconine butterflies, *Heliconius erato*, *Bombyx mori*, and *Danaus plexippus*. We use the genome (and annotation) for *Heliconius melpomene* as a high-quality reference genome, and the anchor for the whole genome alignment used by some tools. We downloaded the cactus hal file for heliconines published by [Edelman *et al.* (2019)](https://science.sciencemag.org/content/366/6465/594). The data directory contains fasta files for the four genomes and a newick format tree depicting the species relationships, and that is required for running Augustus in comparative mode. We extracted the four heliconine genomes from the hal file with hal2maf version 2.1, using the following cmd:
-   
-```bash
-   hal2maf finalAssemblies_highQual_1kbFilter_161101.hal 4speciesset_finalAssemblies_highQual_1kbFilter_161101.hal --refGenome HmelRef --noAncestors --noDupes --targetGenomes HmelRef,Bmor,HeraRef,Dple 
-```
+We perform annotation for 3 heliconine butterflies, *Heliconius erato*, *Bombyx mori*, and *Danaus plexippus*. We use the genome (and annotation) for *Heliconius melpomene* as a high-quality reference genome, and the anchor for the whole genome alignment used by some tools. We used soft-masked versions of these genomes published in [Edelman *et al.* (2019)](https://science.sciencemag.org/content/366/6465/594), that were filtered such that the minimum scaffold size was 1kb.Whole-genome alignment was based upon the relationships depicted in [tree.nwk](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/data/tree.nwk). We aligned the four genomes using [cactus](https://github.com/ComparativeGenomicsToolkit/cactus), executing the script in a SLURM script on Harvard's Cannon HPC with  
+
 
 Some tools and pipelines presented here integrate RNA-seq data, either as splice site hints, ESTs or transcript models directly inferred from read alignments. Thus,for each species we downloaded paired-end RNA-seq data from the [NCBI Sequence Read Archive (SRA)](https://www.ncbi.nlm.nih.gov/sra).
 
