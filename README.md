@@ -12,20 +12,22 @@ Some tools and pipelines presented here integrate RNA-seq data, either as splice
 
 ## Objectives and strategy
 Our objectives are to:
-* Compare the performance of purportedly full annotation pipelines
-    * [Maker2](https://www.yandell-lab.org/software/maker.html)
-    * [Braker2](https://github.com/Gaius-Augustus/BRAKER)
-    * [Funannotate](https://github.com/nextgenusfs/funannotate)
-    * [Comparative Augustus](https://github.com/Gaius-Augustus/Augustus)
-    * [Comparative Annotation Toolkit (CAT)](https://github.com/ComparativeGenomicsToolkit/Comparative-Annotation-Toolkit)
-
-* Assess benefits of integrating RNA-seq data
-* Assess the relative performance of standard pipelines (above) with integrators that take inputs from multiple sources
+* Compare the performance of diverse annotation approaches
+    * Annotation pipelines
+        * [Maker2](https://www.yandell-lab.org/software/maker.html)
+        * [Braker2](https://github.com/Gaius-Augustus/BRAKER)
+    * Genome-alignment driven gene prediction    
+        * [Comparative Augustus](https://github.com/Gaius-Augustus/Augustus)
+    * Transcript assembly from RNA-seq
+        * [StringTie](https://ccb.jhu.edu/software/stringtie/)
+        * [Scallop](https://github.com/Kingsford-Group/scallop)
+        * [PsiCLASS](https://github.com/splicebox/PsiCLASS)
+* Assess impact of RNA-seq integration on annotation quality
+* Assess impact on annotation quality of integrating multiple annotation sources
     * [Mikado](https://github.com/EI-CoreBioinformatics/mikado)
-    * [EvidenceModeler](https://evidencemodeler.github.io/)
 
-* Assess whether transferring annotation information from another genome improves genome annotation
-    * Add annotation transfers from [CESAR](https://github.com/hillerlab/CESAR) to pipelines and integrators 
+* Assess impact on annotation of supplementing with exon-aware annotation transfer from a reference genome
+    * integration of annotations trasferred with [CESAR](https://github.com/hillerlab/CESAR) 
 
 * Enhance reproducibility and ease of deployment on HPC clusters of top performing pipelines by providing
     * Snakemake pipelines
