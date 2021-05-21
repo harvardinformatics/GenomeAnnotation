@@ -23,6 +23,7 @@ Our objectives are to:
         * [Scallop](https://github.com/Kingsford-Group/scallop)
         * [PsiCLASS](https://github.com/splicebox/PsiCLASS)
 * Assess impact of RNA-seq integration on annotation quality
+    * Maker2,Braker2, Comparative Augustus
 * Assess impact on annotation quality of integrating multiple annotation sources
     * [Mikado](https://github.com/EI-CoreBioinformatics/mikado)
 
