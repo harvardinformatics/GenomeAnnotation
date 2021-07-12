@@ -15,6 +15,8 @@ Our objectives are to:
         * [Braker2](https://github.com/Gaius-Augustus/BRAKER)
     * Genome-alignment driven gene prediction    
         * [Comparative Augustus](https://github.com/Gaius-Augustus/Augustus)
+    * Exon-aware annotation transfer from a reference genome
+        * [CESAR2.0](https://github.com/hillerlab/CESAR2.0)
     * Transcript assembly from RNA-seq
         * [StringTie](https://ccb.jhu.edu/software/stringtie/)
         * [Scallop](https://github.com/Kingsford-Group/scallop)
@@ -23,10 +25,7 @@ Our objectives are to:
     * Maker2,Braker2, Comparative Augustus
 * Assess impact on annotation quality of integrating multiple annotation sources
     * [Mikado](https://github.com/EI-CoreBioinformatics/mikado)
-
-* Assess impact on annotation of supplementing with exon-aware annotation transfer from a reference genome
-    * integration of annotations trasferred with [CESAR](https://github.com/hillerlab/CESAR) 
-
+    * [EvidenceModeler](https://evidencemodeler.github.io/)
 * Enhance reproducibility and ease of deployment on HPC clusters of top performing pipelines by providing
     * Snakemake pipelines
     * Singularity containers
