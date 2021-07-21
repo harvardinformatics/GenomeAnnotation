@@ -9,7 +9,7 @@ After identifying a set of top-performing methods, we then evaluate these in hum
 Our specific objectives with respect to methods comparisons are to:
 * Compare the performance of diverse annotation approaches
     * Annotation pipelines
-        * [Maker2](https://www.yandell-lab.org/software/maker.html)
+        * [Maker3](https://www.yandell-lab.org/software/maker.html)
         * [Braker2](https://github.com/Gaius-Augustus/BRAKER)
     * Genome-alignment driven gene prediction
         * [Comparative Augustus](https://github.com/Gaius-Augustus/Augustus)
