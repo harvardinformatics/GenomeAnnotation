@@ -12,4 +12,13 @@ When one wishes to include Genemark predictions in the Maker pipeline, there are
 
 ```bash
 sbatch genemarkES.sh genome.fa
-``` 
+```
+## Maker: round1
+For a particular dataset, and depending upon whether annotation is performed only with external protein evidence or also with RNA-seq evidence, in the maker_opts.ctl file we specify the protein fasta and the transcript assembly gff3 files, respectively. For the latter, we use a Stringtie assembly merged across samples and based upon spliced RNA-seq read alignments generated with STAR. Generic control files are provided [here], with run-specific maker_opts.ctl files located in the opts directory. The first round is executed with a slurm script from the same directory where the control files for the run are stored:
+
+```bash
+sbatch maker.sh
+```
+
+For more details regarding the singularity implementation of Maker3 on Harvard's FASRC cluster, see the following Informatics Group [webpage](https://informatics.fas.harvard.edu/maker-on-the-fasrc-cluster.html). 
+ 
