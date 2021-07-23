@@ -20,6 +20,9 @@ For a particular dataset, and depending upon whether annotation is performed onl
 sbatch maker.sh
 ```
 
+For more details regarding the singularity implementation of Maker3 on Harvard's FASRC cluster, see the following Informatics Group [webpage](https://informatics.fas.harvard.edu/maker-on-the-fasrc-cluster.html).
+
+
 ### Summarizing outputs
 After Maker completes, we do some quick bookkeeping by way of generating a transcript fasta and gff3 file from all of the genomic intervals with results. This can be done either as a slurm script or in an interactive session in which you setup an environment using a singularity image, for example:
 
@@ -32,9 +35,6 @@ gff3_merge -n -s -d $datastore_index > ${YOUR_ANALYSIS_NAME}_round1_maker_all.gf
 ```
 
 These three commands generate a gff3 file including the predicted transcript sequences appended in the footer, a transcript fasta, and a gff3 without the fasta sequences in the footer, respectively.
-
-For more details regarding the singularity implementation of Maker3 on Harvard's FASRC cluster, see the following Informatics Group [webpage](https://informatics.fas.harvard.edu/maker-on-the-fasrc-cluster.html). 
-
 
 ## SNAP training
 To train SNAP for *ab initio* prediction in round2, we first create a directory for our training data, and run the maker2zff executable from within that directory, providing as a command line argument the maker master_datastore_index.log file included as output from round1 by Maker. A generic call of maker2zff is as follows:
