@@ -21,4 +21,22 @@ sbatch maker.sh
 ```
 
 For more details regarding the singularity implementation of Maker3 on Harvard's FASRC cluster, see the following Informatics Group [webpage](https://informatics.fas.harvard.edu/maker-on-the-fasrc-cluster.html). 
- 
+
+
+## SNAP training
+To train SNAP for *ab initio* prediction in round2, we first create a directory for our training data, and run the maker2zff executable from within that directory, providing as a command line argument the maker master_datastore_index.log file included as output from round1 by Maker. A generic call of maker2zff is as follows:
+
+```bash
+maker2zff -n -d $datatore_index
+```
+
+where datastore_index is the full path to the datastore_index.log file. 
+
+Following guidance from the Maker developers, we perform no filtering with this command (that would typically be implemented with -x and -l arguments) by using the -n switch, as filtering can lead to zero-sized output files, i.e. no useable results. This is particularly the case when using protein data. To make analyses comparable, we use -n even when we supply RNA-seq transcript assemblies as evidence. See [this thread](http://yandell-lab.org/pipermail/maker-devel_yandell-lab.org/2013-December/004663.html) for more details. 
+
+
+We run it using [maker-snap-training.sh]():
+
+```bash
+sbatch maker-snap-training.sh $datastore_index
+```
