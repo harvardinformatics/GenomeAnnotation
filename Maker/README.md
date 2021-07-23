@@ -31,7 +31,7 @@ MAKER_IMAGE=/n/singularity_images/informatics/maker/maker:3.01.03-repbase.sif
 singularity exec --cleanenv ${MAKER_IMAGE} /bin/bash
 gff3_merge -s -d $datastore_index > ${YOUR_ANALYSIS_NAME}_round1_maker_all.gff3
 fasta_merge -d $datastore_index
-gff3_merge -n -s -d $datastore_index > ${YOUR_ANALYSIS_NAME}_round1_maker_all.gff3
+gff3_merge -n -s -d $datastore_index > ${YOUR_ANALYSIS_NAME}_round1_maker_all_noseq.gff3
 ```
 
 These three commands generate a gff3 file including the predicted transcript sequences appended in the footer, a transcript fasta, and a gff3 without the fasta sequences in the footer, respectively.
@@ -71,3 +71,11 @@ cd ..
 hmm-assembler.pl genome params > ${YOUR_ANALYSIS_NAME}_rnd1.zff.hmm
 ```
 The \.hmm file will be specified in the second round of annotation.
+
+## Augustus training
+To train Augustus, we again follow Daren Card's example and use BUSCO. We first create a directory where training outputs will be stored, then symlink the \*noseq.gff file and the genome fasta there. Next, we use bedtools and some awk commands to generate a padded transcript fasta:
+
+```bash
+module load bedtools2/2.26.0-fasrc01
+awk -v OFS="\t" '{ if ($3 == "mRNA") print $1, $4, $5 }' ${YOUR_ANALYSIS_NAME}_round1_all_maker_noseq.gff | awk -v OFS="\t" '{ if ($2 < 1000) print $1, "0", $3+1000; else print $1, $2-1000, $3+1000 }' | bedtools getfasta -fi dple.fa -bed - -fo ${YOUR_ANALYSIS_NAME}.transcripts1000.fasta > mrnapaddedfasta.log 2>&1
+```
