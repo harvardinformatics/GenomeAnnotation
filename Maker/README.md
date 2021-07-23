@@ -35,7 +35,7 @@ where datastore_index is the full path to the datastore_index.log file.
 Following guidance from the Maker developers, we perform no filtering with this command (that would typically be implemented with -x and -l arguments) by using the -n switch, as filtering can lead to zero-sized output files, i.e. no useable results. This is particularly the case when using protein data. To make analyses comparable, we use -n even when we supply RNA-seq transcript assemblies as evidence. See [this thread](http://yandell-lab.org/pipermail/maker-devel_yandell-lab.org/2013-December/004663.html) for more details. 
 
 
-We run it using [maker-snap-training.sh]():
+We run it using [maker-snap-training.sh](https://github.com/harvardinformatics/GenomeAnnotation/tree/master/Maker/slurm_scripts/maker-snap-training.sh):
 
 ```bash
 sbatch maker-snap-training.sh $datastore_index
