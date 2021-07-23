@@ -79,3 +79,19 @@ To train Augustus, we again follow Daren Card's example and use BUSCO. We first 
 module load bedtools2/2.26.0-fasrc01
 awk -v OFS="\t" '{ if ($3 == "mRNA") print $1, $4, $5 }' ${YOUR_ANALYSIS_NAME}_round1_all_maker_noseq.gff | awk -v OFS="\t" '{ if ($2 < 1000) print $1, "0", $3+1000; else print $1, $2-1000, $3+1000 }' | bedtools getfasta -fi dple.fa -bed - -fo ${YOUR_ANALYSIS_NAME}.transcripts1000.fasta > mrnapaddedfasta.log 2>&1
 ```
+
+One can then run [BUSCO](https://busco.ezlab.org/) on the resulting transcriptome fasta  to generate Augustus training parameters. It is important to note that BUSCO now uses MetaEuk as its default tool for identifying genes in contigs. Thus one needs to explicitly tell BUSCO to use Augustus instead. An example command line used for analysis of the butterfly genomes is as follows:
+
+```bash
+busco -c 16 -m genome --long --augustus --augustus_species heliconius_melpomene1 --augustus_parameters='--progress=true' -o busco_${outstring} -i $tscriptsfa -l /n/holyscratch01/external_repos/INFORMATICS/BUSCO/lepidoptera_odb10
+```
+
+where $outstring is the input fasta file prefix, $tscriptfasta is the name of the transriptome fasta generated with the above bedtools command, and the directory specified after the -l is the BUSCO database of interest, in this case the one for lepidoptera.
+
+This command is wrapped in [BUSCO-augustus-training-butterflies.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/Maker/slurm_scripts/maker-snap-training.sh) and can be executed as follows:
+
+```bash
+sbatch BUSCO-augustus-training-butterflies.sh $mytranscriptomefasta
+```
+
+and should be modified to point to a different BUSCO database if working on a different taxonomic group for which there is a more appropriate database.
