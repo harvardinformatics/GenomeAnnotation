@@ -20,6 +20,19 @@ For a particular dataset, and depending upon whether annotation is performed onl
 sbatch maker.sh
 ```
 
+### Summarizing outputs
+After Maker completes, we do some quick bookkeeping by way of generating a transcript fasta and gff3 file from all of the genomic intervals with results. This can be done either as a slurm script or in an interactive session in which you setup an environment using a singularity image, for example:
+
+```bash
+MAKER_IMAGE=/n/singularity_images/informatics/maker/maker:3.01.03-repbase.sif
+singularity exec --cleanenv ${MAKER_IMAGE} /bin/bash
+gff3_merge -s -d $datastore_index > ${YOUR_ANALYSIS_NAME}_round1_maker_all.gff3
+fasta_merge -d $datastore_index
+gff3_merge -n -s -d $datastore_index > ${YOUR_ANALYSIS_NAME}_round1_maker_all.gff3
+```
+
+These three commands generate a gff3 file including the predicted transcript sequences appended in the footer, a transcript fasta, and a gff3 without the fasta sequences in the footer, respectively.
+
 For more details regarding the singularity implementation of Maker3 on Harvard's FASRC cluster, see the following Informatics Group [webpage](https://informatics.fas.harvard.edu/maker-on-the-fasrc-cluster.html). 
 
 
