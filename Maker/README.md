@@ -40,3 +40,21 @@ We run it using [maker-snap-training.sh](https://github.com/harvardinformatics/G
 ```bash
 sbatch maker-snap-training.sh $datastore_index
 ```
+
+Once this job has finished, from within the same directory, we launch an interactive session, and create a new environment using the Maker3 singularity image, and run fathom and forge:
+
+```bash
+MAKER_IMAGE=/n/singularity_images/informatics/maker/maker:3.01.03-repbase.sif
+singularity exec --cleanenv ${MAKER_IMAGE} /bin/bash
+fathom genome.ann genome.dna -gene-stats > gene-stats.log 2>&1
+fathom genome.ann genome.dna -validate > validate.log 2>&1
+fathom genome.ann genome.dna -categorize 1000 > categorize.log 2>&1
+fathom uni.ann uni.dna -export 1000 -plus > uni-plus.log 2>&1
+
+mkdir params
+cd params
+forge ../export.ann ../export.dna > ../forge.log 2>&1
+cd ..
+hmm-assembler.pl genome params > ${YOUR_ANALYSIS_NAME}_rnd1.zff.hmm
+```
+The \.hmm file will be specified in the second round of annotation.
