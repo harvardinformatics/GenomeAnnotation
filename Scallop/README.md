@@ -6,13 +6,13 @@ Similar to how we implement StringTie, we first built a Scallop conda enviornmen
 module load python
 conda create -n scallop -c bioconda scallop
 ```
-One then launches scallop with [scallop.sh]()
+One then launches scallop with [scallop.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/Scallop/slurm_scripts/scallop.sh)
 ```bash
 sbatch scallop.sh $sorted.bam
 ```
 where $sorted.bam is the spliced alignment to the genome of the RNA-seq reads. It is worth noting that, unlike StringTie, Scallop is single-threaded. While it is relatively fast, one may need to increase the time limit specified in the slurm script if the bam file originates from a deeply sequenced RNA-seq library.
 
-Once individual Scallop assemblies have been generated, one merges them with taco using [taco.sh]()
+Once individual Scallop assemblies have been generated, one merges them with taco using [taco.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/Scallop/slurm_scripts/taco.sh)
 ```bash
 sbatch taco.sh $my_outputfile_prefix
 ```
