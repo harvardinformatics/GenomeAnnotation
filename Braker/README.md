@@ -10,7 +10,7 @@ awk '{print $1}' $my_input_fasta > headcleaned_${my_input_fasta}
 ```
 
 ## Protein-only
-Running Braker with extrinsic protein evidence only requires you provide the genome sequence, and the protein (amino acid) fasta files. An example script for how we annotate the Monarch Butterfly (*Danaus plexippus*) is provided [here](), and can be run as a simple sbatch command:
+Running Braker with extrinsic protein evidence only requires you provide the genome sequence, and the protein (amino acid) fasta files. An example script for how we annotate the Monarch Butterfly (*Danaus plexippus*) is provided [here](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/Braker/slurm_scripts/braker_danaus_plexippus_proteinonly_example.sh), and can be run as a simple sbatch command:
 ```bash
 sbatch braker_danaus_plexippus_proteinonly_example.sh
 ``` 
