@@ -43,9 +43,27 @@ Next, use samtools to namesort the bam file, using our script [namesortbam.sh]()
 sbatch namesortbam.sh $mymergedbam
 ```
 
-After name-sorting, the bam file needs to be filtered. We have modified the original [filterBam](https://github.com/nextgenusfs/augustus/tree/master/auxprogs/filterBam) code as follows[filterBam-zlib-ng-2]() in order to speed up filtering. We execute this updated version from within a singularity image,oneapi-hpckit_2021.2-devel-centos8.sif, available at: . To execute this step we use [filterbam_FAS_informatics_version.sh]() run as follows:
+After name-sorting, the bam file needs to be filtered. We have modified the original [filterBam](https://github.com/nextgenusfs/augustus/tree/master/auxprogs/filterBam) code to [filterBam-zlib-ng-2:LINK NOT YET ADDED] in order to speed up filtering. We execute this updated version from within a singularity image,oneapi-hpckit_2021.2-devel-centos8.sif, available at: . To execute this step we use [filterbam_FAS_informatics_version.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/ComparativeAugustus/slurm_scripts/filterbam_FAS_informatics_version.sh) run as follows:
 ```bash
-sbatch filterbam_FAS_informatics_version.sh $myfilteredbam
+sbatch filterbam_FAS_informatics_version.sh $mymergeddbam
 ```
 
-After filtering the bam file, we then generate "intron part" hints,  
+After filtering the bam file, we then generate "intron part" hints by running the Augustus tool bam2hints with [bam2hints](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/ComparativeAugustus/slurm_scripts/bam2hints.sh):
+```bash
+sbatch bam2hints $myfilteredbam
+``` 
+
+To generate "exon part" hints, we then resort the filtered bam file back into coordinate order with [coordsortbam.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/ComparativeAugustus/slurm_scripts/coordsortbam.sh):
+```bash
+mkdir tmp
+sbatch coordsortbam.sh $myfilteredbam
+```
+
+Then, we convert the resorted bam to wig format with the Augustus tool bam2wig using [bam2wig.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/ComparativeAugustus/slurm_scripts/bam2wig.sh):
+```bash
+sbatch bam2wig.sh $coordsorted_filtered_bam
+```
+Finally, we convert the wig file into a gff formatted hints file with wig2hints.pl via our slurm script [wig2hints.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/ComparativeAugustus/slurm_scripts/wig2hints.sh)
+```bash
+sbatch wig2hints.sh $mywigfile
+```
