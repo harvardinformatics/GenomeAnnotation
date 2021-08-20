@@ -1,6 +1,6 @@
 # Augustus: multi-species mode
 
-# Protein-only 
+## Protein-only 
 To generate splice hints from external protein sequence data, we use scripts that are part of the Augustus distribution to wrap protein alignment to the genome using [GenomeThreader](https://genomethreader.org/) and creation of hints from those alignments. 
 
 We first create a genomethreader conda environment
@@ -29,7 +29,7 @@ This script looks for the align_gth directory produced during the alignment step
 
 
 
-# RNA-seq only
+## RNA-seq only
 To generate RNA-seq derived splice-site hints for Augustus is a multi-step process which present computational challenges. We have implemented changes to tools within the Augustus distribution in order for them to handle contemporary, increasingly large RNA-seq datasets in a time-efficient manner. 
 
 After using samtools to merge the bamfiles of interest, one has to sort them bam-file by sequence name rather that coordinate order. In the directory where the merged bam is, first create a tmp directory:
