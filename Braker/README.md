@@ -1,0 +1,17 @@
+# Braker
+[Braker](https://github.com/Gaius-Augustus/BRAKER) is a gene prediction tool that combines GenemarkET and Augustus, and that uses extrinsic evidence in the form homology information derived from protein or RNA-seq data to automatically train these tools along with directly inferred homology-based predictions of gene models. As with our implementation of other tools capable of using both protein and RNA-seq extrinsic evidence, we generate annotations that either only use protein evidence, or use both protein and RNA-seq evidence. Previously, Braker had options for simultaneously providing both types of evidence in a single analysis run, but this approach was classified as "experimental." Current best practice is to perform separate Braker analyses for each type of evidence, then merge the outputs with [TSEBRA](https://github.com/Gaius-Augustus/TSEBRA). We have identified cases where TSEBRA erroneously discards large numbers of gene models because they purportedly are missing CDS features (when those features are present in the Braker gtf output files), and are waiting for fixes to the code before finalizing our annotations that combine RNA-seq and protein evidence.
+
+## Singularity container
+To aid users of Harvard's Odyssey HPC cluster, and because successfully building Braker with all the required dependencies can be challenging, we run Braker using a singularity image, available at "/n/singularity_images/informatics/braker/braker_2021-06-14.sif".
+
+In general, when Braker is provided fasta files that have more than one space-separated field in the header, it issues warning saying it may not work correctly in downstream steps. Therefore, we "clean" the headers of all genome and protein fasta files prior to use,simply by removing everything after the 1st field (which is usually the sequence name). In cases where a fasta file requires concatenation of more than one header field to provide the correct sequence name, custom tweaking of the below one-off awk command will be necessary:
+```bash
+awk '{print $1}' $my_input_fasta > headcleaned_${my_input_fasta}
+```
+
+## Protein-only
+Running Braker with extrinsic protein evidence only requires you provide the genome sequence, and the protein (amino acid) fasta files. An example script for how we annotate the Monarch Butterfly (*Danaus plexippus*) is provided [here](), and can be run as a simple sbatch command:
+```bash
+sbatch braker_danaus_plexippus_proteinonly_example.sh
+``` 
+ 
