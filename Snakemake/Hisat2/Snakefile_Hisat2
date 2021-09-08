@@ -1,0 +1,51 @@
+from glob import glob
+from os.path import basename
+import yaml
+from os import system
+
+configfile: "config/config.yaml"
+res_config = yaml.load(open("config/resources.yaml"),Loader=yaml.FullLoader)
+
+
+## setup tmp directory for samtools sort ##
+if glob("tmp") == ['tmp']:
+    pass
+elif glob("tmp") == []: 
+    system("mkdir tmp")
+else:
+   print("Error generating tmp dir for samsort")
+
+if glob("%s" % config["samsortOutdir"]) == [config["samsortOutdir"]]:
+    pass
+elif glob("%s" % config["samsortOutdir"]) == []:
+    system("mkdir %s" % config["samsortOutdir"])
+else:
+    print("Error generating destination dir for sorted bams")
+    
+###
+    
+SAMPLES = list(set([basename(i.split('/')[-1].split('_')[0]) for i in glob("%s*gz" % config["fastqDir"])]))
+
+### RULES ###
+
+rule all:
+    input:
+        expand("{outdir}sorted_{sample}_hisat2.bam", outdir=config["samsortOutdir"],sample=SAMPLES)		
+
+rule hisat2_align:
+    input:
+        hisat2index=glob("%s*.ht2" % config["hisat2IndexDir"]),
+        r1=config["fastqDir"] + "{sample}" + "_1_val_1.fq.gz",
+        r2=config["fastqDir"] + "{sample}" + "_2_val_2.fq.gz"
+    output:
+        config["hisat2Outdir"] + "{sample}" + "_hisat2.sam"
+    shell:
+        "hisat2 -p %s -x %s%s -q --phred33 --dta --min-intronlen 20 --max-intronlen 500000 -1 {input.r1} -2 {input.r2} -S {output}" % (res_config['hisat2_align']['cpus'],config["hisat2IndexDir"],config["hisat_index_prefix"])
+
+rule samsort:
+    input:
+        config["hisat2Outdir"] + "{sample}" + "_hisat2.sam"
+    output:
+        config["samsortOutdir"] + "sorted_" + "{sample}" + "_hisat2.bam"
+    shell:
+        "samtools sort -@ %s -T tmp/{wildcards.sample}.aln.sorted -O bam -o {output} {input}" % res_config['samsort']['cpus']  

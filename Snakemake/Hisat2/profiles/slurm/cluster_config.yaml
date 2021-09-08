@@ -1,0 +1,24 @@
+__default__:
+    partition: "shared"
+    time: 1380
+    nodes: 1
+    output: "logs/slurm-%j.out"
+    error: "logs/slurm-%j.err"
+
+
+###
+# hisat2_align
+###
+
+hisat2_align:
+    partition: "holy-info,holy-smokes,holy-cow,shared" 
+    output: "logs/hisat2_align-%j.out"
+    error: "logs/hisat2_align-%j.err"
+    job-name: "hisat2_align"
+###
+# samsort (and bam covert)
+samsort:
+    partition: "holy-info,holy-smokes,holy-cow,shared"
+    output: "logs/samsort-%j.out"
+    error: "logs/samsort-%j.err"
+    job-name: "samsort"

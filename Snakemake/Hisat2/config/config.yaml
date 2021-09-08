@@ -1,0 +1,14 @@
+## ALL OF BELOW NEED TO BE MODIFIED TO WORK
+## FOR YOUR DATA!!
+
+## fastq input file data ##
+fastqDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/snakemake/hisat2/fastqs/"
+# hisat2 genome index location #
+hisat2IndexDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/snakemake/hisat2/dple_hisat2_index/"
+hisat_index_prefix: "Danaus_plexippus_v3_-_scaffolds.fa_1kb.fa.softmasked"
+
+# hisat2 output directory #
+hisat2Outdir: "/n/holyscratch01/informatics/genome_annotation_evaluation/snakemake/hisat2/hisat_sams/"
+
+# sortsam output directory # 
+samsortOutdir: "/n/holyscratch01/informatics/genome_annotation_evaluation/snakemake/hisat2/sorted_bams/"
