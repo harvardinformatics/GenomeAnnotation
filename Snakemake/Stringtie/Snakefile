@@ -22,4 +22,4 @@ rule all:
     input:
         config["mergeDir"] + config["mergeLabel"] + "_stringtie-merge_" + config["alignment_tool"] + ".gtf"	
 
-include: "../rules/stringtie.smk"
+include: "rules/stringtie.smk"
