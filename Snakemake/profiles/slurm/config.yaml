@@ -6,6 +6,6 @@ max-jobs-per-second: 1
 max-status-checks-per-second: 3
 use-conda: True
 latency-wait: 60
-cores=10000
+cores: 10000
 jobs: 1000
 rerun-incomplete: True
