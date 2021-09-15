@@ -3,10 +3,9 @@ jobscript: "slurm-jobscript.sh"
 cluster: "slurm-submit.py"
 cluster-status: "slurm-status.py"
 max-jobs-per-second: 1
-max-status-checks-per-second: 10
+max-status-checks-per-second: 3
 use-conda: True
-#local-cores: 1
 latency-wait: 60
-#resources: cpus=600
-jobs: 12
+cores=10000
+jobs: 1000
 rerun-incomplete: True
