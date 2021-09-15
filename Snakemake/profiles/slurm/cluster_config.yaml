@@ -6,9 +6,10 @@ __default__:
     error: "logs/slurm-%j.err"
 
 
-###
-# stringtie
-###
+#############
+# stringtie #
+############
+
 
 stringtie:
     partition: "holy-info,holy-smokes,holy-cow,shared" 
@@ -16,12 +17,24 @@ stringtie:
     error: "logs/stringtie-%j.err"
     job-name: "stringtie"
 
-###
-# stringtie-merge
-# ###
-
 merge:
     partition: "holy-info,holy-smokes,holy-cow,shared"
     output: "logs/stringtie-merge-%j.out"
     error: "logs/stringtie-merge-%j.err"
     job-name: "stie-merge"
+
+###########
+# hisat2 #
+###########
+
+hisat2_align:
+    partition: "holy-info,holy-smokes,holy-cow,shared"
+    output: "logs/hisat2-%j.out"
+    error: "logs/hisat2-%j.err"
+    job-name: "hisat2"
+
+samsort:
+    partition: "holy-info,holy-smokes,holy-cow,shared"
+    output: "logs/samsort-%j.out"
+    error: "logs/samsort-%j.err"
+    job-name: "samsort"
