@@ -1,0 +1,29 @@
+from glob import glob
+from os.path import basename
+import yaml
+from os import system
+
+configfile: "config/config.yaml"
+res_config = yaml.load(open("config/resources.yaml"),Loader=yaml.FullLoader)
+system("rm gtflist.txt")
+print(res_config)   
+SAMPLES = list(set([basename(i.split('/')[-1].split('_')[1]) for i in glob("%s*bam" % config["bamDir"])]))
+
+if glob("%s" % config["assemblyDir"]) !=[]:
+    system("rm -r %s" % config["assemblyDir"])
+
+for sample in SAMPLES:
+   system("echo %s%s_scallop_%s.gtf >> gtflist.txt" % (config["assemblyDir"],sample,config["alignment_tool"]))
+
+### directory setup ###
+if glob("%s" % config["assemblyDir"]) == []:
+    system("mkdir %s" % config["assemblyDir"])
+
+
+### RULES ###
+
+rule all:
+    input:
+        config["mergeDir"] + "assembly.gtf"
+
+include: "../rules/scallop.smk"	
