@@ -1,0 +1,11 @@
+scallop:
+    nodes: 1 
+    cpus: 1
+    mem_mb: 32000
+    time: 420
+
+taco:
+    nodes: 1
+    cpus: 16
+    mem_mb: 32000 
+    time: 360
