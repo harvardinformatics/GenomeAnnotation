@@ -38,3 +38,19 @@ samsort:
     output: "logs/samsort-%j.out"
     error: "logs/samsort-%j.err"
     job-name: "samsort"
+
+###########
+# scallop #
+###########
+
+scallop:
+    partition: "holy-info,holy-smokes,holy-cow,shared"
+    output: "logs/scallop-%j.out"
+    error: "logs/scallop-%j.err"
+    job-name: "scallop" 
+
+taco:
+    partition: "holy-info,holy-smokes,holy-cow,shared"
+    output: "logs/taco-%j.out"
+    error: "logs/taco-%j.err"
+    job-name: "taco" 
