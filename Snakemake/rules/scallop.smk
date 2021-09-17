@@ -12,7 +12,7 @@ rule taco:
     input:
         expand("{outdir}{sample}_scallop_{aligner}.gtf", outdir=config["assemblyDir"],sample=SAMPLES,aligner=config["alignment_tool"])
     output:
-        config["mergeDir"] + "assembly.gtf"
+        directory(config["mergeDir"])
     conda:
         "../envs/taco.yml"
     shell:
