@@ -1,0 +1,17 @@
+star_1stpass:
+    nodes: 1 
+    cpus: 8
+    mem_mb: 64000
+    time: 1920
+
+star_2ndpass:
+    nodes: 1
+    cpus: 8
+    mem_mb: 64000
+    time: 1920
+
+samsort:
+    nodes: 1
+    cpus: 12
+    mem_mb: 24000
+    time: 360  
