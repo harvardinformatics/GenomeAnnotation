@@ -40,6 +40,23 @@ samsort:
     job-name: "samsort"
 
 ###########
+#  STAR   #
+###########
+star_1stpass:
+    partition: "holy-info,holy-smokes,holy-cow,shared"
+    output: "logs/star1stpass-%j.out"
+    error: "logs/star1stpass-%j.err"
+    job-name: "star1st"
+
+star_2ndpass:
+    partition: "holy-info,holy-smokes,holy-cow,shared"
+    output: "logs/star1stpass-%j.out"
+    error: "logs/star2ndpass-%j.err"
+    job-name: "star2nd"
+
+
+
+###########
 # scallop #
 ###########
 
