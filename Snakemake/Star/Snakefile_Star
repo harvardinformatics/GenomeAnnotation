@@ -30,7 +30,7 @@ print(SAMPLES)
 
 rule all:
     input:
-        expand("{outdir}_{sample}_STAR1stpass.sam",outdir=config["Star1stPassOutdir"],sample=SAMPLES),
+        expand("{outdir}{sample}_STAR1stpass.sam",outdir=config["Star1stPassOutdir"],sample=SAMPLES),
         expand("{outdir}sorted_{sample}_STAR2ndpass.bam", outdir=config["samsortOutdir"],sample=SAMPLES)
 
 include: "/n/home_rc/afreedman/workspace/GenomeAnnotation/Snakemake/rules/star.smk"
