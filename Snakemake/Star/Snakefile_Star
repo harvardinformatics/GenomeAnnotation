@@ -1,0 +1,36 @@
+from glob import glob
+from os.path import basename
+import yaml
+from os import system
+
+configfile: "config/config.yaml"
+res_config = yaml.load(open("config/resources.yaml"),Loader=yaml.FullLoader)
+
+
+## setup tmp directory for samtools sort ##
+if glob("tmp") == ['tmp']:
+    pass
+elif glob("tmp") == []: 
+    system("mkdir tmp")
+else:
+   print("Error generating tmp dir for samsort")
+
+if glob("%s" % config["samsortOutdir"]) == [config["samsortOutdir"]]:
+    pass
+elif glob("%s" % config["samsortOutdir"]) == []:
+    system("mkdir %s" % config["samsortOutdir"])
+else:
+    print("Error generating destination dir for sorted bams")
+    
+###
+    
+SAMPLES = list(set([basename(i.split('/')[-1].split('_')[0]) for i in glob("%s*gz" % config["fastqDir"])]))
+print(SAMPLES)
+### RULES ###
+
+rule all:
+    input:
+        expand("{outdir}_{sample}_STAR1stpass.sam",outdir=config["Star1stPassOutdir"],sample=SAMPLES),
+        expand("{outdir}sorted_{sample}_STAR2ndpass.bam", outdir=config["samsortOutdir"],sample=SAMPLES)
+
+include: "/n/home_rc/afreedman/workspace/GenomeAnnotation/Snakemake/rules/star.smk"

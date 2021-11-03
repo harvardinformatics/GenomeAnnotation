@@ -2,15 +2,16 @@
 ## FOR YOUR DATA!!
 
 ## fastq input file data ##
-fastqDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/snakemake/star/fastqs/"
-# hisat2 genome index location #
-StarIndexDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/snakemake/StarIndexDir/"
+fastqDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/fastq/drosophila_melanogaster/trimmed_reads/"
+
+# star genome index location #
+StarIndexDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/genomes/dmel/star/"
 
 # star 1stpass output directory #
-Star1stPassOutdir: "/n/holyscratch01/informatics/genome_annotation_evaluation/snakemake/Star1stpass/"
+Star1stPassOutdir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/star/dmel/Star1stpass/"
 
 # star 1stpass output directory #
-Star2ndPassOutdir: "/n/holyscratch01/informatics/genome_annotation_evaluation/snakemake/Star2ndpass/"
+Star2ndPassOutdir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/star/dmel/Star2ndpass/"
 
 # sortsam output directory # 
-samsortOutdir: "/n/holyscratch01/informatics/genome_annotation_evaluation/snakemake/Star/sorted_bams/"
+samsortOutdir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/star/dmel/sorted_bams/"
