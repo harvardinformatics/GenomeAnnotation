@@ -7,11 +7,11 @@ rule star_1stpass:
     conda:
         "../envs/star.yml"
     shell:
-        "STAR --runThreadN %s --genomeDir %s --readFilesCommand zcat -outFileNamePrefix %s{wildcards.sample}_STAR1stpass --readFilesIn {input.r1} {input.r2}" % (res_config['star_1stpass']['cpus'],config["StarIndexDir"],config["Star1stPassOutdir"])
+        "STAR --runThreadN %s --genomeDir %s --outFileNamePrefix %s{wildcards.sample}_STAR1stpass --outTmpDir {wildcards.sample}_1stpassSTARtmp --readFilesIn <(gunzip -c {input.r1}) <(gunzip -c {input.r2})" % (res_config['star_1stpass']['cpus'],config["StarIndexDir"],config["Star1stPassOutdir"])
 
 rule star_2ndpass:
     input:
-        tables=glob("%s*tab" % config["Star1stPassOutdir"]),
+        expand("{outdir}{sample}_STAR1stpass.sam",outdir=config["Star1stPassOutdir"],sample=SAMPLES),
         r1=config["fastqDir"] + "{sample}" + "_1_val_1.fq.gz",
         r2=config["fastqDir"] + "{sample}" + "_2_val_2.fq.gz"
     output:
@@ -19,8 +19,8 @@ rule star_2ndpass:
     conda:
         "../envs/star.yml"
     
-    shell:
-        "STAR --runThreadN %s --genomeDir %s --outSAMstrandField intronMotif --readFilesCommand zcat --sjdbFileChrStartEnd {input.tables} --outFileNamePrefix %s{wildcards.sample}_STAR2ndpass --readFilesIn {input.r1} {input.r2}" % (res_config['star_1stpass']['cpus'],config["StarIndexDir"],config["Star2ndPassOutdir"])
+    shell: 
+        "STAR --runThreadN %s --genomeDir %s --outSAMstrandField intronMotif --outTmpDir {wildcards.sample}_2ndpassSTARtmp --sjdbFileChrStartEnd {TABLES} --outFileNamePrefix %s{wildcards.sample}_STAR2ndpass --readFilesIn <(gunzip -c {input.r1}) <(gunzip -c {input.r2})" % (res_config['star_1stpass']['cpus'],config["StarIndexDir"],config["Star2ndPassOutdir"])
 
 
 rule samsort:
