@@ -3,7 +3,7 @@ from os.path import basename
 import yaml
 from os import system
 
-configfile: "/n/home_rc/afreedman/workspace/GenomeAnnotation/Snakemake/config.yaml"
+configfile: "/n/home_rc/afreedman/workspace/GenomeAnnotation/Snakemake/config/config.yaml"
 res_config = yaml.load(open("/n/home_rc/afreedman/workspace/GenomeAnnotation/Snakemake/config/resources.yaml"),Loader=yaml.FullLoader)
 
 
@@ -15,10 +15,10 @@ elif glob("tmp") == []:
 else:
    print("Error generating tmp dir for samsort")
 
-if glob("%s" % config["samsortOutdir"]) == [config["samsortOutdir"]]:
+if glob("%s" % config["Hisat2SamsortOutdir"]) == [config["Hisat2SamsortOutdir"]]:
     pass
-elif glob("%s" % config["samsortOutdir"]) == []:
-    system("mkdir %s" % config["samsortOutdir"])
+elif glob("%s" % config["Hisat2SamsortOutdir"]) == []:
+    system("mkdir %s" % config["Hisat2SamsortOutdir"])
 else:
     print("Error generating destination dir for sorted bams")
     
@@ -30,7 +30,7 @@ SAMPLES = list(set([basename(i.split('/')[-1].split('_')[0]) for i in glob("%s*g
 
 rule all:
     input:
-        expand("{outdir}sorted_{sample}_hisat2.bam", outdir=config["samsortOutdir"],sample=SAMPLES)
+        expand("{outdir}sorted_{sample}_hisat2.bam", outdir=config["Hisat2SamsortOutdir"],sample=SAMPLES)
 
 
 include: "/n/home_rc/afreedman/workspace/GenomeAnnotation/Snakemake/rules/hisat2.smk"
