@@ -5,7 +5,7 @@
 ## RNA-SEQ FASTQ FILES #
 ########################
 # fastq input file data ##
-fastqDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/snakemake/hisat2/fastqs/"
+fastqDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/fastq/drosophila_melanogaster/trimmed_reads/"
 
 ############
 ## HISAT2 ##
