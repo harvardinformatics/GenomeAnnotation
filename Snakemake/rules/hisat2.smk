@@ -10,7 +10,7 @@ rule hisat2_align:
     threads:
         res_config['hisat2_align']['threads']
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * res_config['hisat2_align']['mem_mb'],
+        mem_mb = res_config['hisat2_align']['mem_mb'],
         time = res_config['hisat2_align']['time']
     shell:
         "hisat2 -p {threads} -x %s%s -q --phred33 --dta --min-intronlen 20 --max-intronlen 500000 -1 {input.r1} -2 {input.r2} -S {output}" % (config["Hisat2IndexDir"],config["Hisat2IndexPrefix"])
@@ -25,7 +25,7 @@ rule samsort:
     threads:
         res_config['samsort']['threads']
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * res_config['samsort']['mem_mb'],
+        mem_mb = res_config['samsort']['mem_mb'],
         time = res_config['samsort']['time']
     shell:
         "samtools sort -@ {threads} -T tmp/{wildcards.sample}.aln.sorted -O bam -o {output} {input}"  
