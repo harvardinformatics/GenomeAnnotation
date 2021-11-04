@@ -8,7 +8,7 @@ import slurm_utils
 
 
 # slurm arguments
-SBATCH_DEFAULTS = """time=360 mem=16000 job-name=hisat2 partition=holy-info,holy-smokes,holy-cow,shared nodes=1 ntasks=12"""
+SBATCH_DEFAULTS = """time=360 mem=16000 job-name=hisat2 partition=holy-info,holy-smokes,holy-cow,shared nodes=1"""
 CLUSTER_CONFIG = "cluster_config.yaml"
 ADVANCED_ARGUMENT_CONVERSION = {"yes": True, "no": False}["yes"]
 
