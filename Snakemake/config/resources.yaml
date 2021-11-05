@@ -6,6 +6,18 @@ hisat2_align:
 
 samsort:
     nodes: 1
-    threads: 8
+    threads: 12
     mem_mb: 24000
     time: 360  
+
+stringtie:
+    nodes: 1 
+    threads: 16
+    mem_mb: 32000
+    time: 720
+
+stringtie_merge:
+    nodes: 1
+    threads: 8
+    mem_mb: 20000 
+    time: 360
