@@ -1,19 +1,25 @@
 rule stringtie:
     input:
-        config["bamDir"] + "sorted_" + "{sample}" + "_" + config["alignment_tool"] + ".bam"
+        config["StringtieBamDir"] + "sorted_" + "{sample}" + "_" + config["StringtieAlignmentTool"] + ".bam"
     output:
-        config["assemblyDir"] + "{sample}" + "_stringtie_" + config["alignment_tool"] + ".gtf"
+        config["StringtieAssemblyDir"] + "{sample}" + "_stringtie_" + config["StringtieAlignmentTool"] + ".gtf"
     conda:
         "../envs/stringtie.yml"
-    shell:
-        "stringtie {input} -p %s -o {output}"  % res_config['stringtie']['cpus']
+    threads:
+        res_config['stringtie']['threads']
 
-rule merge:
+    resources:
+        mem_mb = res_config['stringtoie']['mem_mb'],
+        time = res_config['stringtie']['time'] 
+    shell:
+        "stringtie {input} -p {threads} -o {output}"  
+
+rule stringtie_merge:
     input:
-        expand("{outdir}{sample}_stringtie_{aligner}.gtf", outdir=config["assemblyDir"],sample=SAMPLES,aligner=config["alignment_tool"])
+        expand("{outdir}{sample}_stringtie_{aligner}.gtf", outdir=config["StringtieAssemblyDir"],sample=SAMPLES,aligner=config["StringtieAlignmentTool"])
     output:
-        config["mergeDir"] + config["mergeLabel"] + "_stringtie-merge_" + config["alignment_tool"] + ".gtf"
+        config["StringtieMergeDir"] + config["StringtieMergeLabel"] + "_stringtie-merge_" + config["StringtieAlignmentTool"] + ".gtf"
     conda:
         "../envs/stringtie.yml"
     shell:
-        "stringtie -p %s --merge gtflist.txt -o %s%s_stringtie-merge_%s.gtf" % (res_config['merge']['cpus'],config["mergeDir"],config["mergeLabel"],config["alignment_tool"])
+        "stringtie -p {threads} --merge gtflist.txt -o %s%s_stringtie-merge_%s.gtf" % (config["StriingtieMergeDir"],config["StringtieMergeLabel"],config["StringtieAlignmentTool"])
