@@ -49,5 +49,5 @@ StringtieAlignmentTool: "hisat2"
 StringtieAssemblyDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/stringtie/dmel/individual_assemblies/"
 
 # merged assembly directory #
-StringtiemergeDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/stringtie/dmel/merged_assembly/"
+StringtieMergeDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/stringtie/dmel/merged_assembly/"
 StringtieMergeLabel: "dmel" 

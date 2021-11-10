@@ -9,7 +9,7 @@ rule stringtie:
         res_config['stringtie']['threads']
 
     resources:
-        mem_mb = res_config['stringtoie']['mem_mb'],
+        mem_mb = res_config['stringtie']['mem_mb'],
         time = res_config['stringtie']['time'] 
     shell:
         "stringtie {input} -p {threads} -o {output}"  
@@ -22,4 +22,4 @@ rule stringtie_merge:
     conda:
         "../envs/stringtie.yml"
     shell:
-        "stringtie -p {threads} --merge gtflist.txt -o %s%s_stringtie-merge_%s.gtf" % (config["StriingtieMergeDir"],config["StringtieMergeLabel"],config["StringtieAlignmentTool"])
+        "stringtie -p {threads} --merge gtflist.txt -o %s%s_stringtie-merge_%s.gtf" % (config["StringtieMergeDir"],config["StringtieMergeLabel"],config["StringtieAlignmentTool"])
