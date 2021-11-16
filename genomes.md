@@ -53,11 +53,15 @@ Not yet decided if we will bother with this...
 
 ### Amphibians
 
+Some additional species listed so we can decide to drop the unpublished ones as needed.
+
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
 | -----------  | -------------- |----------- | ----------- | ----------- |
-| Tropical clawed frog (focal) |   UCB_Xtro_10.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/195/GCF_000004195.4_UCB_Xtro_10.0/GCF_000004195.4_UCB_Xtro_10.0_genomic.fna.gz) | NCBI release 104 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/195/GCF_000004195.4_UCB_Xtro_10.0/GCF_000004195.4_UCB_Xtro_10.0_genomic.gff.gz) |
+| Tropical clawed frog (focal) |   UCB_Xtro_10.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/195/GCF_000004195.4_UCB_Xtro_10.0/GCF_000004195.4_UCB_Xtro_10.0_genomic.fna.gz) | NCBI Release 104 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/195/GCF_000004195.4_UCB_Xtro_10.0/GCF_000004195.4_UCB_Xtro_10.0_genomic.gff.gz) |
 | Puerto Rican coqui  |   UCB_Ecoq_1.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/019/857/665/GCA_019857665.1_UCB_Ecoq_1.0/GCA_019857665.1_UCB_Ecoq_1.0_genomic.fna.gz) | unpublished update | NA |
 | American bullfrog  |   unpublished update    | NA | unpublished update | NA |
+| Common toad | aBufBuf1.1 | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/905/171/765/GCF_905171765.1_aBufBuf1.1/GCF_905171765.1_aBufBuf1.1_genomic.fna.gz) | NCBI Release 100 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/8384/100/GCF_905171765.1_aBufBuf1.1/GCF_905171765.1_aBufBuf1.1_genomic.gff.gz) |
+| Common frog | aRanTem1.1 | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/905/171/775/GCF_905171775.1_aRanTem1.1/GCF_905171775.1_aRanTem1.1_genomic.fna.gz) | NCBI Release 100 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/8407/100/GCF_905171775.1_aRanTem1.1/GCF_905171775.1_aRanTem1.1_genomic.gff.gz) |
 
 ## Other Animals
 
