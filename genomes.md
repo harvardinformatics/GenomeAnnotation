@@ -94,12 +94,11 @@ Brassica oleracea is about 25 million years diverged from the Arabidopsis group.
 
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
 | -----------  | -------------- |----------- | ----------- | ----------- |
-| Brachypodium distachyon (focal) |   3.1    | [genome fasta]() | annotation version | [gff]() |
-| Orza satvia |   version    | [genome fasta]() | annotation version | [gff]() |
-| Setaria italica |   version    | [genome fasta]() | annotation version | [gff]() |
-| Zea mays |   version    | [genome fasta]() | annotation version | [gff]() |
+| Brachypodium distachyon (focal) |  3.0  | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/505/GCF_000005505.3_Brachypodium_distachyon_v3.0/GCF_000005505.3_Brachypodium_distachyon_v3.0_genomic.fna.gz) | NCBI Release 103 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/505/GCF_000005505.3_Brachypodium_distachyon_v3.0/GCF_000005505.3_Brachypodium_distachyon_v3.0_genomic.gff.gz) |
+| Orza satvia | IRGSP-1.0 | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/433/935/GCF_001433935.1_IRGSP-1.0/GCF_001433935.1_IRGSP-1.0_genomic.fna.gz) | NCBI Release 102| [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/433/935/GCF_001433935.1_IRGSP-1.0/GCF_001433935.1_IRGSP-1.0_genomic.gff.gz) |
+| Setaria italica |   v2.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/263/155/GCF_000263155.2_Setaria_italica_v2.0/GCF_000263155.2_Setaria_italica_v2.0_genomic.fna.gz) | NCBI Release 103 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/263/155/GCF_000263155.2_Setaria_italica_v2.0/GCF_000263155.2_Setaria_italica_v2.0_genomic.gff.gz) |
+| Zea mays |   Zm-B73-REFERENCE-NAM-5.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/902/167/145/GCF_902167145.1_Zm-B73-REFERENCE-NAM-5.0/GCF_902167145.1_Zm-B73-REFERENCE-NAM-5.0_genomic.fna.gz) | NCBI Release 103 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/902/167/145/GCF_902167145.1_Zm-B73-REFERENCE-NAM-5.0/GCF_902167145.1_Zm-B73-REFERENCE-NAM-5.0_genomic.gff.gz) |
 
-Brachypodium distachyon v 3.1 annotated on Phytozome, but not NCBI which only has 3.0 as far as I can tell. Both Setaria italica (millet) and Zea mays (maize) are about equally diverged and could make a good quartet as could also use Zea mays as a focal species.
 
 ### Asterids
 
