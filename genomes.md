@@ -67,12 +67,13 @@ Some additional species listed so we can decide to drop the unpublished ones as 
 
 ### Nematodes
 
+Using the tree from [this paper](https://onlinelibrary.wiley.com/doi/full/10.1002/evl3.110) as a guide.
+
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
 | -----------  | -------------- |----------- | ----------- | ----------- |
-| C. elelgans (focal) |   version    | link | annotation version | annotation link |
-| ???  ....  |   version    | link | annotation version | annotation link |
-| ??? ...  |   version    | link | annotation version | annotation link |
-| ???  ...  |   version    | link | annotation version | annotation link |
+| Caenorhabditis elelgans (focal) |   PRJNA13758    | [genome fasta](https://downloads.wormbase.org/species/c_elegans/sequence/genomic/c_elegans.PRJNA13758.WS282.genomic.fa.gz) | wS282 | [gff](https://downloads.wormbase.org/species/c_elegans/gff/c_elegans.PRJNA13758.WS282.protein_annotation.gff3.gz) |
+| Caenorhabditis inopinata  |   PRJDB5687    | [genome fasta](https://downloads.wormbase.org/species/c_inopinata/sequence/genomic/c_inopinata.PRJDB5687.WS282.genomic.fa.gz) | WS282 | [gff](https://downloads.wormbase.org/species/c_inopinata/gff/c_inopinata.PRJDB5687.WS282.annotations.gff3.gz) |
+| Caenorhabditis briggsae  |   PRJNA10731    | [genome fasta](https://downloads.wormbase.org/species/c_briggsae/PRJNA10731/sequence/genomic/c_briggsae.PRJNA10731.WS282.genomic.fa.gz) | WS282 | [gff](https://downloads.wormbase.org/species/c_briggsae/PRJNA10731/gff/c_briggsae.PRJNA10731.WS282.protein_annotation.gff3.gz) |
 
 ## Plants
 
