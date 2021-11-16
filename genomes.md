@@ -67,7 +67,7 @@ Some additional species listed so we can decide to drop the unpublished ones as 
 
 ### Nematodes
 
-Using the tree from [this paper](https://onlinelibrary.wiley.com/doi/full/10.1002/evl3.110) as a guide.
+Using the tree from [this paper](https://onlinelibrary.wiley.com/doi/full/10.1002/evl3.110) as a guide. Data from WormBase.
 
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
 | -----------  | -------------- |----------- | ----------- | ----------- |
@@ -77,25 +77,27 @@ Using the tree from [this paper](https://onlinelibrary.wiley.com/doi/full/10.100
 
 ## Plants
 
+Selecting annotation data for plants is tricky, as NCBI is less consistent here, and other sources (JGI, Ensembl Plants) typically import genebuilds made in a variety of ways. Opted to select NCBI annotation if available for the latest genome version, otherwise use another source. Except in rosids where 
+
 ### Rosids
 
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
 | -----------  | -------------- |----------- | ----------- | ----------- |
-| Arabidopsis thaliana (focal) |   version    | link | annotation version | annotation link |
-| Arabidopsis lyrata (maybe?) |   version    | link | annotation version | annotation link |
-| Brassica oleracea |   version    | link | annotation version | annotation link |
-| Cleome violacea (see note)  ...  |   version    | link | annotation version | annotation link |
+| Arabidopsis thaliana (focal) |   TAIR10    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/735/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_genomic.fna.gz) | Araport | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/735/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_genomic.gff.gz) |
+| Arabidopsis lyrata |   v1.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/255/GCF_000004255.2_v.1.0/GCF_000004255.2_v.1.0_genomic.fna.gz) | NCBI Release 101 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/255/GCF_000004255.2_v.1.0/GCF_000004255.2_v.1.0_genomic.gff.gz) |
+| Capsella rubella |   Caprub1_0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/325/GCF_000375325.1_Caprub1_0/GCF_000375325.1_Caprub1_0_genomic.fna.gz) |  NCBI Release 100 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/325/GCF_000375325.1_Caprub1_0/GCF_000375325.1_Caprub1_0_genomic.gff.gz) |
+| Brassica oleracea |   BOL    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/695/525/GCF_000695525.1_BOL/GCF_000695525.1_BOL_genomic.fna.gz) | NCBI Release 100 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/695/525/GCF_000695525.1_BOL/GCF_000695525.1_BOL_genomic.gff.gz) |
 
-Cleome violacea only available from Phytozome, not NCBI. Not sure if we care. Looks like something like soybean (Glycine max) or one of the cotton species (Gossypium sp) may be another option.
+Brassica oleracea is about 25 million years diverged from the Arabidopsis group.
 
 ### Monocots (grasses)
 
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
 | -----------  | -------------- |----------- | ----------- | ----------- |
-| Brachypodium distachyon (focal) |   3.1    | link | annotation version | annotation link |
-| Orza satvia |   version    | link | annotation version | annotation link |
-| Setaria italica |   version    | link | annotation version | annotation link |
-| Zea mays |   version    | link | annotation version | annotation link |
+| Brachypodium distachyon (focal) |   3.1    | [genome fasta]() | annotation version | [gff]() |
+| Orza satvia |   version    | [genome fasta]() | annotation version | [gff]() |
+| Setaria italica |   version    | [genome fasta]() | annotation version | [gff]() |
+| Zea mays |   version    | [genome fasta]() | annotation version | [gff]() |
 
 Brachypodium distachyon v 3.1 annotated on Phytozome, but not NCBI which only has 3.0 as far as I can tell. Both Setaria italica (millet) and Zea mays (maize) are about equally diverged and could make a good quartet as could also use Zea mays as a focal species.
 
@@ -103,8 +105,8 @@ Brachypodium distachyon v 3.1 annotated on Phytozome, but not NCBI which only ha
 
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
 | -----------  | -------------- |----------- | ----------- | ----------- |
-| Solanum lycopersicum (focal) |   version    | link | annotation version | annotation link |
-| Nicotiana |   version    | link | annotation version | annotation link |
-| Ipomoea |   version    | link | annotation version | annotation link |
+| Solanum lycopersicum (focal) |   version    | [genome fasta]() | annotation version | [gff]() |
+| Nicotiana |   version    | [genome fasta]() | annotation version | [gff]() |
+| Ipomoea |   version    | [genome fasta]() | annotation version | [gff]() |
 
 Nicotiana (tobacco) and Ipomoea (morning glory) have several species and assemblies, and probably need to be looked into a bit more. A second Solanum species (potato) might also be an option here as a fourth species.
