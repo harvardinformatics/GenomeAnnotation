@@ -27,10 +27,10 @@ Not yet decided if we will bother with this...
 
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
 | -----------  | -------------- |----------- | ----------- | ----------- |
-| Apis mellifera (focal) |   version    | link | annotation version | annotation link |
-| Apis ....  |   version    | link | annotation version | annotation link |
-| Bombus ...  |   version    | link | annotation version | annotation link |
-| Bombus ...  |   version    | link | annotation version | annotation link |
+| Apis mellifera (focal) |   Amel_HAv3.1    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/254/395/GCF_003254395.2_Amel_HAv3.1/GCF_003254395.2_Amel_HAv3.1_genomic.fna.gz) | NCBI Release 104 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/7460/104/GCF_003254395.2_Amel_HAv3.1/GCF_003254395.2_Amel_HAv3.1_genomic.gff.gz) |
+| Apis cerana  |   ACSNU-2.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/442/555/GCF_001442555.1_ACSNU-2.0/GCF_001442555.1_ACSNU-2.0_genomic.fna.gz) | NCBI Release 101 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/7461/101/GCF_001442555.1_ACSNU-2.0/GCF_001442555.1_ACSNU-2.0_genomic.gff.gz) |
+| Bombus terrestris  |   Bter_1.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/214/255/GCF_000214255.1_Bter_1.0/GCF_000214255.1_Bter_1.0_genomic.fna.gz) | NCBI Release 102 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/30195/102/GCF_000214255.1_Bter_1.0/GCF_000214255.1_Bter_1.0_genomic.gff.gz) |
+| Frieseomelitta varia  |  [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/011/392/965/GCF_011392965.1_Fvar_1.2/GCF_011392965.1_Fvar_1.2_genomic.fna.gz)  | NCBI Release 100 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/561572/100/GCF_011392965.1_Fvar_1.2/GCF_011392965.1_Fvar_1.2_genomic.gff.gz) |
 
 ## Vertebrates
 
