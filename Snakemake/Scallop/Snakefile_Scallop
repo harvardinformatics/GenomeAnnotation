@@ -3,17 +3,19 @@ from os.path import basename
 import yaml
 from os import system
 
-configfile: "config/config.yaml"
-res_config = yaml.load(open("config/resources.yaml"),Loader=yaml.FullLoader)
-SAMPLES = list(set([basename(i.split('/')[-1].split('_')[1]) for i in glob("%s*bam" % config["bamDir"])]))
+configfile: "/n/home_rc/afreedman/workspace/GenomeAnnotation/Snakemake/config/config.yaml"
+res_config = yaml.load(open("/n/home_rc/afreedman/workspace/GenomeAnnotation/Snakemake/config/resources.yaml"),Loader=yaml.FullLoader)
+SAMPLES = list(set([basename(i.split('/')[-1].split('_')[1]) for i in glob("%s*bam" % config["Hisat2SamsortOutdir"])]))
+
+system("rm gtflist.txt")
 
 for sample in SAMPLES:
-   system("echo %s%s_scallop_%s.gtf >> gtflist.txt" % (config["assemblyDir"],sample,config["alignment_tool"]))
+   system("echo %s%s_scallop_%s.gtf >> gtflist.txt" % (config["ScallopAssemblyDir"],sample,config["ScallopAlignmentTool"]))
 
 ### RULES ###
 
 rule all:
     input:
-        directory(config["mergeDir"])
+        directory(config["TacoDir"]) + "assembly.gtf"
 
 include: "../rules/scallop.smk"	

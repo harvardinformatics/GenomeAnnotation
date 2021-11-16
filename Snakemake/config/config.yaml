@@ -51,3 +51,10 @@ StringtieAssemblyDir: "/n/holyscratch01/informatics/genome_annotation_evaluation
 # merged assembly directory #
 StringtieMergeDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/stringtie/dmel/merged_assembly/"
 StringtieMergeLabel: "dmel" 
+
+##############
+##  SCALLOP ##
+#############
+ScallopAlignmentTool: "hisat2"
+ScallopAssemblyDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/scallop/dmel/hisat2/individual_assemblies/"
+TacoDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/scallop/dmel/hisat2/taco/"
