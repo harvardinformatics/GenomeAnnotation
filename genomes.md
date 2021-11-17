@@ -104,8 +104,7 @@ Brassica oleracea is about 25 million years diverged from the Arabidopsis group.
 
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
 | -----------  | -------------- |----------- | ----------- | ----------- |
-| Solanum lycopersicum (focal) |   version    | [genome fasta]() | annotation version | [gff]() |
-| Nicotiana |   version    | [genome fasta]() | annotation version | [gff]() |
-| Ipomoea |   version    | [genome fasta]() | annotation version | [gff]() |
+| Solanum lycopersicum (focal) |   SL3.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/188/115/GCF_000188115.4_SL3.0/GCF_000188115.4_SL3.0_genomic.fna.gz) | NCBI Release 103 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/188/115/GCF_000188115.4_SL3.0/GCF_000188115.4_SL3.0_genomic.gff.gz) |
+| Nicotiana attenuata |   NIATTr2    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/879/085/GCF_001879085.1_NIATTr2/GCF_001879085.1_NIATTr2_genomic.fna.gz) | NCBI Release 100| [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/879/085/GCF_001879085.1_NIATTr2/GCF_001879085.1_NIATTr2_genomic.gff.gz) |
+| Ipomoea triloba |   ASM357664v1    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/576/645/GCF_003576645.1_ASM357664v1/GCF_003576645.1_ASM357664v1_genomic.fna.gz) |NCBI Release 100| [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/576/645/GCF_003576645.1_ASM357664v1/GCF_003576645.1_ASM357664v1_genomic.gff.gz) |
 
-Nicotiana (tobacco) and Ipomoea (morning glory) have several species and assemblies, and probably need to be looked into a bit more. A second Solanum species (potato) might also be an option here as a fourth species.
