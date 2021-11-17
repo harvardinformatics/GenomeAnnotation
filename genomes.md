@@ -77,8 +77,6 @@ Using the tree from [this paper](https://onlinelibrary.wiley.com/doi/full/10.100
 
 ## Plants
 
-Selecting annotation data for plants is tricky, as NCBI is less consistent here, and other sources (JGI, Ensembl Plants) typically import genebuilds made in a variety of ways. Opted to select NCBI annotation if available for the latest genome version, otherwise use another source. Except in rosids where 
-
 ### Rosids
 
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
