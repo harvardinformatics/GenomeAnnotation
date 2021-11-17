@@ -1,8 +1,8 @@
 ## ALL OF BELOW NEED TO BE MODIFIED TO WORK
 ## FOR YOUR DATA!!
-#
 
-speciesname="dmel"
+# LABEL FOR MERGED ASSEMBLIES #
+speciesname: "dmel"
 
 ########################
 ## RNA-SEQ FASTQ FILES #
@@ -13,51 +13,34 @@ fastqDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/fas
 ############
 ## HISAT2 ##
 ############
-# Hisat2 index info #
 Hisat2IndexDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/genomes/dmel/hisat/"
 Hisat2IndexPrefix: "dmel_GCF_000001215.4_Release_6_hisat2"
-
-# hisat2 output directory #
-Hisat2Outdir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/hisat/dmel/"
-
-# sortsam output directory # 
-Hisat2SamsortOutdir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/hisat/dmel/sorted/"
+Hisat2Outdir: "hisat2/"
+Hisat2SamsortOutdir: "hisat2/sorted/" 
 
 ##########
 ## STAR ##
 #########
-# star genome index location #
 StarIndexDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/genomes/dmel/star/"
+Star1stPassOutdir: "star/star1stpass/" 
+Star2ndPassOutdir: "star/star2ndpass/"
+StarSamsortOutdir: "star/sorted/" 
 
-# star 1stpass output directory #
-Star1stPassOutdir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/star/dmel/Star1stpass/"
+#############
+# STRINGTIE #
+# ###########
 
-# star 1stpass output directory #
-Star2ndPassOutdir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/star/dmel/Star2ndpass/"
-
-# STAR sortsam output directory # 
-StarSamsortOutdir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/star/dmel/sorted_bams/"
-
-
-###############
-## STRINGTIE ##
-###############
-# directory where input bam files are located #
-StringtieBamDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/hisat/dmel/sorted/"
-
-# alignment tool used to produce bams #
-#StringtieAlignmentTool: "hisat2"
-
-# output directory for sample-level stringtie assemblies #
-StringtieAssemblyDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/stringtie/dmel/individual_assemblies/"
-
-# merged assembly directory #
-StringtieMergeDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/stringtie/dmel/merged_assembly/"
-#StringtieMergeLabel: "dmel" 
+StringtieHisat2AssemblyDir: "stringtie/hisat2/individual_assemblies/" 
+StringtieHisat2MergeDir: "stringtie/hisat2/merged_assembly/" 
+StringtieStarAssemblyDir: "stringtie/star/individual_assemblies/"
+StringtieStarMergeDir: "stringtie/star/merged_assembly/"
 
 ##############
 ##  SCALLOP ##
 #############
-ScallopAlignmentTool: "hisat2"
-ScallopAssemblyDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/scallop/dmel/hisat2/individual_assemblies/"
-TacoDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/scallop/dmel/hisat2/taco/"
+ScallopHisat2Dir: "scallop/hisat2/"
+ScallopHisat2AssemblyDir: "scallop/hisat2/individual_assemblies/" 
+TacoHisat2Dir: "scallop/hisat2/taco/"
+ScallopStarDir: "scallop/star/"
+ScallopStarAssemblyDir: "scallop/star/individual_assemblies/"
+TacoStarDir: "scallop/star/taco/" 

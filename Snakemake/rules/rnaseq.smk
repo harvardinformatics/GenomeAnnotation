@@ -155,7 +155,7 @@ rule scallop_hisat2:
     input:
         config["Hisat2SamsortOutdir"] + "sorted_" + "{sample}" + "_hisat2.bam"
     output:
-        config["ScallopAssemblyDir"] + "{sample}" + "_scallop_" + config["ScallopAlignmentTool"] + ".gtf"
+        config["ScallopHisat2AssemblyDir"] + "{sample}" + "_scallop-hisat2".gtf"
     conda:
         "../envs/scallop.yml"
     threads:
@@ -166,11 +166,11 @@ rule scallop_hisat2:
     shell:
         "scallop -i {input} -o {output}"  
 
-rule taco:
+rule taco_hisat2:
     input:
-        expand("{outdir}{sample}_scallop_{aligner}.gtf", outdir=config["ScallopAssemblyDir"],sample=SAMPLES,aligner=config["ScallopAlignmentTool"])
+        expand("{outdir}{sample}_scallop-hisat2.gtf", outdir=config["ScallopHisat2AssemblyDir"],sample=SAMPLES)
     output:
-        touch("mytask.done")
+        touch("%smytask.taco.hisat2.done" % config["TacoHisat2Dir))
     conda:
         "../envs/taco.yml"
     threads:
@@ -179,4 +179,34 @@ rule taco:
         mem_mb = res_config['taco']['mem_mb'],
         time = res_config['taco']['time'] 
     shell:
-        "taco_run -p {threads} --gtf-expr-attr RPKM -o %s gtflist.txt" % config["TacoDir"]
+        "taco_run -p {threads} --gtf-expr-attr RPKM -o %s %sgtflist.txt" % (config["TacoHisat2Dir"],config["ScallopHisat2AssemblyDir"])
+
+rule scallop_star:
+    input:
+        config["StarSamsortOutdir"] + "sorted_" + "{sample}" + "_STAR2ndpass.bam"
+    output:
+        config["ScallopStarAssemblyDir"] + "{sample}" + "_scallop-star".gtf"
+    conda:
+        "../envs/scallop.yml"
+    threads:
+        res_config['scallop']['threads']
+    resources:
+        mem_mb = res_config['scallop']['mem_mb'],
+        time = res_config['scallop']['time']
+    shell:
+        "scallop -i {input} -o {output}"
+
+rule taco_star:
+    input:
+        expand("{outdir}{sample}_scallop-star.gtf", outdir=config["ScallopStarAssemblyDir"],sample=SAMPLES)
+    output:
+        touch("%smytask.taco.star.done" % config["TacoStarDir"])
+    conda:
+        "../envs/taco.yml"
+    threads:
+        res_config['taco']['threads']
+    resources:
+        mem_mb = res_config['taco']['mem_mb'],
+        time = res_config['taco']['time']
+    shell:
+        "taco_run -p {threads} --gtf-expr-attr RPKM -o %s %sgtflist.txt" % (config["TacoStarDir"],config["ScallopStarAssemblyDir"])
