@@ -16,6 +16,7 @@ for sample in SAMPLES:
 
 rule all:
     input:
-        directory(config["TacoDir"]) + "assembly.gtf"
+        #directory(config["TacoDir"]) + "assembly.gtf"
+        "mytask.done"
 
 include: "../rules/scallop.smk"	

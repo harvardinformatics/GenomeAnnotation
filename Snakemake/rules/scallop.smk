@@ -17,7 +17,7 @@ rule taco:
     input:
         expand("{outdir}{sample}_scallop_{aligner}.gtf", outdir=config["ScallopAssemblyDir"],sample=SAMPLES,aligner=config["ScallopAlignmentTool"])
     output:
-        directory(config["TacoDir"]) + "assembly.gtf"
+        touch("mytask.done")
     conda:
         "../envs/taco.yml"
     threads:
@@ -26,4 +26,4 @@ rule taco:
         mem_mb = res_config['taco']['mem_mb'],
         time = res_config['taco']['time'] 
     shell:
-        "taco_run -p {threads} --gtf-expr-attr RPKM -o %s gtflist.txt" % directory(config["TacoDir"])
+        "taco_run -p {threads} --gtf-expr-attr RPKM -o %s gtflist.txt" % config["TacoDir"]

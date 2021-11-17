@@ -1,6 +1,9 @@
 ## ALL OF BELOW NEED TO BE MODIFIED TO WORK
 ## FOR YOUR DATA!!
 #
+
+speciesname="dmel"
+
 ########################
 ## RNA-SEQ FASTQ FILES #
 ########################
@@ -43,14 +46,14 @@ StarSamsortOutdir: "/n/holyscratch01/informatics/genome_annotation_evaluation/di
 StringtieBamDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/hisat/dmel/sorted/"
 
 # alignment tool used to produce bams #
-StringtieAlignmentTool: "hisat2"
+#StringtieAlignmentTool: "hisat2"
 
 # output directory for sample-level stringtie assemblies #
 StringtieAssemblyDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/stringtie/dmel/individual_assemblies/"
 
 # merged assembly directory #
 StringtieMergeDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/stringtie/dmel/merged_assembly/"
-StringtieMergeLabel: "dmel" 
+#StringtieMergeLabel: "dmel" 
 
 ##############
 ##  SCALLOP ##
