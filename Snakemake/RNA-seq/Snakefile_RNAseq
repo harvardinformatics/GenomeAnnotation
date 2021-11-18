@@ -23,4 +23,4 @@ rule all:
         config["StringtieStarMergeDir"] + config["speciesname"] + "_stringtie-star_merge.gtf"
         config["StringtieHisat2MergeDir"] + config["speciesname"] + "_stringtie-hisat2_merge.gtf" 
 
-include: "../rules/rnaseq.smk"	
+include: "workflow/rules/rnaseq.smk"	
