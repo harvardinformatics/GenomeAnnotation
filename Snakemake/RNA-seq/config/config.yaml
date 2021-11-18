@@ -16,31 +16,31 @@ fastqDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/fas
 Hisat2IndexDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/genomes/dmel/hisat/"
 Hisat2IndexPrefix: "dmel_GCF_000001215.4_Release_6_hisat2"
 Hisat2Outdir: "hisat2/"
-Hisat2SamsortOutdir: "hisat2/sorted/" 
+Hisat2SamsortOutdir: "results/hisat2/bams/" 
 
 ##########
 ## STAR ##
 #########
 StarIndexDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/genomes/dmel/star/"
-Star1stPassOutdir: "star/star1stpass/" 
-Star2ndPassOutdir: "star/star2ndpass/"
-StarSamsortOutdir: "star/sorted/" 
+Star1stPassOutdir: "results/star/star1stpass/" 
+Star2ndPassOutdir: "results/star/star2ndpass/"
+StarSamsortOutdir: "results/star/bams/" 
 
 #############
 # STRINGTIE #
 # ###########
 
-StringtieHisat2AssemblyDir: "stringtie/hisat2/individual_assemblies/" 
-StringtieHisat2MergeDir: "stringtie/hisat2/merged_assembly/" 
-StringtieStarAssemblyDir: "stringtie/star/individual_assemblies/"
-StringtieStarMergeDir: "stringtie/star/merged_assembly/"
+StringtieHisat2AssemblyDir: "results/stringtie/hisat2/individual_assemblies/" 
+StringtieHisat2MergeDir: "results/stringtie/hisat2/merged_assembly/" 
+StringtieStarAssemblyDir: "results/stringtie/star/individual_assemblies/"
+StringtieStarMergeDir: "results/stringtie/star/merged_assembly/"
 
 ##############
 ##  SCALLOP ##
 #############
-ScallopHisat2Dir: "scallop/hisat2/"
-ScallopHisat2AssemblyDir: "scallop/hisat2/individual_assemblies/" 
-TacoHisat2Dir: "scallop/hisat2/taco/"
-ScallopStarDir: "scallop/star/"
-ScallopStarAssemblyDir: "scallop/star/individual_assemblies/"
-TacoStarDir: "scallop/star/taco/" 
+ScallopHisat2Dir: "results/scallop/hisat2/"
+ScallopHisat2AssemblyDir: "results/scallop/hisat2/individual_assemblies/" 
+TacoHisat2Dir: "results/scallop/hisat2/taco/"
+ScallopStarDir: "results/scallop/star/"
+ScallopStarAssemblyDir: "results/scallop/star/individual_assemblies/"
+TacoStarDir: "results/scallop/star/taco/" 
