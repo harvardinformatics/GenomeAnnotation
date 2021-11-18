@@ -27,10 +27,10 @@ Not yet decided if we will bother with this...
 
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
 | -----------  | -------------- |----------- | ----------- | ----------- |
-| Apis mellifera (focal) |   version    | link | annotation version | annotation link |
-| Apis ....  |   version    | link | annotation version | annotation link |
-| Bombus ...  |   version    | link | annotation version | annotation link |
-| Bombus ...  |   version    | link | annotation version | annotation link |
+| Apis mellifera (focal) |   Amel_HAv3.1    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/254/395/GCF_003254395.2_Amel_HAv3.1/GCF_003254395.2_Amel_HAv3.1_genomic.fna.gz) | NCBI Release 104 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/7460/104/GCF_003254395.2_Amel_HAv3.1/GCF_003254395.2_Amel_HAv3.1_genomic.gff.gz) |
+| Apis cerana  |   ACSNU-2.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/442/555/GCF_001442555.1_ACSNU-2.0/GCF_001442555.1_ACSNU-2.0_genomic.fna.gz) | NCBI Release 101 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/7461/101/GCF_001442555.1_ACSNU-2.0/GCF_001442555.1_ACSNU-2.0_genomic.gff.gz) |
+| Bombus terrestris  |   Bter_1.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/214/255/GCF_000214255.1_Bter_1.0/GCF_000214255.1_Bter_1.0_genomic.fna.gz) | NCBI Release 102 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/30195/102/GCF_000214255.1_Bter_1.0/GCF_000214255.1_Bter_1.0_genomic.gff.gz) |
+| Frieseomelitta varia  | Fvar_1.2 | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/011/392/965/GCF_011392965.1_Fvar_1.2/GCF_011392965.1_Fvar_1.2_genomic.fna.gz)  | NCBI Release 100 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/561572/100/GCF_011392965.1_Fvar_1.2/GCF_011392965.1_Fvar_1.2_genomic.gff.gz) |
 
 ## Vertebrates
 
@@ -53,22 +53,27 @@ Not yet decided if we will bother with this...
 
 ### Amphibians
 
+Some additional species listed so we can decide to drop the unpublished ones as needed.
+
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
 | -----------  | -------------- |----------- | ----------- | ----------- |
-| Tropical clawed frog (focal) |   UCB_Xtro_10.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/195/GCF_000004195.4_UCB_Xtro_10.0/GCF_000004195.4_UCB_Xtro_10.0_genomic.fna.gz) | NCBI release 104 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/195/GCF_000004195.4_UCB_Xtro_10.0/GCF_000004195.4_UCB_Xtro_10.0_genomic.gff.gz) |
+| Tropical clawed frog (focal) |   UCB_Xtro_10.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/195/GCF_000004195.4_UCB_Xtro_10.0/GCF_000004195.4_UCB_Xtro_10.0_genomic.fna.gz) | NCBI Release 104 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/195/GCF_000004195.4_UCB_Xtro_10.0/GCF_000004195.4_UCB_Xtro_10.0_genomic.gff.gz) |
 | Puerto Rican coqui  |   UCB_Ecoq_1.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/019/857/665/GCA_019857665.1_UCB_Ecoq_1.0/GCA_019857665.1_UCB_Ecoq_1.0_genomic.fna.gz) | unpublished update | NA |
 | American bullfrog  |   unpublished update    | NA | unpublished update | NA |
+| Common toad | aBufBuf1.1 | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/905/171/765/GCF_905171765.1_aBufBuf1.1/GCF_905171765.1_aBufBuf1.1_genomic.fna.gz) | NCBI Release 100 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/8384/100/GCF_905171765.1_aBufBuf1.1/GCF_905171765.1_aBufBuf1.1_genomic.gff.gz) |
+| Common frog | aRanTem1.1 | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/905/171/775/GCF_905171775.1_aRanTem1.1/GCF_905171775.1_aRanTem1.1_genomic.fna.gz) | NCBI Release 100 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/8407/100/GCF_905171775.1_aRanTem1.1/GCF_905171775.1_aRanTem1.1_genomic.gff.gz) |
 
 ## Other Animals
 
 ### Nematodes
 
+Using the tree from [this paper](https://onlinelibrary.wiley.com/doi/full/10.1002/evl3.110) as a guide. Data from WormBase.
+
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
 | -----------  | -------------- |----------- | ----------- | ----------- |
-| C. elelgans (focal) |   version    | link | annotation version | annotation link |
-| ???  ....  |   version    | link | annotation version | annotation link |
-| ??? ...  |   version    | link | annotation version | annotation link |
-| ???  ...  |   version    | link | annotation version | annotation link |
+| Caenorhabditis elelgans (focal) |   PRJNA13758    | [genome fasta](https://downloads.wormbase.org/species/c_elegans/sequence/genomic/c_elegans.PRJNA13758.WS282.genomic.fa.gz) | wS282 | [gff](https://downloads.wormbase.org/species/c_elegans/gff/c_elegans.PRJNA13758.WS282.protein_annotation.gff3.gz) |
+| Caenorhabditis inopinata  |   PRJDB5687    | [genome fasta](https://downloads.wormbase.org/species/c_inopinata/sequence/genomic/c_inopinata.PRJDB5687.WS282.genomic.fa.gz) | WS282 | [gff](https://downloads.wormbase.org/species/c_inopinata/gff/c_inopinata.PRJDB5687.WS282.annotations.gff3.gz) |
+| Caenorhabditis briggsae  |   PRJNA10731    | [genome fasta](https://downloads.wormbase.org/species/c_briggsae/PRJNA10731/sequence/genomic/c_briggsae.PRJNA10731.WS282.genomic.fa.gz) | WS282 | [gff](https://downloads.wormbase.org/species/c_briggsae/PRJNA10731/gff/c_briggsae.PRJNA10731.WS282.protein_annotation.gff3.gz) |
 
 ## Plants
 
@@ -76,30 +81,28 @@ Not yet decided if we will bother with this...
 
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
 | -----------  | -------------- |----------- | ----------- | ----------- |
-| Arabidopsis thaliana (focal) |   version    | link | annotation version | annotation link |
-| Arabidopsis lyrata (maybe?) |   version    | link | annotation version | annotation link |
-| Brassica oleracea |   version    | link | annotation version | annotation link |
-| Cleome violacea (see note)  ...  |   version    | link | annotation version | annotation link |
+| Arabidopsis thaliana (focal) |   TAIR10    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/735/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_genomic.fna.gz) | Araport | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/735/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_genomic.gff.gz) |
+| Arabidopsis lyrata |   v1.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/255/GCF_000004255.2_v.1.0/GCF_000004255.2_v.1.0_genomic.fna.gz) | NCBI Release 101 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/255/GCF_000004255.2_v.1.0/GCF_000004255.2_v.1.0_genomic.gff.gz) |
+| Capsella rubella |   Caprub1_0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/325/GCF_000375325.1_Caprub1_0/GCF_000375325.1_Caprub1_0_genomic.fna.gz) |  NCBI Release 100 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/325/GCF_000375325.1_Caprub1_0/GCF_000375325.1_Caprub1_0_genomic.gff.gz) |
+| Brassica oleracea |   BOL    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/695/525/GCF_000695525.1_BOL/GCF_000695525.1_BOL_genomic.fna.gz) | NCBI Release 100 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/695/525/GCF_000695525.1_BOL/GCF_000695525.1_BOL_genomic.gff.gz) |
 
-Cleome violacea only available from Phytozome, not NCBI. Not sure if we care. Looks like something like soybean (Glycine max) or one of the cotton species (Gossypium sp) may be another option.
+Brassica oleracea is about 25 million years diverged from the Arabidopsis group.
 
 ### Monocots (grasses)
 
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
 | -----------  | -------------- |----------- | ----------- | ----------- |
-| Brachypodium distachyon (focal) |   3.1    | link | annotation version | annotation link |
-| Orza satvia |   version    | link | annotation version | annotation link |
-| Setaria italica |   version    | link | annotation version | annotation link |
-| Zea mays |   version    | link | annotation version | annotation link |
+| Brachypodium distachyon (focal) |  3.0  | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/505/GCF_000005505.3_Brachypodium_distachyon_v3.0/GCF_000005505.3_Brachypodium_distachyon_v3.0_genomic.fna.gz) | NCBI Release 103 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/505/GCF_000005505.3_Brachypodium_distachyon_v3.0/GCF_000005505.3_Brachypodium_distachyon_v3.0_genomic.gff.gz) |
+| Orza satvia | IRGSP-1.0 | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/433/935/GCF_001433935.1_IRGSP-1.0/GCF_001433935.1_IRGSP-1.0_genomic.fna.gz) | NCBI Release 102| [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/433/935/GCF_001433935.1_IRGSP-1.0/GCF_001433935.1_IRGSP-1.0_genomic.gff.gz) |
+| Setaria italica |   v2.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/263/155/GCF_000263155.2_Setaria_italica_v2.0/GCF_000263155.2_Setaria_italica_v2.0_genomic.fna.gz) | NCBI Release 103 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/263/155/GCF_000263155.2_Setaria_italica_v2.0/GCF_000263155.2_Setaria_italica_v2.0_genomic.gff.gz) |
+| Zea mays |   Zm-B73-REFERENCE-NAM-5.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/902/167/145/GCF_902167145.1_Zm-B73-REFERENCE-NAM-5.0/GCF_902167145.1_Zm-B73-REFERENCE-NAM-5.0_genomic.fna.gz) | NCBI Release 103 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/902/167/145/GCF_902167145.1_Zm-B73-REFERENCE-NAM-5.0/GCF_902167145.1_Zm-B73-REFERENCE-NAM-5.0_genomic.gff.gz) |
 
-Brachypodium distachyon v 3.1 annotated on Phytozome, but not NCBI which only has 3.0 as far as I can tell. Both Setaria italica (millet) and Zea mays (maize) are about equally diverged and could make a good quartet as could also use Zea mays as a focal species.
 
 ### Asterids
 
 | Species      | Genome Version | Genome Link | Annotation Version | Annotation Link |
 | -----------  | -------------- |----------- | ----------- | ----------- |
-| Solanum lycopersicum (focal) |   version    | link | annotation version | annotation link |
-| Nicotiana |   version    | link | annotation version | annotation link |
-| Ipomoea |   version    | link | annotation version | annotation link |
+| Solanum lycopersicum (focal) |   SL3.0    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/188/115/GCF_000188115.4_SL3.0/GCF_000188115.4_SL3.0_genomic.fna.gz) | NCBI Release 103 | [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/188/115/GCF_000188115.4_SL3.0/GCF_000188115.4_SL3.0_genomic.gff.gz) |
+| Nicotiana attenuata |   NIATTr2    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/879/085/GCF_001879085.1_NIATTr2/GCF_001879085.1_NIATTr2_genomic.fna.gz) | NCBI Release 100| [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/879/085/GCF_001879085.1_NIATTr2/GCF_001879085.1_NIATTr2_genomic.gff.gz) |
+| Ipomoea triloba |   ASM357664v1    | [genome fasta](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/576/645/GCF_003576645.1_ASM357664v1/GCF_003576645.1_ASM357664v1_genomic.fna.gz) |NCBI Release 100| [gff](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/576/645/GCF_003576645.1_ASM357664v1/GCF_003576645.1_ASM357664v1_genomic.gff.gz) |
 
-Nicotiana (tobacco) and Ipomoea (morning glory) have several species and assemblies, and probably need to be looked into a bit more. A second Solanum species (potato) might also be an option here as a fourth species.
