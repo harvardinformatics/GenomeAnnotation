@@ -3,24 +3,28 @@ from os.path import basename
 import yaml
 from os import system
 
-configfile: "/n/home_rc/afreedman/workspace/GenomeAnnotation/Snakemake/config/config.yaml"
-res_config = yaml.load(open("/n/home_rc/afreedman/workspace/GenomeAnnotation/Snakemake/config/resources.yaml"),Loader=yaml.FullLoader)
-SAMPLES = list(set([basename(i.split('/')[-1].split('_')[0]) for i in glob("_1.fq.gz" % config["fastqDir"])]))
+configfile: "config/config.yaml"
+res_config = yaml.load(open("config/resources.yaml"),Loader=yaml.FullLoader)
+SAMPLES = list(set([basename(i.split('/')[-1].split('_')[0]) for i in glob("%s*_1.fq.gz" % config["fastqDir"])]))
 print(SAMPLES)
-system("rm %s/gtflist.txt" % ScallopHisat2Dir)
-system("rm %s/gtflist.txt" % ScallopStarDir)
+TABLES = ' '.join(expand("{outdir}{sample}_STAR1stpassSJ.out.tab", outdir=config["Star1stPassOutdir"],sample=SAMPLES))
+
+if glob("scallop.gtflist.hisat2.txt") != []:
+    system("rm scallop.gtflist.hisat2.txt")
+if glob("scallop.gtflist.star.txt") != []:
+    system("rm scallop.gtflist.star.txt")
 
 for sample in SAMPLES:
-   system("echo %s%s_scallop-hisat2.gtf >> gtflist.txt" % (config["ScallopHisat2AssemblyDir"],sample))
-   system("echo %s%s_scallop-star.gtf >> gtflist.txt" % (config["ScallopStarAssemblyDir"],sample))
+   system("echo %s%s_scallop-hisat2.gtf >> scallop.gtflist.hisat2.txt" % (config["ScallopHisat2AssemblyDir"],sample))
+   system("echo %s%s_scallop-star.gtf >> scallop.gtflist.star.txt" % (config["ScallopStarAssemblyDir"],sample))
 
 ### RULES ###
 
 rule all:
     input:
-        "%smytask.scallop.hisat2.done" % ScallopHisat2Dir
-        "%smytask.scallop.star.done" % ScallopStarDir
-        config["StringtieStarMergeDir"] + config["speciesname"] + "_stringtie-star_merge.gtf"
+        "mytask.taco.hisat2.done",
+        "mytask.taco.star.done",
+        config["StringtieStarMergeDir"] + config["speciesname"] + "_stringtie-star_merge.gtf",
         config["StringtieHisat2MergeDir"] + config["speciesname"] + "_stringtie-hisat2_merge.gtf" 
 
 include: "workflow/rules/rnaseq.smk"	

@@ -117,7 +117,7 @@ rule stringtie_hisat2_merge:
     conda:
         "../envs/stringtie.yml"
     shell:
-        "stringtie -p {threads} --merge gtflist.txt -o %s%s_stringtie-hisat2_merge_%s.gtf" % (config["StringtieHisat2MergeDir"],config["speciesname"])
+        "stringtie -p {threads} --merge gtflist.txt -o %s%s_stringtie-hisat2_merge.gtf" % (config["StringtieHisat2MergeDir"],config["speciesname"])
 
 # STAR #
 rule stringtie_star:
@@ -144,7 +144,7 @@ rule stringtie_star_merge:
     conda:
         "../envs/stringtie.yml"
     shell:
-        "stringtie -p {threads} --merge gtflist.txt -o %s%s_stringtie-star_merge_%s.gtf" % (config["StringtieStarMergeDir"],config["speciesname"])
+        "stringtie -p {threads} --merge gtflist.txt -o %s%s_stringtie-star_merge.gtf" % (config["StringtieStarMergeDir"],config["speciesname"])
 
 ###########
 # SCALLOP #
@@ -155,7 +155,7 @@ rule scallop_hisat2:
     input:
         config["Hisat2SamsortOutdir"] + "sorted_" + "{sample}" + "_hisat2.bam"
     output:
-        config["ScallopHisat2AssemblyDir"] + "{sample}" + "_scallop-hisat2".gtf"
+        config["ScallopHisat2AssemblyDir"] + "{sample}" + "_scallop-hisat2.gtf"
     conda:
         "../envs/scallop.yml"
     threads:
@@ -170,7 +170,7 @@ rule taco_hisat2:
     input:
         expand("{outdir}{sample}_scallop-hisat2.gtf", outdir=config["ScallopHisat2AssemblyDir"],sample=SAMPLES)
     output:
-        touch("%smytask.taco.hisat2.done" % config["TacoHisat2Dir))
+        touch("mytask.taco.hisat2.done")
     conda:
         "../envs/taco.yml"
     threads:
@@ -179,13 +179,13 @@ rule taco_hisat2:
         mem_mb = res_config['taco']['mem_mb'],
         time = res_config['taco']['time'] 
     shell:
-        "taco_run -p {threads} --gtf-expr-attr RPKM -o %s %sgtflist.txt" % (config["TacoHisat2Dir"],config["ScallopHisat2AssemblyDir"])
+        "taco_run -p {threads} --gtf-expr-attr RPKM -o %s scallop.gtflist.hisat2.txt" % config["TacoHisat2Dir"]
 
 rule scallop_star:
     input:
         config["StarSamsortOutdir"] + "sorted_" + "{sample}" + "_STAR2ndpass.bam"
     output:
-        config["ScallopStarAssemblyDir"] + "{sample}" + "_scallop-star".gtf"
+        config["ScallopStarAssemblyDir"] + "{sample}" + "_scallop-star.gtf"
     conda:
         "../envs/scallop.yml"
     threads:
@@ -200,7 +200,7 @@ rule taco_star:
     input:
         expand("{outdir}{sample}_scallop-star.gtf", outdir=config["ScallopStarAssemblyDir"],sample=SAMPLES)
     output:
-        touch("%smytask.taco.star.done" % config["TacoStarDir"])
+        touch("mytask.taco.star.done")
     conda:
         "../envs/taco.yml"
     threads:
@@ -209,4 +209,4 @@ rule taco_star:
         mem_mb = res_config['taco']['mem_mb'],
         time = res_config['taco']['time']
     shell:
-        "taco_run -p {threads} --gtf-expr-attr RPKM -o %s %sgtflist.txt" % (config["TacoStarDir"],config["ScallopStarAssemblyDir"])
+        "taco_run -p {threads} --gtf-expr-attr RPKM -o %s scallop.gtflist.star.txt" % config["TacoStarDir"]
