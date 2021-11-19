@@ -32,7 +32,7 @@ rule samsort_hisat2:
         mem_mb = res_config['samsort']['mem_mb'],
         time = res_config['samsort']['time']
     shell:
-        "samtools sort -@ {threads} -T tmp/{wildcards.sample}.aln.sorted -O bam -o {output} {input}"  
+        "samtools sort -@ {threads} -T %stmp/{wildcards.sample}.aln.sorted -O bam -o {output} {input}" % config["Hisat2SamsortOutdir"] 
 
 #########
 #  STAR #
@@ -52,7 +52,7 @@ rule star_1stpass:
         mem_mb = res_config['star_1stpass']['mem_mb'],
         time = res_config['star_1stpass']['time']
     shell:
-        "STAR --runThreadN {threads} --genomeDir %s --outFileNamePrefix %s{wildcards.sample}_STAR1stpass --outTmpDir {wildcards.sample}_1stpassSTARtmp --readFilesIn <(gunzip -c {input.r1}) <(gunzip -c {input.r2})" % (config["StarIndexDir"],config["Star1stPassOutdir"])
+        "STAR --runThreadN {threads} --genomeDir %s --outFileNamePrefix %s{wildcards.sample}_STAR1stpass --outTmpDir %s{wildcards.sample}_1stpassSTARtmp --readFilesIn <(gunzip -c {input.r1}) <(gunzip -c {input.r2})" % (config["StarIndexDir"],config["Star1stPassOutdir"],config["Star1stPassOutdir"])
 
 rule star_2ndpass:
     input:
@@ -70,7 +70,7 @@ rule star_2ndpass:
         time = res_config['star_2ndpass']['time']
     
     shell: 
-        "STAR --runThreadN {threads} --genomeDir %s --outSAMstrandField intronMotif --outTmpDir {wildcards.sample}_2ndpassSTARtmp --sjdbFileChrStartEnd {TABLES} --outFileNamePrefix %s{wildcards.sample}_STAR2ndpass --readFilesIn <(gunzip -c {input.r1}) <(gunzip -c {input.r2})" % (config["StarIndexDir"],config["Star2ndPassOutdir"])
+        "STAR --runThreadN {threads} --genomeDir %s --outSAMstrandField intronMotif --outTmpDir %s{wildcards.sample}_2ndpassSTARtmp --sjdbFileChrStartEnd {TABLES} --outFileNamePrefix %s{wildcards.sample}_STAR2ndpass --readFilesIn <(gunzip -c {input.r1}) <(gunzip -c {input.r2})" % (config["StarIndexDir"],config["Star2ndPassOutdir"],config["Star2ndPassOutdir"])
 
 
 rule samsort_star:
@@ -86,8 +86,7 @@ rule samsort_star:
         mem_mb = res_config['samsort']['mem_mb'],
         time = res_config['samsort']['time']
     shell:
-        "samtools sort -@ {threads} -T tmp/{wildcards.sample}.aln.sorted -O bam -o {output} {input}"  
-
+        "samtools sort -@ {threads} -T %stmp/{wildcards.sample}.aln.sorted -O bam -o {output} {input}" % config["StarSamsortOutdir"] 
 #############
 # STRINGTIE #
 ############
@@ -117,7 +116,7 @@ rule stringtie_hisat2_merge:
     conda:
         "../envs/stringtie.yml"
     shell:
-        "stringtie -p {threads} --merge gtflist.txt -o %s%s_stringtie-hisat2_merge.gtf" % (config["StringtieHisat2MergeDir"],config["speciesname"])
+        "stringtie -p {threads} --merge stringtie-hisat2_gtflist.txt -o %s%s_stringtie-hisat2_merge.gtf" % (config["StringtieHisat2MergeDir"],config["speciesname"])
 
 # STAR #
 rule stringtie_star:
@@ -144,7 +143,7 @@ rule stringtie_star_merge:
     conda:
         "../envs/stringtie.yml"
     shell:
-        "stringtie -p {threads} --merge gtflist.txt -o %s%s_stringtie-star_merge.gtf" % (config["StringtieStarMergeDir"],config["speciesname"])
+        "stringtie -p {threads} --merge stringtie-star_gtflist.txt -o %s%s_stringtie-star_merge.gtf" % (config["StringtieStarMergeDir"],config["speciesname"])
 
 ###########
 # SCALLOP #

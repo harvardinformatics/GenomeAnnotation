@@ -15,7 +15,7 @@ fastqDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/fas
 ############
 Hisat2IndexDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/genomes/dmel/hisat/"
 Hisat2IndexPrefix: "dmel_GCF_000001215.4_Release_6_hisat2"
-Hisat2Outdir: "hisat2/"
+Hisat2Outdir: "results/hisat2/"
 Hisat2SamsortOutdir: "results/hisat2/bams/" 
 
 ##########

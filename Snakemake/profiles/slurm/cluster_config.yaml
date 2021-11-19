@@ -11,16 +11,28 @@ __default__:
 ############
 
 
-stringtie:
+stringtie_hisat2:
     partition: "holy-info,holy-smokes,holy-cow,shared" 
-    output: "logs/stringtie-%j.out"
-    error: "logs/stringtie-%j.err"
-    job-name: "stringtie"
+    output: "logs/stringtie-hisat2-%j.out"
+    error: "logs/stringtie-hisat2-%j.err"
+    job-name: "stiehisat"
 
-merge:
+stringtie_hisat2_merge:
     partition: "holy-info,holy-smokes,holy-cow,shared"
-    output: "logs/stringtie-merge-%j.out"
-    error: "logs/stringtie-merge-%j.err"
+    output: "logs/stringtie-hisat2-merge-%j.out"
+    error: "logs/stringtie-hisat2-merge-%j.err"
+    job-name: "stie-merge"
+
+stringtie_star:
+    partition: "holy-info,holy-smokes,holy-cow,shared"
+    output: "logs/stringtie-star-%j.out"
+    error: "logs/stringtie-star-%j.err"
+    job-name: "stiestar"
+
+stringtie_star2_merge:
+    partition: "holy-info,holy-smokes,holy-cow,shared"
+    output: "logs/stringtie-star-merge-%j.out"
+    error: "logs/stringtie-star-merge-%j.err"
     job-name: "stie-merge"
 
 ###########
@@ -33,11 +45,11 @@ hisat2_align:
     error: "logs/hisat2-%j.err"
     job-name: "hisat2"
 
-samsort:
+samsort_hisat2:
     partition: "holy-info,holy-smokes,holy-cow,shared"
-    output: "logs/samsort-%j.out"
-    error: "logs/samsort-%j.err"
-    job-name: "samsort"
+    output: "logs/samsort-hisat2-%j.out"
+    error: "logs/samsort-hisat2-%j.err"
+    job-name: "sorthisat"
 
 ###########
 #  STAR   #
@@ -54,20 +66,38 @@ star_2ndpass:
     error: "logs/star2ndpass-%j.err"
     job-name: "star2nd"
 
+samsort_star:
+    partition: "holy-info,holy-smokes,holy-cow,shared"
+    output: "logs/samsort-star-%j.out"
+    error: "logs/samsort-star-%j.err"
+    job-name: "sortstar"
 
 
 ###########
 # scallop #
 ###########
 
-scallop:
+scallop_hisat2:
     partition: "holy-info,holy-smokes,holy-cow,shared"
-    output: "logs/scallop-%j.out"
-    error: "logs/scallop-%j.err"
-    job-name: "scallop" 
+    output: "logs/scallop-hisat2-%j.out"
+    error: "logs/scallop-hisat2-%j.err"
+    job-name: "scallophisat" 
 
-taco:
+taco_hisat2:
     partition: "holy-info,holy-smokes,holy-cow,shared"
-    output: "logs/taco-%j.out"
-    error: "logs/taco-%j.err"
-    job-name: "taco" 
+    output: "logs/taco-hisat2-%j.out"
+    error: "logs/taco-hisat2-%j.err"
+    job-name: "tacohisat"
+
+scallop_star:
+    partition: "holy-info,holy-smokes,holy-cow,shared"
+    output: "logs/scallop-star-%j.out"
+    error: "logs/scallop-star-%j.err"
+    job-name: "scallopstar"
+
+taco_hisat2:
+    partition: "holy-info,holy-smokes,holy-cow,shared"
+    output: "logs/taco-star-%j.out"
+    error: "logs/taco-star-%j.err"
+    job-name: "tacostar"
+ 

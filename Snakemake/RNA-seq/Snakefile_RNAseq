@@ -9,14 +9,24 @@ SAMPLES = list(set([basename(i.split('/')[-1].split('_')[0]) for i in glob("%s*_
 print(SAMPLES)
 TABLES = ' '.join(expand("{outdir}{sample}_STAR1stpassSJ.out.tab", outdir=config["Star1stPassOutdir"],sample=SAMPLES))
 
-if glob("scallop.gtflist.hisat2.txt") != []:
-    system("rm scallop.gtflist.hisat2.txt")
-if glob("scallop.gtflist.star.txt") != []:
-    system("rm scallop.gtflist.star.txt")
+system("touch scallop.gtflist.hisat2.txt")
+system("rm scallop.gtflist.hisat2.txt")
+
+system("touch scallop.gtflist.star.txt")
+system("rm scallop.gtflist.star.txt")
+
+system("touch stringtie-hisat2_gtflist.txt")
+system("rm stringtie-hisat2_gtflist.txt")
+
+system("touch stringtie-star_gtflist.txt")
+system("rm stringtie-star_gtflist.txt")
 
 for sample in SAMPLES:
    system("echo %s%s_scallop-hisat2.gtf >> scallop.gtflist.hisat2.txt" % (config["ScallopHisat2AssemblyDir"],sample))
    system("echo %s%s_scallop-star.gtf >> scallop.gtflist.star.txt" % (config["ScallopStarAssemblyDir"],sample))
+   
+   system("echo %s%s_stringtie-star.gtf >> stringtie-star_gtflist.txt" % (config["StringtieStarAssemblyDir"],sample))
+   system("echo %s%s_stringtie-hisat2.gtf >> stringtie-hisat2_gtflist.txt" % (config["StringtieHisat2AssemblyDir"],sample))
 
 ### RULES ###
 
