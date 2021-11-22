@@ -29,7 +29,7 @@ stringtie_star:
     error: "logs/stringtie-star-%j.err"
     job-name: "stiestar"
 
-stringtie_star2_merge:
+stringtie_star_merge:
     partition: "holy-info,holy-smokes,holy-cow,shared"
     output: "logs/stringtie-star-merge-%j.out"
     error: "logs/stringtie-star-merge-%j.err"
@@ -95,7 +95,7 @@ scallop_star:
     error: "logs/scallop-star-%j.err"
     job-name: "scallopstar"
 
-taco_hisat2:
+taco_star:
     partition: "holy-info,holy-smokes,holy-cow,shared"
     output: "logs/taco-star-%j.out"
     error: "logs/taco-star-%j.err"

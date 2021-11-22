@@ -87,7 +87,8 @@ rule samsort_star:
         time = res_config['samsort']['time']
     shell:
         "samtools sort -@ {threads} -T %stmp/{wildcards.sample}.aln.sorted -O bam -o {output} {input}" % config["StarSamsortOutdir"] 
-#############
+
+############
 # STRINGTIE #
 ############
 

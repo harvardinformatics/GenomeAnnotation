@@ -18,7 +18,7 @@ stringtie:
 
 stringtie_merge:
     nodes: 1
-    threads: 8
+    threads: 1
     mem_mb: 20000 
     time: 360
 

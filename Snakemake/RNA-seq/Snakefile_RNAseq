@@ -9,17 +9,17 @@ SAMPLES = list(set([basename(i.split('/')[-1].split('_')[0]) for i in glob("%s*_
 print(SAMPLES)
 TABLES = ' '.join(expand("{outdir}{sample}_STAR1stpassSJ.out.tab", outdir=config["Star1stPassOutdir"],sample=SAMPLES))
 
-system("touch scallop.gtflist.hisat2.txt")
-system("rm scallop.gtflist.hisat2.txt")
+system("> scallop.gtflist.hisat2.txt")
+system("> scallop.gtflist.star.txt")
+system("> stringtie-hisat2_gtflist.txt")
+system("> stringtie-star_gtflist.txt")
 
-system("touch scallop.gtflist.star.txt")
-system("rm scallop.gtflist.star.txt")
 
-system("touch stringtie-hisat2_gtflist.txt")
-system("rm stringtie-hisat2_gtflist.txt")
+system("mkdir %s" % config["Hisat2SamsortOutdir"])
+system("mkdir %stmp" % config["Hisat2SamsortOutdir"])
 
-system("touch stringtie-star_gtflist.txt")
-system("rm stringtie-star_gtflist.txt")
+system("mkdir %s" % config["StarSamsortOutdir"])
+system("mkdir %stmp" % config["StarSamsortOutdir"])
 
 for sample in SAMPLES:
    system("echo %s%s_scallop-hisat2.gtf >> scallop.gtflist.hisat2.txt" % (config["ScallopHisat2AssemblyDir"],sample))
