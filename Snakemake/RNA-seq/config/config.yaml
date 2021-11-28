@@ -22,6 +22,7 @@ Hisat2SamsortOutdir: "results/hisat2/bams/"
 ## STAR ##
 #########
 StarIndexDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/genomes/dmel/star/"
+StarOutDir: "results/star/"
 Star1stPassOutdir: "results/star/star1stpass/" 
 Star2ndPassOutdir: "results/star/star2ndpass/"
 StarSamsortOutdir: "results/star/bams/" 
