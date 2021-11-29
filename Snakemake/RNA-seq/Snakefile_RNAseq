@@ -14,6 +14,7 @@ system("> scallop.gtflist.star.txt")
 system("> stringtie-hisat2_gtflist.txt")
 system("> stringtie-star_gtflist.txt")
 
+system("mkdir results")
 system("mkdir %s" % config["Hisat2Outdir"])
 system("mkdir %s" % config["Hisat2SamsortOutdir"])
 system("mkdir %stmp" % config["Hisat2SamsortOutdir"])
