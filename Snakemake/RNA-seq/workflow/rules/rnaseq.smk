@@ -14,7 +14,7 @@ rule hisat2_align:
     threads:
         res_config['hisat2_align']['threads']
     resources:
-        mem_mb = res_config['hisat2_align']['mem_mb'],
+        mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['hisat2_align']['mem_mb'],
         time = res_config['hisat2_align']['time']
     shell:
         "hisat2 -p {threads} -x %s%s -q --phred33 --dta --min-intronlen 20 --max-intronlen 500000 -1 {input.r1} -2 {input.r2} -S {output}" % (config["Hisat2IndexDir"],config["Hisat2IndexPrefix"])
@@ -29,7 +29,7 @@ rule samsort_hisat2:
     threads:
         res_config['samsort']['threads']
     resources:
-        mem_mb = res_config['samsort']['mem_mb'],
+        mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['samsort']['mem_mb'],
         time = res_config['samsort']['time']
     shell:
         "samtools sort -@ {threads} -T %stmp/{wildcards.sample}.aln.sorted -O bam -o {output} {input}" % config["Hisat2SamsortOutdir"] 
@@ -49,7 +49,7 @@ rule star_1stpass:
     threads:
         res_config['star_1stpass']['threads']
     resources:
-        mem_mb = res_config['star_1stpass']['mem_mb'],
+        mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['star_1stpass']['mem_mb'],
         time = res_config['star_1stpass']['time']
     shell:
         "STAR --runThreadN {threads} --genomeDir %s --outFileNamePrefix %s{wildcards.sample}_STAR1stpass --outTmpDir %s{wildcards.sample}_1stpassSTARtmp --readFilesIn <(gunzip -c {input.r1}) <(gunzip -c {input.r2})" % (config["StarIndexDir"],config["Star1stPassOutdir"],config["Star1stPassOutdir"])
@@ -66,7 +66,7 @@ rule star_2ndpass:
     threads:
         res_config['star_2ndpass']['threads']
     resources:
-        mem_mb = res_config['star_2ndpass']['mem_mb'],
+        mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['star_2ndpass']['mem_mb'],
         time = res_config['star_2ndpass']['time']
     
     shell: 
@@ -83,7 +83,7 @@ rule samsort_star:
     threads:
         res_config['samsort']['threads']
     resources:
-        mem_mb = res_config['samsort']['mem_mb'],
+        mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['samsort']['mem_mb'],
         time = res_config['samsort']['time']
     shell:
         "samtools sort -@ {threads} -T %stmp/{wildcards.sample}.aln.sorted -O bam -o {output} {input}" % config["StarSamsortOutdir"] 
@@ -104,7 +104,7 @@ rule stringtie_hisat2:
         res_config['stringtie']['threads']
 
     resources:
-        mem_mb = res_config['stringtie']['mem_mb'],
+        mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['stringtie']['mem_mb'],
         time = res_config['stringtie']['time'] 
     shell:
         "stringtie {input} -p {threads} -o {output}"  
@@ -116,6 +116,9 @@ rule stringtie_hisat2_merge:
         config["StringtieHisat2MergeDir"] + config["speciesname"] + "_stringtie-hisat2_merge.gtf"
     conda:
         "../envs/stringtie.yml"
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['stringtie_merge']['mem_mb'],
+        time = res_config['stringtie_merge']['time']
     shell:
         "stringtie -p {threads} --merge stringtie-hisat2_gtflist.txt -o %s%s_stringtie-hisat2_merge.gtf" % (config["StringtieHisat2MergeDir"],config["speciesname"])
 
@@ -131,7 +134,7 @@ rule stringtie_star:
         res_config['stringtie']['threads']
 
     resources:
-        mem_mb = res_config['stringtie']['mem_mb'],
+        mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['stringtie']['mem_mb'],
         time = res_config['stringtie']['time']
     shell:
         "stringtie {input} -p {threads} -o {output}"
@@ -143,6 +146,9 @@ rule stringtie_star_merge:
         config["StringtieStarMergeDir"] + config["speciesname"] + "_stringtie-star_merge.gtf"
     conda:
         "../envs/stringtie.yml"
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['stringtie_merge']['mem_mb'],
+        time = res_config['stringtie_merge']['time']
     shell:
         "stringtie -p {threads} --merge stringtie-star_gtflist.txt -o %s%s_stringtie-star_merge.gtf" % (config["StringtieStarMergeDir"],config["speciesname"])
 
@@ -161,7 +167,7 @@ rule scallop_hisat2:
     threads:
         res_config['scallop']['threads']
     resources:
-        mem_mb = res_config['scallop']['mem_mb'],
+        mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['scallop']['mem_mb'],
         time = res_config['scallop']['time'] 
     shell:
         "scallop -i {input} -o {output}"  
@@ -176,7 +182,7 @@ rule taco_hisat2:
     threads:
         res_config['taco']['threads']
     resources:
-        mem_mb = res_config['taco']['mem_mb'],
+        mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['taco']['mem_mb'],
         time = res_config['taco']['time'] 
     shell:
         "taco_run -p {threads} --gtf-expr-attr RPKM -o %s scallop.gtflist.hisat2.txt" % config["TacoHisat2Dir"]
@@ -191,7 +197,7 @@ rule scallop_star:
     threads:
         res_config['scallop']['threads']
     resources:
-        mem_mb = res_config['scallop']['mem_mb'],
+        mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['scallop']['mem_mb'],
         time = res_config['scallop']['time']
     shell:
         "scallop -i {input} -o {output}"
@@ -206,7 +212,7 @@ rule taco_star:
     threads:
         res_config['taco']['threads']
     resources:
-        mem_mb = res_config['taco']['mem_mb'],
+        mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['taco']['mem_mb'],
         time = res_config['taco']['time']
     shell:
         "taco_run -p {threads} --gtf-expr-attr RPKM -o %s scallop.gtflist.star.txt" % config["TacoStarDir"]

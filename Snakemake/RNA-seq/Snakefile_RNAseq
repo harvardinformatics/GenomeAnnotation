@@ -14,14 +14,14 @@ system("> scallop.gtflist.star.txt")
 system("> stringtie-hisat2_gtflist.txt")
 system("> stringtie-star_gtflist.txt")
 
-system("mkdir results")
-system("mkdir %s" % config["Hisat2Outdir"])
-system("mkdir %s" % config["Hisat2SamsortOutdir"])
-system("mkdir %stmp" % config["Hisat2SamsortOutdir"])
+#system("mkdir results")
+#system("mkdir %s" % config["Hisat2Outdir"])
+#system("mkdir %s" % config["Hisat2SamsortOutdir"])
+system("mkdir -p %stmp" % config["Hisat2SamsortOutdir"])
 
-system("mkdir %s" % config["StarOutDir"])
-system("mkdir %s" % config["StarSamsortOutdir"])
-system("mkdir %stmp" % config["StarSamsortOutdir"])
+#system("mkdir %s" % config["StarOutDir"])
+#system("mkdir %s" % config["StarSamsortOutdir"])
+system("mkdir -p %stmp" % config["StarSamsortOutdir"])
 
 for sample in SAMPLES:
    system("echo %s%s_scallop-hisat2.gtf >> scallop.gtflist.hisat2.txt" % (config["ScallopHisat2AssemblyDir"],sample))
