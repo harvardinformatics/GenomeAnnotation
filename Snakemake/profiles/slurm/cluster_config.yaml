@@ -12,25 +12,25 @@ __default__:
 
 
 stringtie_hisat2:
-    partition: "shared,holy-info" 
+    partition: "serial_requeue,shared,holy-info" 
     output: "logs/stringtie-hisat2-%j.out"
     error: "logs/stringtie-hisat2-%j.err"
     job-name: "stiehisat"
 
 stringtie_hisat2_merge:
-    partition: "shared,holy-info"
+    partition: "serial_requeue,shared,holy-info"
     output: "logs/stringtie-hisat2-merge-%j.out"
     error: "logs/stringtie-hisat2-merge-%j.err"
     job-name: "stie-merge"
 
 stringtie_star:
-    partition: "shared,holy-info"
+    partition: "serial_requeue,shared,holy-info"
     output: "logs/stringtie-star-%j.out"
     error: "logs/stringtie-star-%j.err"
     job-name: "stiestar"
 
 stringtie_star_merge:
-    partition: "shared,holy-info"
+    partition: "serial_requeue,shared,holy-info"
     output: "logs/stringtie-star-merge-%j.out"
     error: "logs/stringtie-star-merge-%j.err"
     job-name: "stie-merge"
@@ -40,13 +40,13 @@ stringtie_star_merge:
 ###########
 
 hisat2_align:
-    partition: "shared,holy-info"
+    partition: "serial_requeue,shared,holy-info"
     output: "logs/hisat2-%j.out"
     error: "logs/hisat2-%j.err"
     job-name: "hisat2"
 
 samsort_hisat2:
-    partition: "shared,holy-info"
+    partition: "serial_requeue,shared,holy-info"
     output: "logs/samsort-hisat2-%j.out"
     error: "logs/samsort-hisat2-%j.err"
     job-name: "sorthisat"
@@ -55,19 +55,19 @@ samsort_hisat2:
 #  STAR   #
 ###########
 star_1stpass:
-    partition: "shared,holy-info"
+    partition: "serial_requeue,shared,holy-info"
     output: "logs/star1stpass-%j.out"
     error: "logs/star1stpass-%j.err"
     job-name: "star1st"
 
 star_2ndpass:
-    partition: "shared,holy-info"
+    partition: "serial_requeue,shared,holy-info"
     output: "logs/star1stpass-%j.out"
     error: "logs/star2ndpass-%j.err"
     job-name: "star2nd"
 
 samsort_star:
-    partition: "shared,holy-info"
+    partition: "serial_requeue,shared,holy-info"
     output: "logs/samsort-star-%j.out"
     error: "logs/samsort-star-%j.err"
     job-name: "sortstar"
@@ -78,25 +78,25 @@ samsort_star:
 ###########
 
 scallop_hisat2:
-    partition: "shared,holy-info"
+    partition: "serial_requeue,shared,holy-info"
     output: "logs/scallop-hisat2-%j.out"
     error: "logs/scallop-hisat2-%j.err"
     job-name: "scallophisat" 
 
 taco_hisat2:
-    partition: "shared,holy-info"
+    partition: "serial_requeue,shared,holy-info"
     output: "logs/taco-hisat2-%j.out"
     error: "logs/taco-hisat2-%j.err"
     job-name: "tacohisat"
 
 scallop_star:
-    partition: "shared,holy-info"
+    partition: "serial_requeue,shared,holy-info"
     output: "logs/scallop-star-%j.out"
     error: "logs/scallop-star-%j.err"
     job-name: "scallopstar"
 
 taco_star:
-    partition: "shared,holy-info"
+    partition: "serial_requeue,shared,holy-info"
     output: "logs/taco-star-%j.out"
     error: "logs/taco-star-%j.err"
     job-name: "tacostar"
