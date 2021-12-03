@@ -1,3 +1,20 @@
+## RNA-seq data set selection
+For each species within each taxonomic group we investigated, when selecting SRA RNA-seq accessions, to the extent possible we employed the following criteria:
+* Retain 15-20 Biosamples per species
+* Select 1 experiment consisting of one Run per Biosample
+* Use paired-end sequencing only
+    * Minimum read length of 100bp
+* Use data from HiSeq and later Illumina instruments, i.e. no Genome Analyzer data
+* For metazoans, we preferentially selected brain or head samples if available
+* Avoid experimental treatment such as knockdowns
+* Select runs with a release date of 2011 or later
+
+For species for which there are not enough Runs to reach the 15-20 Biosample goal, we relax the above criteria, including:
+* Require a minimum read length of 50 instead of 100bp
+* Accept Runs with pre-2011 release dates
+
+During the testing phase of this project, we evaluated useability of annotation tools with heliconine genomes and samples prior to establishing these criteria, such that we included more samples per species than noted above, but in all cases we included less than 30 Biosamples per species.
+  
 ## RNA-seq QC, pre-processing, and alignment
 ### QC and pre-processing
 Prior to aligning RNA-seq paired-end reads to their respective genomes, we first do a quick quality check on libraries with [fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), v. 0.11.8. We then strip residual adapter sequences from reads with [Trim Galore!](https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/) v. 0.6.4, which is used to wrap [cutadapt](https://cutadapt.readthedocs.io/en/stable/) v. 2.10. A second run of fastqc is then peroformed to confirm success in removing residual adapter sequences. A generic example of our Trim Galore! command line is as follows:
