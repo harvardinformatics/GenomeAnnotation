@@ -1,76 +1,76 @@
-SRA_runid	Species
-ERR2018558	Bombyx_mori
-ERR2018561	Bombyx_mori
-ERR2018562	Bombyx_mori
-ERR2018563	Bombyx_mori
-ERR2018564	Bombyx_mori
-ERR2018567	Bombyx_mori
-ERR2018568	Bombyx_mori
-SRR12489833	Bombyx_mori
-SRR12489834	Bombyx_mori
-SRR12489835	Bombyx_mori
-SRR1806715	Bombyx_mori
-SRR1806736	Bombyx_mori
-SRR1928169	Bombyx_mori
-SRR5184094	Bombyx_mori
-SRR5184095	Bombyx_mori
-SRR5184096	Bombyx_mori
-SRR5184097	Bombyx_mori
-SRR5184102	Bombyx_mori
-SRR5184103	Bombyx_mori
-SRR5184104	Bombyx_mori
-SRR5184105	Bombyx_mori
-SRR6185423	Bombyx_mori
-SRR6185424	Bombyx_mori
-SRR6185425	Bombyx_mori
-SRR6185431	Bombyx_mori
-SRR6516053	Bombyx_mori
-SRR6516054	Bombyx_mori
-SRR10100549	Danaus_plexippus
-SRR10100550	Danaus_plexippus
-SRR10100551	Danaus_plexippus
-SRR585568	Danaus_plexippus
-SRR8580831	Danaus_plexippus
-SRR8580832	Danaus_plexippus
-SRR8580833	Danaus_plexippus
-SRR8580834	Danaus_plexippus
-SRR8580835	Danaus_plexippus
-SRR8580836	Danaus_plexippus
-SRR8580837	Danaus_plexippus
-SRR8580838	Danaus_plexippus
-SRR8580839	Danaus_plexippus
-SRR8580840	Danaus_plexippus
-SRR8580841	Danaus_plexippus
-SRR8580842	Danaus_plexippus
-SRR8580843	Danaus_plexippus
-SRR8580844	Danaus_plexippus
-SRR8580845	Danaus_plexippus
-SRR9620097	Heliconius_erato
-SRR9620098	Heliconius_erato
-SRR9620099	Heliconius_erato
-SRR9620100	Heliconius_erato
-SRR9620105	Heliconius_erato
-SRR9620106	Heliconius_erato
-SRR9620107	Heliconius_erato
-SRR9620108	Heliconius_erato
-SRR9620109	Heliconius_erato
-SRR9620122	Heliconius_erato
-SRR9620123	Heliconius_erato
-SRR9620124	Heliconius_erato
-SRR9620125	Heliconius_erato
-SRR9620126	Heliconius_erato
-SRR9620132	Heliconius_erato
-SRR9620134	Heliconius_erato
-SRR9620135	Heliconius_erato
-SRR9620136	Heliconius_erato
-SRR9620137	Heliconius_erato
-SRR9620138	Heliconius_erato
-SRR9620139	Heliconius_erato
-SRR9620152	Heliconius_erato
-SRR9620153	Heliconius_erato
-SRR9620154	Heliconius_erato
-SRR9620155	Heliconius_erato
-SRR9620156	Heliconius_erato
-SRR9620173	Heliconius_erato
-SRR9620174	Heliconius_erato
-SRR9620175	Heliconius_erato
+SRA_runid	Species	BioProject
+ERR2018558	Bombyx_mori	PRJEB21541
+ERR2018561	Bombyx_mori	PRJEB21541
+ERR2018562	Bombyx_mori	PRJEB21541
+ERR2018563	Bombyx_mori	PRJEB21541
+ERR2018564	Bombyx_mori	PRJEB21541
+ERR2018567	Bombyx_mori	PRJEB21541
+ERR2018568	Bombyx_mori	PRJEB21541
+SRR12489833	Bombyx_mori	PRJNA658457
+SRR12489834	Bombyx_mori	PRJNA658457
+SRR12489835	Bombyx_mori	PRJNA658457
+SRR1806715	Bombyx_mori	PRJNA275511
+SRR1806736	Bombyx_mori	PRJNA275511
+SRR1928169	Bombyx_mori	PRJNA279323
+SRR5184094	Bombyx_mori	PRJNA360502
+SRR5184095	Bombyx_mori	PRJNA360502
+SRR5184096	Bombyx_mori	PRJNA360502
+SRR5184097	Bombyx_mori	PRJNA360502
+SRR5184102	Bombyx_mori	PRJNA360502
+SRR5184103	Bombyx_mori	PRJNA360502
+SRR5184104	Bombyx_mori	PRJNA360502
+SRR5184105	Bombyx_mori	PRJNA360502
+SRR6185423	Bombyx_mori	PRJNA414307
+SRR6185424	Bombyx_mori	PRJNA414307
+SRR6185425	Bombyx_mori	PRJNA414307
+SRR6185431	Bombyx_mori	PRJNA414307
+SRR6516053	Bombyx_mori	PRJNA429535
+SRR6516054	Bombyx_mori	PRJNA429535
+SRR10100549	Danaus_plexippus	PRJNA522622
+SRR10100550	Danaus_plexippus	PRJNA522622
+SRR10100551	Danaus_plexippus	PRJNA522622
+SRR585568	Danaus_plexippus	PRJNA72423
+SRR8580831	Danaus_plexippus	PRJNA522622
+SRR8580832	Danaus_plexippus	PRJNA522622
+SRR8580833	Danaus_plexippus	PRJNA522622
+SRR8580834	Danaus_plexippus	PRJNA522622
+SRR8580835	Danaus_plexippus	PRJNA522622
+SRR8580836	Danaus_plexippus	PRJNA522622
+SRR8580837	Danaus_plexippus	PRJNA522622
+SRR8580838	Danaus_plexippus	PRJNA522622
+SRR8580839	Danaus_plexippus	PRJNA522622
+SRR8580840	Danaus_plexippus	PRJNA522622
+SRR8580841	Danaus_plexippus	PRJNA522622
+SRR8580842	Danaus_plexippus	PRJNA522622
+SRR8580843	Danaus_plexippus	PRJNA522622
+SRR8580844	Danaus_plexippus	PRJNA522622
+SRR8580845	Danaus_plexippus	PRJNA522622
+SRR9620097	Heliconius_erato	PRJNA552081
+SRR9620098	Heliconius_erato	PRJNA552081
+SRR9620099	Heliconius_erato	PRJNA552081
+SRR9620100	Heliconius_erato	PRJNA552081
+SRR9620105	Heliconius_erato	PRJNA552081
+SRR9620106	Heliconius_erato	PRJNA552081
+SRR9620107	Heliconius_erato	PRJNA552081
+SRR9620108	Heliconius_erato	PRJNA552081
+SRR9620109	Heliconius_erato	PRJNA552081
+SRR9620122	Heliconius_erato	PRJNA552081
+SRR9620123	Heliconius_erato	PRJNA552081
+SRR9620124	Heliconius_erato	PRJNA552081
+SRR9620125	Heliconius_erato	PRJNA552081
+SRR9620126	Heliconius_erato	PRJNA552081
+SRR9620132	Heliconius_erato	PRJNA552081
+SRR9620134	Heliconius_erato	PRJNA552081
+SRR9620135	Heliconius_erato	PRJNA552081
+SRR9620136	Heliconius_erato	PRJNA552081
+SRR9620137	Heliconius_erato	PRJNA552081
+SRR9620138	Heliconius_erato	PRJNA552081
+SRR9620139	Heliconius_erato	PRJNA552081
+SRR9620152	Heliconius_erato	PRJNA552081
+SRR9620153	Heliconius_erato	PRJNA552081
+SRR9620154	Heliconius_erato	PRJNA552081
+SRR9620155	Heliconius_erato	PRJNA552081
+SRR9620156	Heliconius_erato	PRJNA552081
+SRR9620173	Heliconius_erato	PRJNA552081
+SRR9620174	Heliconius_erato	PRJNA552081
+SRR9620175	Heliconius_erato	PRJNA552081

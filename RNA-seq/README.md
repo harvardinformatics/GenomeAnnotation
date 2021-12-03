@@ -13,7 +13,7 @@ For species for which there are not enough Runs to reach the 15-20 Biosample goa
 * Require a minimum read length of 50 instead of 100bp
 * Accept Runs with pre-2011 release dates
 
-During the testing phase of this project, we evaluated useability of annotation tools with heliconine genomes and samples prior to establishing these criteria, such that we included more samples per species than noted above, but in all cases we included less than 30 Biosamples per species.
+During the testing phase of this project, we evaluated useability of annotation tools with heliconine genomes and samples prior to establishing these criteria, such that we included a smalla number of GAII-derived samples, and we included more samples per species than noted above; in all cases we included less than 30 Biosamples per species.
   
 ## RNA-seq QC, pre-processing, and alignment
 ### QC and pre-processing
