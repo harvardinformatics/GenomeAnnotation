@@ -62,7 +62,7 @@ star_1stpass:
 
 star_2ndpass:
     partition: "serial_requeue,shared,holy-info"
-    output: "logs/star1stpass-%j.out"
+    output: "logs/star2ndpass-%j.out"
     error: "logs/star2ndpass-%j.err"
     job-name: "star2nd"
 

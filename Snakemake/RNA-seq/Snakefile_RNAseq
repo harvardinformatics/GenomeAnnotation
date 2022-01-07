@@ -6,32 +6,11 @@ from os import system
 configfile: "config/config.yaml"
 res_config = yaml.load(open("config/resources.yaml"),Loader=yaml.FullLoader)
 SAMPLES = list(set([basename(i.split('/')[-1].split('_')[0]) for i in glob("%s*_1.fq.gz" % config["fastqDir"])]))
-print(SAMPLES)
-TABLES = ' '.join(expand("{outdir}{sample}_STAR1stpassSJ.out.tab", outdir=config["Star1stPassOutdir"],sample=SAMPLES))
 
-system("> scallop.gtflist.hisat2.txt")
-system("> scallop.gtflist.star.txt")
-system("> stringtie-hisat2_gtflist.txt")
-system("> stringtie-star_gtflist.txt")
-
-#system("mkdir results")
-#system("mkdir %s" % config["Hisat2Outdir"])
-#system("mkdir %s" % config["Hisat2SamsortOutdir"])
 system("mkdir -p %stmp" % config["Hisat2SamsortOutdir"])
-
-#system("mkdir %s" % config["StarOutDir"])
-#system("mkdir %s" % config["StarSamsortOutdir"])
 system("mkdir -p %stmp" % config["StarSamsortOutdir"])
 
-for sample in SAMPLES:
-   system("echo %s%s_scallop-hisat2.gtf >> scallop.gtflist.hisat2.txt" % (config["ScallopHisat2AssemblyDir"],sample))
-   system("echo %s%s_scallop-star.gtf >> scallop.gtflist.star.txt" % (config["ScallopStarAssemblyDir"],sample))
-   
-   system("echo %s%s_stringtie-star.gtf >> stringtie-star_gtflist.txt" % (config["StringtieStarAssemblyDir"],sample))
-   system("echo %s%s_stringtie-hisat2.gtf >> stringtie-hisat2_gtflist.txt" % (config["StringtieHisat2AssemblyDir"],sample))
-
 ### RULES ###
-
 rule all:
     input:
         "mytask.taco.hisat2.done",
