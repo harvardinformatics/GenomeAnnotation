@@ -10,7 +10,7 @@ import slurm_utils
 # slurm arguments
 SBATCH_DEFAULTS = """ """
 CLUSTER_CONFIG = "cluster_config.yaml"
-ADVANCED_ARGUMENT_CONVERSION = {"yes": True, "no": False}["yes"]
+ADVANCED_ARGUMENT_CONVERSION = {"yes": True, "no": False}["no"] # changed to no 10 jan 2022
 
 RESOURCE_MAPPING = {
     "time": ("time", "runtime", "walltime"),
