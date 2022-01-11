@@ -49,7 +49,7 @@ rule star_1stpass:
         r1=config["fastqDir"] + "{sample}" + "_1_val_1.fq.gz",
         r2=config["fastqDir"] + "{sample}" + "_2_val_2.fq.gz"
     output:
-        config["Star1stPassOutdir"] + "{sample}" + "_STAR1stpassAligned.out.sam"
+        config["Star1stPassOutdir"] + "{sample}" + "_STAR1stpassSJ.out.tab"
     conda:
         "../envs/star.yml"
     threads:
@@ -67,16 +67,9 @@ rule star_1stpass:
          "--outTmpDir {params.outdir}{wildcards.sample}_1stpassSTARtmp "
          "--readFilesIn <(gunzip -c {input.r1}) <(gunzip -c {input.r2})"
 
-
-
-def CreateStarSpliceTableList(outdir,SAMPLES=SAMPLES):
-    tablelist = expand("{outdir}{sample}_STAR1stpassSJ.out.tab", outdir=config["Star1stPassOutdir"],sample=SAMPLES)
-    tablestring = ' '.join(tablelist)
-    return tablestring
-
 rule star_2ndpass:
     input:
-        tables = CreateStarSpliceTableList(config["Star1stPassOutdir"]),
+        tablelist = expand("{outdir}{sample}_STAR1stpassSJ.out.tab", outdir=config["Star1stPassOutdir"],sample=SAMPLES),
         r1=config["fastqDir"] + "{sample}" + "_1_val_1.fq.gz",
         r2=config["fastqDir"] + "{sample}" + "_2_val_2.fq.gz"
     output:
@@ -91,11 +84,12 @@ rule star_2ndpass:
     params:
         outdir = config["Star2ndPassOutdir"],
         indexdir = config["StarIndexDir"],
+        tablestring = ' '.join(expand("{outdir}{sample}_STAR1stpassSJ.out.tab", outdir=config["Star1stPassOutdir"],sample=SAMPLES))
     shell:
         "rm -rf {params.outdir}{wildcards.sample}_2ndpassSTARtmp;"
         "STAR --runThreadN {threads} "
         "--genomeDir {params.indexdir} --outSAMstrandField intronMotif "
-        "--outTmpDir {params.outdir}{wildcards.sample}_2ndpassSTARtmp --sjdbFileChrStartEnd {input.tables} "
+        "--outTmpDir {params.outdir}{wildcards.sample}_2ndpassSTARtmp --sjdbFileChrStartEnd {params.tablestring} "
         "--outFileNamePrefix {params.outdir}{wildcards.sample}_STAR2ndpass "
         "--readFilesIn <(gunzip -c {input.r1}) <(gunzip -c {input.r2})" 
      
