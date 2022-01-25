@@ -10,17 +10,17 @@ Our specific objectives with respect to methods comparisons are to:
 * Compare the performance of diverse annotation approaches
     * Annotation pipelines
         * [Maker3](https://www.yandell-lab.org/software/maker.html)
-        * [Braker2](https://github.com/Gaius-Augustus/BRAKER)
+        * [Braker](https://github.com/Gaius-Augustus/BRAKER)
     * Genome-alignment driven gene prediction
         * [Comparative Augustus](https://github.com/Gaius-Augustus/Augustus)
     * Exon-aware annotation transfer from a reference genome
-        * [CESAR2.0](https://github.com/hillerlab/CESAR2.0)
+        * [TOGA](https://github.com/hillerlab/TOGA)
     * Transcript assembly from RNA-seq
         * [StringTie](https://ccb.jhu.edu/software/stringtie/)
         * [Scallop](https://github.com/Kingsford-Group/scallop)
         * [PsiCLASS](https://github.com/splicebox/PsiCLASS)
 * Assess impact of RNA-seq integration on annotation quality
-    * Maker3,Braker2, Comparative Augustus
+    * Maker3,Braker, Comparative Augustus
 * Assess impact on annotation quality of integrating multiple annotation sources
     * [Mikado](https://github.com/EI-CoreBioinformatics/mikado)
     * [EvidenceModeler](https://evidencemodeler.github.io/)
