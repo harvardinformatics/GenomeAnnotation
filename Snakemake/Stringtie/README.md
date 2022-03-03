@@ -1,1 +1,0 @@
-# snakemake: Stringtie
