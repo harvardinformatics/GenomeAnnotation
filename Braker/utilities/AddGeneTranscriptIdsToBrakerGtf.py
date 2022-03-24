@@ -28,7 +28,7 @@ def CreateId(linelist,exon_tracker,cds_tracker,intron_tracker):
         elif linelist[2] == 'intron':
             intron_tracker[datadict['transcript_id']]+=1 
             newid = 'ID "%s-intron%s"' % (datadict['transcript_id'],intron_tracker[datadict['transcript_id']])
-	else:
+        else:
             raise ValueError("Unknown data type")
     return newid       
 
