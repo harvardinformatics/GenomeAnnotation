@@ -1,5 +1,5 @@
 #!/bin/sh
-#SBATCH -p holy-info,shared
+#SBATCH -p serial_requeue,shared
 #SBATCH -n 16
 #SBATCH -N 1
 #SBATCH --mem=24000
