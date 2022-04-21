@@ -22,11 +22,11 @@ You can [install Snakemake using conda](https://anaconda.org/bioconda/snakemake)
 
 [Cactus](https://github.com/ComparativeGenomicsToolkit/cactus) is whole genome alignment software.
 
-While any type of cactus executable should work, this pipeline was built around the Singularity image of the cactus program optimized for GPU usage. Singularity is a program that containerizes and executes programs in an isolated environment, making them easier to use. 
+While any type of Cactus executable should work, this pipeline was built around the Singularity image of the cactus program optimized for GPU usage. Singularity is a program that containerizes and executes programs in an isolated environment, making them easier to use. 
 
 You can [install Singularity using conda](https://anaconda.org/conda-forge/singularity).
 
-The Singularity image for cactus (GPU) is included in this repository in the `cactus-snakemake-gpu` folder as `cactus_v2.0.5-gpu.sif`. 
+The Singularity image for Cactus (GPU) is included in this repository in the `cactus-snakemake-gpu` folder as `cactus_v2.0.5-gpu.sif`. 
 
 
 <details><summary>Click here to see how we built the Singularity image for cactus</summary>
@@ -42,19 +42,18 @@ We chose the Singularity image over Docker for security reasons.
 
 </p>
 </details>
-</br>
 
 ## What you will need (Inputs)
 
 To run this pipeline you will need:
 
-1. The location of the cactus executable (e.g. the path to the cactus Singularity image)
+1. The location of the Cactus executable (e.g. the path to the Cactus Singularity image)
 2. A phylogenetic tree of all species to align, with or without branch lengths
 3. The genome FASTA files for each species
 
-## Preparing the cactus input file
+## Preparing the Cactus input file
 
-The various cactus commands depend on a single input file with information about the genomes to align. This file is a simple tab delmited file. The first line of the file contains the **rooted** input species tree in [Newick format](https://en.wikipedia.org/wiki/Newick_format) and nothing else. Each subsequent line contains in the first column one tip label and in the second column the path to the genome FASTA file for that species. **The genome fasta files must be uncompressed for cactus to read them.**
+The various Cactus commands depend on a single input file with information about the genomes to align. This file is a simple tab delmited file. The first line of the file contains the **rooted** input species tree in [Newick format](https://en.wikipedia.org/wiki/Newick_format) and nothing else. Each subsequent line contains in the first column one tip label and in the second column the path to the genome FASTA file for that species. **The genome fasta files must be uncompressed for cactus to read them.**
 
 For example, if I were running this pipeline on 5 species, A, B, C, D, and E, my input file may look something like this:
 
@@ -69,7 +68,7 @@ E   seqdir/e.fa
 
 ## Running `cactus-prepare`
 
-Next we need to run the `cactus-prepare` script, which importantly labels the internal nodes of the input tree according to cactus' specifications and generates several more files needed to run subsequent steps.
+Next we need to run the `cactus-prepare` script, which importantly labels the internal nodes of the input tree according to Cactus' specifications and generates several more files needed to run subsequent steps.
 
 Generally, it can be run as follows:
 
@@ -88,12 +87,12 @@ You will have to specify the paths defined within <>.
 | Name in command above | Description |
 |-----------------------|-------------|
 | INPUT FILE            | The file prepared above that contains the input species tree and input fasta sequences  |
-| OUTPUT DIRECTORY      | Desired output directory for all cactus config and sequence files |
-| TEMP DIRECTORY        | A directory with plenty of storage space for temporary files generated during cactus runs |
+| OUTPUT DIRECTORY      | Desired output directory for all Cactus config and sequence files |
+| TEMP DIRECTORY        | A directory with plenty of storage space for temporary files generated during Cactus runs |
 
 ## Preparing the snakemake config file
 
-Now we can set up the config file for the snakemake pipeline. An example template is provided in this repository: `cactus-gpu-snakemake/config-template.yaml`. This file contains the following parameters that will be used by snakemake to run cactus:
+Now we can set up the config file for the snakemake pipeline. An example template is provided in this repository: `cactus-gpu-snakemake/config-template.yaml`. This file contains the following parameters that will be used by snakemake to run Cactus:
 
 ```
 cactus_path: <cactus_path>
@@ -119,7 +118,7 @@ tmp_dir: /path/to/my/tmp-directory/
 
 ## Running cactus with snakemake
 
-Now we are ready to run cactus with snakemake!
+Now we are ready to run Cactus with snakemake!
 
 ```{bash}
 snakemake -p -s cactus_gpu.smk --configfile <CONFIG FILE> --profile <SLURM PROFILE DIRECTORY> --dryrun
@@ -131,7 +130,7 @@ For the other files, you will have to specify the paths defined within <>.
 
 | Name in command above      | Description |
 |----------------------------|-------------|
-| CONFIG FILE                | The config file prepared above that contains the paths for cactus files |
+| CONFIG FILE                | The config file prepared above that contains the paths for Cactus files |
 | SLURM PROFILE DIRECTORY    | The path to the **directory** containing the SLURM cluster configuration file called `config.yaml`. Relative to this file, this directory is `cactus-gpu-snakemake/profiles/slurm_profile/` |
 
 With the `--dryrun` option, this command will run through the pipeline without executing any commands to make sure no errors occur with the pipeline itself. When you are satisfied that the pipeline will be run correctly, remove `--dryrun` to execute the pipeline.
