@@ -18,30 +18,21 @@ Currently, SLURM is the only supported job scheduling software for this pipeline
 
 You can [install Snakemake using conda](https://anaconda.org/bioconda/snakemake).
 
-### 3. Cactus
+### 3. Cactus (Singularity image)
 
 [Cactus](https://github.com/ComparativeGenomicsToolkit/cactus) is whole genome alignment software.
 
-While any type of Cactus executable should work, this pipeline was built around the Singularity image of the cactus program optimized for GPU usage. Singularity is a program that containerizes and executes programs in an isolated environment, making them easier to use. 
+This pipeline was built around the Singularity image of the cactus program optimized for GPU usage. Singularity is a program that containerizes and executes programs in an isolated environment, making them easier to use. 
 
 You can [install Singularity using conda](https://anaconda.org/conda-forge/singularity).
 
-The Singularity image for Cactus (GPU) is included in this repository in the `cactus-snakemake-gpu` folder as `cactus_v2.0.5-gpu.sif`. 
-
-
-<details><summary>Click here to see how we built the Singularity image for cactus</summary>
-<p>
-
-This singularity image was built from [the Docker image provided with cactus](https://github.com/ComparativeGenomicsToolkit/cactus/releases) using the following command:
+With Singularity installed, you can create the image from [the Docker image provided with Cactus (GPU)](https://github.com/ComparativeGenomicsToolkit/cactus/releases) as `cactus_v2.0.5-gpu.sif` with the following command:
 
 ```{bash}
 singularity pull --disable-cache docker://quay.io/comparative-genomics-toolkit/cactus:v2.0.5-gpu
 ```
 
 We chose the Singularity image over Docker for security reasons.
-
-</p>
-</details>
 
 ## What you will need (Inputs)
 
