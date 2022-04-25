@@ -1,6 +1,6 @@
 # Genome alignment with [Cactus](https://github.com/ComparativeGenomicsToolkit/cactus)
 
-This documents the snakemake workflow for genome alignments with the cactus genome aligner (GPU version).
+This documents the snakemake workflow for genome alignments with the Cactus genome aligner (GPU version).
 
 ## Pre-requisites
 
@@ -14,7 +14,7 @@ Currently, SLURM is the only supported job scheduling software for this pipeline
 
 ### 2. Snakemake
 
-[Snakemake](https://snakemake.readthedocs.io/en/stable/) is a workflow management tool. Since cactus is comprised of several steps, we use Snakemake to make sure those steps are run automatically and efficiently.
+[Snakemake](https://snakemake.readthedocs.io/en/stable/) is a workflow management tool. Since Cactus is comprised of several steps, we use Snakemake to make sure those steps are run automatically and efficiently.
 
 You can [install Snakemake using conda](https://anaconda.org/bioconda/snakemake).
 
@@ -22,7 +22,7 @@ You can [install Snakemake using conda](https://anaconda.org/bioconda/snakemake)
 
 [Cactus](https://github.com/ComparativeGenomicsToolkit/cactus) is whole genome alignment software.
 
-This pipeline was built around the Singularity image of the cactus program optimized for GPU usage. Singularity is a program that containerizes and executes programs in an isolated environment, making them easier to use. 
+This pipeline was built around the Singularity image of the Cactus program optimized for GPU usage. Singularity is a program that containerizes and executes programs in an isolated environment, making them easier to use. 
 
 You can [install Singularity using conda](https://anaconda.org/conda-forge/singularity).
 
@@ -44,7 +44,7 @@ To run this pipeline you will need:
 
 ## Preparing the Cactus input file
 
-The various Cactus commands depend on a single input file with information about the genomes to align. This file is a simple tab delmited file. The first line of the file contains the **rooted** input species tree in [Newick format](https://en.wikipedia.org/wiki/Newick_format) and nothing else. Each subsequent line contains in the first column one tip label and in the second column the path to the genome FASTA file for that species. **The genome fasta files must be uncompressed for cactus to read them.**
+The various Cactus commands depend on a single input file with information about the genomes to align. This file is a simple tab delmited file. The first line of the file contains the **rooted** input species tree in [Newick format](https://en.wikipedia.org/wiki/Newick_format) and nothing else. Each subsequent line contains in the first column one tip label and in the second column the path to the genome FASTA file for that species. **The genome fasta files must be uncompressed for Cactus to read them.**
 
 For example, if I were running this pipeline on 5 species, A, B, C, D, and E, my input file may look something like this:
 
@@ -107,7 +107,7 @@ output_dir: /path/to/my/output-directory/
 tmp_dir: /path/to/my/tmp-directory/
 ```
 
-## Running cactus with snakemake
+## Running Cactus with Snakemake
 
 Now we are ready to run Cactus with snakemake!
 
