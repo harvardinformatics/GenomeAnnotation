@@ -11,6 +11,7 @@ For each species within each taxonomic group we investigated, when selecting SRA
 
 For species for which there are not enough Runs to reach the 15-20 Biosample goal, we relax the above criteria, including:
 * Require a minimum read length of 50 instead of 100bp
+    * This includes cases where there are >20 Biosamples on SRA, but they are dominated by only a few tissues, i.e. we relax the assumption to increase transcriptome representation
 * Accept Runs with pre-2011 release dates
 
 During the testing phase of this project, we evaluated useability of annotation tools with heliconine genomes and samples prior to establishing these criteria, such that we included a smalla number of GAII-derived samples, and we included more samples per species than noted above; in all cases we included less than 30 Biosamples per species.
