@@ -1,0 +1,323 @@
+#!/usr/bin/env python
+
+# Copyright (c) 2016-
+# Bo Li
+# libo@broadinstitute.org
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 3 of the
+# License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.   
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+# USA
+
+import os
+import sys
+import argparse
+from operator import itemgetter
+
+
+if sys.version_info.major < 3 or sys.version_info.minor < 6:
+    sys.stderr.write(f"rsem-gff3-to-gtf requires Python version >= 3.6!\n")
+    sys.exit(-1)
+
+
+type_exon = set(["exon", "CDS", "five_prime_UTR", "three_prime_UTR", "UTR", "noncoding_exon", "pseudogenic_exon"])
+# type_exon = set(["exon", "CDS", "five_prime_UTR", "three_prime_UTR", "UTR", "noncoding_exon", "pseudogenic_exon", "start_codon", "stop_codon"])
+
+class HelpOnErrorParser(argparse.ArgumentParser):
+    def error(self, msg):
+        sys.stderr.write(f"{os.path.basename(sys.argv[0])}: error: {msg}\n\n")
+        self.print_help()
+        sys.exit(-1)
+
+
+def my_assert(bool, msg):
+    if not bool:
+        sys.stderr.write(msg + "\n")
+        try:
+            os.remove(args.output_GTF_file)
+        except OSError:
+            pass
+        sys.exit(-1)
+
+
+class Feature:
+    def __init__(self):
+        self.line = self.line_no = None
+        self.seqid = self.source = self.type = self.start = self.end = self.strand = self.attributes = None
+        self.is_exon = False
+        self.attribute_dict = {}
+
+    def __str__(self):
+        res_str = f"{self.seqid}\t{self.source}\t{self.original_type}\t{self.feature_type}\t{self.start}\t{self.end}\t{self.strand}\n"
+        for key, value in self.attribute_dict.items():
+            res_str += f"{key}:{value}\t"
+        return res_str
+
+    def parse(self, line, line_no):
+        """ line should be free of leading and trailing spaces """
+
+        self.line = line
+        self.line_no = line_no
+
+        fields = line.split('\t')
+        my_assert(len(fields) == 9, f"Line {self.line_no} does not have 9 fields:\n{self.line}")        
+
+        self.seqid = fields[0]
+        self.source = fields[1]
+        self.type = fields[2]
+        self.is_exon = fields[2] in type_exon
+        self.start = int(fields[3])
+        self.end = int(fields[4])
+        self.strand = fields[6]
+        self.attributes = fields[8][:-1] if len(fields[8]) > 0 and fields[8][-1] == ';' else fields[8]
+
+    def parseAttributes(self):
+        self.attribute_dict.clear()
+        for attribute in self.attributes.split(';'):
+            fields = attribute.split('=')
+            my_assert(len(fields) <= 2, "Fail to parse attribute {0} of line {1} (detection of multiple =):\n{2}".format(attribute, self.line_no, self.line))
+            if len(fields) == 2:
+                tag, value = fields
+                if tag == "Parent":
+                    self.attribute_dict[tag] = value.split(',')
+                else:
+                    self.attribute_dict[tag] = value
+            else:
+                attribute = attribute.strip()
+                pos = attribute.find(' ')
+                if pos < 0:
+                    # This is ID
+                    self.attribute_dict["ID"] = attribute
+                else:
+                    # Switch to GTF2 style attributes
+                    value = attribute[pos:].strip()
+                    if value[0] == '"' and value[-1] == '"':
+                        value = value[1:-1]
+                    self.attribute_dict[attribute[:pos]] = value
+
+    def getAttribute(self, tag, required = False):
+        value = self.attribute_dict.get(tag, None)
+        my_assert(not required or value != None, f"Line {self.line_no} does not have attribute {tag}:\n{self.line}")
+        return value
+
+
+class Record:
+    def __init__(self, Name, Parent, Type, biotype):
+        self.Name = Name
+        self.Parent = Parent
+        self.Type = Type
+        self.biotype = biotype
+
+    def _update_item(self, name, value, ID):
+        curr_value = getattr(self, name)
+        if curr_value == None:
+            setattr(self, name, value)
+        else:
+            my_assert(str(curr_value)==str(value), f"Gene/Transcript {ID} has different values for {name}: {str(curr_value)} & {str(value)}!")
+
+    def update(self, ID, Name, Parent, Type, biotype):
+        if Name != None:
+            self._update_item("Name", Name, ID)
+        if Parent != None:
+            self._update_item("Parent", Parent, ID)
+        if Type != None:
+            self._update_item("Type", Type, ID)
+        if biotype != None:
+            self._update_item("biotype", biotype, ID)
+
+
+class Transcript:
+    def __init__(self, tid, feature):
+        """ Here feature is an exon feature """
+        self.tid = tid
+
+        self.seqid = feature.seqid
+        self.source = feature.source
+        self.strand = feature.strand
+        self.ttype = None
+        self.biotype = None
+
+        self.tname = feature.getAttribute("transcript_name")
+        self.gid = feature.getAttribute("gene_id")
+        self.gname = feature.getAttribute("gene_name")
+
+        self.intervals = []
+
+    def addExon(self, start, end):
+        self.intervals.append((start, end))
+
+    def update(self, rec):
+        if self.tname == None:
+            self.tname = rec.Name
+        if self.gid == None and rec.Parent != None:
+            my_assert(len(rec.Parent) == 1, f"Transcript {self.tid} is associated with multiple genes: {rec.Parent}!")
+            self.gid = rec.Parent[0]
+        if self.ttype == None:
+            self.ttype = rec.Type
+        if self.biotype == None:
+            self.biotype = rec.biotype
+
+    def merge(self):
+        self.intervals.sort(key = itemgetter(0))
+        self.results = []
+        cstart, cend = self.intervals[0]
+        for start, end in self.intervals[1:]:
+            if cend + 1 >= start:
+                cend = max(cend, end)
+            else:
+                self.results.append((cstart, cend))
+                cstart = start
+                cend = end
+        self.results.append((cstart, cend))
+
+    def __iter__(self):
+        self.index = 0
+        return self
+
+    def __next__(self):
+        if self.index == len(self.results):
+            raise StopIteration
+        interval = self.results[self.index]
+        self.index += 1
+        return interval
+
+
+def getTranscript(tid, feature):
+    pos = tid2pos.get(tid, None)
+
+    if pos == None:
+        transcript = Transcript(tid, feature)
+        tid2pos[tid] = len(transcripts)
+        transcripts.append(transcript)
+        return transcript
+
+    my_assert(pos >= 0, f"Line {feature.line_no} describes an already processed Transcript {tid}:\n{feature.line}")
+    return transcripts[pos]
+
+
+def flush_out(fout):
+    global num_trans
+    global transcripts
+
+    for transcript in transcripts:
+        rec = id2rec.get(transcript.tid, None)
+        if rec != None:
+            transcript.update(rec)
+            if transcript.gid != None and transcript.gname == None:
+                rec = id2rec.get(transcript.gid, None)
+                if rec != None and rec.Name != None:
+                    transcript.gname = rec.Name
+
+        if transcript.gid == None:
+            transcript.gid = transcript.tid # Use transcript ID as gene ID
+
+        tid2pos[transcript.tid] = -1
+        if len(transcript.intervals) == 0 or (len(patterns) > 0 and (transcript.ttype not in patterns)):
+            continue
+
+        transcript.merge()
+
+        output_string = f"{transcript.seqid}\t{transcript.source}\texon\t{{0}}\t{{1}}\t.\t{transcript.strand}\t.\tgene_id \"{transcript.gid}\"; transcript_id \"{transcript.tid}\";"
+        if transcript.gname != None:
+            output_string += f" gene_name \"{transcript.gname}\";"
+        if transcript.tname != None:
+            output_string += f" transcript_name \"{transcript.tname}\";"
+        output_string += "\n"
+
+        for start, end in transcript:
+            fout.write(output_string.format(start, end))
+
+        num_trans += 1
+
+    id2rec.clear()
+    transcripts = []
+
+
+parser = HelpOnErrorParser(formatter_class = argparse.ArgumentDefaultsHelpFormatter, description = "Convert GFF3 files to GTF files.")
+parser.add_argument("input_GFF3_file", help = "Input GFF3 file (plain text or gzipped).")
+parser.add_argument("output_GTF_file", help = "Output GTF file.")
+parser.add_argument("--RNA-patterns", help = "Types of RNAs to be extracted, e.g. mRNA,rRNA. Selection is based on the 'type' column", metavar = "<patterns>")
+parser.add_argument("--extract-sequences", help = "If GFF3 file contains reference sequences, extract them to the specified file", metavar = "<output.fa>")
+args = parser.parse_args()
+
+patterns = set()
+if args.RNA_patterns != None:
+    patterns = set(args.RNA_patterns.split(','))
+
+line_no = 0
+feature = Feature()
+id2rec = {}
+tid2pos = {}
+num_trans = 0
+transcripts = []
+
+reachFASTA = False
+if args.input_GFF3_file.endswith(".gz"):
+    import gzip
+    fin = gzip.open(args.input_GFF3_file, 'rt')
+else:
+    fin = open(args.input_GFF3_file)
+
+fout = open(args.output_GTF_file, "w")
+
+for line in fin:
+    line = line.strip()
+    line_no += 1
+    if line_no % 100000 == 0:
+        print(f"Loaded {line_no} lines.")
+
+    if line.startswith("##FASTA"):
+        reachFASTA = True
+        break
+
+    if line.startswith("###"):
+        flush_out(fout)
+        continue
+
+    if line.startswith("#"):
+        continue
+
+    feature.parse(line, line_no)
+    feature.parseAttributes()
+
+    if feature.is_exon:
+        parents = feature.getAttribute("Parent")
+        if parents == None:
+            tid = feature.getAttribute("transcript_id", True)
+            parents = [tid]
+        for parent in parents:
+            transcript = getTranscript(parent, feature)
+            transcript.addExon(feature.start, feature.end)
+    else:
+        ID = feature.getAttribute("ID")
+        if ID == None:
+            continue # skip this feature
+        rec = id2rec.get(ID, None)
+        if rec == None:
+            id2rec[ID] = Record(feature.getAttribute("Name"), feature.getAttribute("Parent"), feature.type, feature.getAttribute("biotype"))
+        else:
+            rec.update(feature.getAttribute("Name"), feature.getAttribute("Parent"), feature.type, feature.getAttribute("biotype"), ID)
+
+flush_out(fout)
+fout.close()
+
+print("GTF file is successully generated.")
+print(f"There are {num_trans} transcripts contained in the generated GTF file.")   
+
+if reachFASTA and args.extract_sequences != None:
+    with open(args.extract_sequences, "w") as fout:
+        for line in fin:
+            fout.write(line)
+    print("FASTA file is successfully generated.")
+
+fin.close()
