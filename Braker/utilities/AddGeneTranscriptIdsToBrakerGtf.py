@@ -37,7 +37,7 @@ gtfin = open(sys.argv[1],'r')
 gtfout = open('IdsAdded_%s' % sys.argv[1],'w')
 for line in gtfin:
     if line[0] == '#':
-        fout.write(line)
+        gtfout.write(line)
     else:
         linelist = line.strip().split('\t')
         newid = CreateId(linelist,exon_tracker,cds_tracker,intron_tracker)

@@ -1,7 +1,7 @@
 #!/bin/sh
 #SBATCH -p shared,serial_requeue
 #SBATCH -n 1
-#SBATCH --mem=8000
+#SBATCH --mem=24000
 #SBATCH --time=36:00:00
 #SBATCH -e filterbam_%A.e
 #SBATCH -o filterbam_%A.o

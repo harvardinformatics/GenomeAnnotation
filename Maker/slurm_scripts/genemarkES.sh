@@ -10,6 +10,6 @@
 #SBATCH -o genemarkES_%A.out
 #SBATCH -J genemarkES
 
-MAKER_IMAGE=/n/singularity_images/informatics/maker/maker:3.01.03-repbase.sif
+MAKER_IMAGE=/n/singularity_images/informatics/maker/maker_3.01.03--pl5262h8f1cd36_2-repbase.sif###/n/singularity_images/informatics/maker/maker:3.01.03-repbase.sif
 genomefasta=$1
 singularity exec --no-home --home /root --cleanenv ${MAKER_IMAGE} gmes_petap.pl --cores 24 --ES --sequence $genomefasta 
