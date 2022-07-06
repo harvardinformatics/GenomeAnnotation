@@ -111,7 +111,18 @@ output_dir: /path/to/my/output-directory/
 tmp_dir: /path/to/my/tmp-directory/
 ```
 
-Here, `working_dir` is whatever directory you want to be in when all the cactus commands to be run. I prefer this directory to be one level above my output directory.
+Here, `working_dir` is whatever directory you want to be in when all the cactus commands to be run. I prefer this directory to be one level above my output directory. Snakemake will also create a folder here called `slurm-logs/` where all cluster log files will be stored.
+
+## Getting email updates for jobs
+
+If you wish to get emails when individual jobs submitted by snakemake END or FAIL, edit the file `cactus-gpu-snakemake/profiles/slurm_profile/config.yaml`. 
+
+Uncomment lines 14 and 15 and insert your email address there:
+
+```
+  #--mail-type=END,FAIL
+  #--mail-user=<YOUR EMAIL>
+```
 
 ## Running Cactus with Snakemake
 
@@ -133,3 +144,4 @@ For the other files, you will have to specify the paths defined within <>.
 With the `--dryrun` option, this command will run through the pipeline without executing any commands to make sure no errors occur with the pipeline itself. When you are satisfied that the pipeline will be run correctly, remove `--dryrun` to execute the pipeline.
 
 We also recommend running the pipeline script itself using a [terminal multiplexer](https://en.wikipedia.org/wiki/Terminal_multiplexer) or submitting it as a job to your cluster so that it won't be interrupted.
+

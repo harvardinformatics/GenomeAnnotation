@@ -10,8 +10,12 @@
 # input_file: <input_file>
 # input_file: /path/to/my/input/file.txt
 #
+# For working_dir, I prefer to make this one directory above my output_dir
+#
 # Gregg Thomas, Spring 2022
 #############################################################################
+
+working_dir: <working_directory>
 
 cactus_path: <cactus_path>
 
