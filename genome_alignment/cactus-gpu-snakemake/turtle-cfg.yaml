@@ -1,7 +1,9 @@
 # Need to first run the cactus-preprocess script to generate commands and cactus config files:
 # <cactus_path> cactus-prepare <input_file> --outDir <output_dir> --outHal turtle-output/turtles.hal --jobStore <tmp_dir> --gpu
 
-cactus_path: /n/holylfs05/LABS/informatics/Users/gthomas/turtles/cactus/cactus_v2.0.5-gpu.sif
+working_dir: /n/holylfs05/LABS/informatics/Users/gthomas/turtles/cactus/
+
+cactus_path: /n/holylfs05/LABS/informatics/Users/gthomas/turtles/cactus/cactus_v2.1.1-gpu.sif
 
 input_file: /n/holylfs05/LABS/informatics/Users/gthomas/turtles/cactus/genomes.txt
 

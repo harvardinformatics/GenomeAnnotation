@@ -86,6 +86,8 @@ You will have to specify the paths defined within <>.
 Now we can set up the config file for the snakemake pipeline. An example template is provided in this repository: `cactus-gpu-snakemake/config-template.yaml`. This file contains the following parameters that will be used by snakemake to run Cactus:
 
 ```
+working_dir: <working_dir>
+
 cactus_path: <cactus_path>
 
 input_file: <input_file>
@@ -98,6 +100,8 @@ tmp_dir: <tmp_dir>
 Simply replace each path surrounded by <> with the path you used when running `cactus-prepare`, e.g.:
 
 ```
+working_dir: /path/to/directory/in/which/to/run/cactus/
+
 cactus_path: /path/to/my/cactus_v2.0.5-gpu.sif
 
 input_file: /path/to/my/input/file.txt
@@ -106,6 +110,8 @@ output_dir: /path/to/my/output-directory/
 
 tmp_dir: /path/to/my/tmp-directory/
 ```
+
+Here, `working_dir` is whatever directory you want to be in when all the cactus commands to be run. I prefer this directory to be one level above my output directory.
 
 ## Running Cactus with Snakemake
 
