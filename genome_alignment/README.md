@@ -70,7 +70,7 @@ Generally, it can be run as follows:
 Specifically, for the Singularity image, it can be run as:
 
 ```{bash}
-singularity exec --cleanenv cactus_v2.0.5-gpu.sif cactus-prepare <INPUT FILE> --outDir <OUTPUT DIRECTORY> --jobStore <TEMP DIRECTORY> --gpu
+singularity exec --cleanenv cactus_v2.1.1-gpu.sif cactus-prepare <INPUT FILE> --outDir <OUTPUT DIRECTORY> --jobStore <TEMP DIRECTORY> --gpu
 ```
 
 You will have to specify the paths defined within <>.
@@ -102,7 +102,7 @@ Simply replace each path surrounded by <> with the path you used when running `c
 ```
 working_dir: /path/to/directory/in/which/to/run/cactus/
 
-cactus_path: /path/to/my/cactus_v2.0.5-gpu.sif
+cactus_path: /path/to/my/cactus_v2.1.1-gpu.sif
 
 input_file: /path/to/my/input/file.txt
 
