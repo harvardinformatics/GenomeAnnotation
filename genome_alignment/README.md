@@ -26,10 +26,10 @@ This pipeline was built around the Singularity image of the Cactus program optim
 
 You can [install Singularity using conda](https://anaconda.org/conda-forge/singularity).
 
-With Singularity installed, you can create the image from [the Docker image provided with Cactus (GPU)](https://github.com/ComparativeGenomicsToolkit/cactus/releases) as `cactus_v2.0.5-gpu.sif` with the following command:
+With Singularity installed, you can create the image from [the Docker image provided with Cactus (GPU)](https://github.com/ComparativeGenomicsToolkit/cactus/releases) for the latest version (2.1.1 as of the writing of this file) as `cactus_v2.1.1-gpu.sif` with the following command:
 
 ```{bash}
-singularity pull --disable-cache docker://quay.io/comparative-genomics-toolkit/cactus:v2.0.5-gpu
+singularity pull --disable-cache docker://quay.io/comparative-genomics-toolkit/cactus:v2.1.1-gpu
 ```
 
 We chose the Singularity image over Docker for security reasons.
