@@ -1,0 +1,24 @@
+jobs: 40
+cluster-sync:
+  mkdir -p slurm-logs/{rule}/ &&
+  sbatch
+  --wait
+  --partition={resources.partition}
+  --cpus-per-task={resources.cpus}
+  --gres=gpu:{resources.gpu}
+  --gpu-freq=high
+  --job-name={rule}-{wildcards}
+  --mem={resources.mem}
+  --time={resources.time}
+  --output=slurm-logs/{rule}/{rule}-{wildcards}-%j.out
+  #--mail-type=END,FAIL
+  #--mail-user=<YOUR EMAIL>
+default-resources:
+  - cpus=8
+  - partition="shared"
+  - mem="100g"
+  - time="24:00:00"
+  - gpu=0
+restart-times: 0
+latency-wait: 15
+verbose: true 
