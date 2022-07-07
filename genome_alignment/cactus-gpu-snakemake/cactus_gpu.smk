@@ -25,7 +25,7 @@ import cactuslib
 
 #############################################################################
 
-# Cactus works via a post-order transversal of the input tree and runs several steps at each node of the tree.
+# Cactus works by rounds of depth of the input tree and runs several steps at each node of the tree.
 # For tip nodes Cactus runs its preprocess command which masks the input fasta for each genome
 #   1. Preprocess (mask)
 #       Inputs: Original genome fasta
@@ -49,6 +49,10 @@ import cactuslib
 #   5. Append (halAppendSubtree)
 #       Inputs: All .hal files from each internal node in the tree
 #       Outputs: The .hal file at the root of the tree (Anc00.hal) with all alignments appended to it
+#
+#   6. MAF (hal2mafMP.py)
+#       Inputs: The appended .hal file from halAppendSubtree
+#       Output: The alignment in MAF format
 
 #############################################################################
 # System setup
@@ -226,8 +230,11 @@ rule all:
         expand(os.path.join(OUTPUT_DIR, "{internal_node}.fa"), internal_node=[node for node in internals]),
         # The final FASTA sequences from each internal node after rules blast and align
 
-        os.path.join(OUTPUT_DIR, "hal-append-subtree.log")
+        os.path.join(OUTPUT_DIR, "hal-append-subtree.log"),
         # The log file from the append rule (halAppendSubtree)
+
+        #os.path.join(OUTPUT_DIR, root_name + ".maf")
+        # The .maf file from rul maf
 ## Rule all specifies the final output files expected
 
 # #############################################################################
@@ -343,6 +350,13 @@ rule convert:
 
 ####################
 
+## It might be a good idea to copy the root .hal file here, since failures in the subsequent rules
+## would mean the blast/align steps have to be re-run for that node, but this means a little extra
+## storage is required
+
+####################
+
+
 rule append:
     input:
         expand(os.path.join(OUTPUT_DIR, "{internal_node}.fa"), internal_node=internals)
@@ -358,14 +372,14 @@ rule append:
             for node in internals:
                 appendfile.write(node + "\n");
                 if node == root_name:
-                    appendfile.write("Node is root node. Nothing to be done.");
+                    appendfile.write("Node is root node. Nothing to be done.\n");
                     appendfile.write("----------" + "\n\n");
                     appendfile.flush();
                     continue;
                 # If the node is the root we don't want to append since that is the hal file we
                 # are appending to
 
-                cmd = ["singularity", "exec", "--nv", "--cleanenv", "--bind " + TMPDIR + ":/tmp", config["cactus_path"], "halAppendSubtree", os.path.join(OUTPUT_DIR, root_name + ".hal"), os.path.join(OUTPUT_DIR, node + ".hal"), node, node, "--merge", "--hdf5InMemory"];
+                cmd = ["singularity", "exec", "--nv", "--cleanenv", "--bind", TMPDIR + ":/tmp", config["cactus_path"], "halAppendSubtree", os.path.join(OUTPUT_DIR, root_name + ".hal"), os.path.join(OUTPUT_DIR, node + ".hal"), node, node, "--merge", "--hdf5InMemory"];
                 appendfile.write("RUNNING COMMAND:\n");
                 appendfile.write(" ".join(cmd) + "\n");
                 appendfile.flush();
@@ -383,10 +397,31 @@ rule append:
                 appendfile.flush();
                 # Print the output of the command to the log file
                 # TODO: Maybe check for errors in stderr and exit with non-zero if found? Not sure if that would work...
+                # Note that calling singularity with --nv will print text to stderr even though there is no error
         ## End node loop
     ## This rule runs halAppendSubtree on every internal node in the tree to combine alignments into a single file.
     ## Because this command writes to the same file for every node, jobs must be run serially, so this command
     ## is run in a run block with pyhton's subprocess.run() function.
     ## Output is captured in the 'hal-append-subtree.log'
+
+####################
+
+rule maf:
+    input:
+        root_hal = os.path.join(OUTPUT_DIR, root_name + ".hal"),
+        append_log = os.path.join(OUTPUT_DIR, "hal-append-subtree.log")
+    output:
+        os.path.join(OUTPUT_DIR, root_name + ".maf")
+    params:
+        path = CACTUS_PATH_TMP
+    resources:
+        partition = "shared",
+        cpus = 32,
+        mem = "100g",
+        time = "24:00:00"
+    shell:
+        """
+        {params.path} hal2mafMP.py --numProc {resources.cpus} {input.root_hal} {output}
+        """
 
 #############################################################################
