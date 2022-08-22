@@ -1,5 +1,9 @@
 # TODO
 
 1. ~~Implement jobs by rounds instead of strict post-order traversal of intput tree~~ Completed 4.25.2022
-2. Add resource options to config
-3. ~~halAppend steps~~
+2. ~~Add resource options to config~~ Completed 8.4.2022
+3. ~~halAppend steps~~ Completed 7.7.2022
+4. ~~Test various issues (e.g. the --restart flag, --configFile)~~ Completed 8.4.2022
+5. ~~Add a rule to copy the final HAL file before appending the other HALs to it so it that step doesn't have to be re-done if the later steps need to be re-run~~ Completed 8.4.2022
+6. Add a rule to conver the final HAL to MAF
+7. Add a non-gpu option for the mask and blast rules

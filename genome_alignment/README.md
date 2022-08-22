@@ -113,6 +113,19 @@ tmp_dir: /path/to/my/tmp-directory/
 
 Here, `working_dir` is whatever directory you want to be in when all the cactus commands to be run. I prefer this directory to be one level above my output directory. Snakemake will also create a folder here called `slurm-logs/` where all cluster log files will be stored.
 
+### Allocating resources for each step
+
+**The config file also has resource allocations for each step of the cactus pipeline, e.g. for the alignment step:**
+
+```
+align_partition: "bigmem"
+align_cpu: 24
+align_mem: "450g"
+align_time: "24:00:00"
+```
+
+**Be sure to adjust these to your cluster and needs!**
+
 ## Getting email updates for jobs
 
 If you wish to get emails when individual jobs submitted by snakemake END or FAIL, edit the file `cactus-gpu-snakemake/profiles/slurm_profile/config.yaml`. 
