@@ -94,6 +94,8 @@ input_file: <input_file>
 
 output_dir: <output_dir>
 
+final_hal: <final .hal file with all genomes appended>
+
 tmp_dir: <tmp_dir>
 ```
 
@@ -108,10 +110,14 @@ input_file: /path/to/my/input/file.txt
 
 output_dir: /path/to/my/output-directory/
 
+final_hal: /desired/path/to/final/file.hal
+
 tmp_dir: /path/to/my/tmp-directory/
 ```
 
 Here, `working_dir` is whatever directory you want to be in when all the cactus commands to be run. I prefer this directory to be one level above my output directory. Snakemake will also create a folder here called `slurm-logs/` where all cluster log files will be stored.
+
+The `final_hal` file will be the one with all aligned genomes appended to it. It starts as a copy of the .hal file at the root of the tree and then the `append` rule runs `halAppendSubtree` on each other node in the tree to ad them to this file.
 
 ### Allocating resources for each step
 
