@@ -5,5 +5,6 @@
 3. ~~halAppend steps~~ Completed 7.7.2022
 4. ~~Test various issues (e.g. the --restart flag, --configFile)~~ Completed 8.4.2022
 5. ~~Add a rule to copy the final HAL file before appending the other HALs to it so it that step doesn't have to be re-done if the later steps need to be re-run~~ Completed 8.4.2022
-6. Add a rule to conver the final HAL to MAF
+6. Add a rule to convert the final HAL to MAF
 7. Add a non-gpu option for the mask and blast rules
+8. ~~Update to cactus 2.2.0~~ Completed 8.24.2022

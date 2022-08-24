@@ -12,7 +12,7 @@ cluster-sync:
   --time={resources.time}
   --output=slurm-logs/{rule}/{rule}-{wildcards}-%j.out
   #--mail-type=END,FAIL
-  #--mail-user=<your email>
+  #--mail-user=<YOUR EMAIL>
 default-resources:
   - cpus=8
   - partition="shared"
