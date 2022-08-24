@@ -96,6 +96,11 @@ CACTUS_FILE = os.path.join(OUTPUT_DIR, os.path.basename(INPUT_FILE));
 # final_hal_file = "turtles.hal";
 # The final hal file generated on the root node -- currently still encoded as Anc00.hal
 
+if config["use_gpu"]:
+    GPU_OPT = "--gpu";
+else:
+    GPU_OPT = "";
+
 #############################################################################
 # Reading files
 
@@ -266,7 +271,8 @@ rule mask:
         cactus_file = os.path.join(OUTPUT_DIR, CACTUS_FILE),
         genome_name = lambda wildcards: [ name for name in tips if tips[name]['output'] == wildcards.final_tip ][0],#  tips[wildcards.final_tip]['name'],
         #job_dir = lambda wildcards: os.path.join(TMPDIR, tips[wildcards.final_tip]['name'] + "-mask")
-        job_dir = lambda wildcards: os.path.join(TMPDIR, [ name for name in tips if tips[name]['output'] == wildcards.final_tip ][0] + "-mask")
+        job_dir = lambda wildcards: os.path.join(TMPDIR, [ name for name in tips if tips[name]['output'] == wildcards.final_tip ][0] + "-mask"),
+        gpu_opt = GPU_OPT
     resources:
         partition = config["mask_partition"],
         gpu = config["mask_gpu"],
@@ -275,10 +281,15 @@ rule mask:
         time = config["mask_time"]
     run:
         if os.path.isdir(params.job_dir):
-            shell("{params.path} cactus-preprocess {params.job_dir} {params.input_file} {params.cactus_file} --inputNames {params.genome_name} --realTimeLogging --logInfo --retryCount 0 --maxCores {resources.cpus} --gpu --restart")
+            shell("{params.path} cactus-preprocess {params.job_dir} {params.input_file} {params.cactus_file} --inputNames {params.genome_name} --realTimeLogging --logInfo --retryCount 0 --maxCores {resources.cpus} {params.gpu_opt} --restart")
         else:
-            shell("{params.path} cactus-preprocess {params.job_dir} {params.input_file} {params.cactus_file} --inputNames {params.genome_name} --realTimeLogging --logInfo --retryCount 0 --maxCores {resources.cpus} --gpu")
+            shell("{params.path} cactus-preprocess {params.job_dir} {params.input_file} {params.cactus_file} --inputNames {params.genome_name} --realTimeLogging --logInfo --retryCount 0 --maxCores {resources.cpus} {params.gpu_opt}")
         # When not requesting all CPU on a node: toil.batchSystems.abstractBatchSystem.InsufficientSystemResources: The job LastzRepeatMaskJob is requesting 64.0 cores, more than the maximum of 32 cores that SingleMachineBatchSystem was configured with, or enforced by --maxCores.Scale is set to 1.0.
+
+    # shell:
+    #     """
+    #     {params.path} cactus-preprocess {params.job_dir} {params.input_file} {params.cactus_file} --inputNames {params.genome_name} --realTimeLogging --logInfo --retryCount 0 --maxCores {resources.cpus} {params.gpu_opt}
+    #     """
 ## This rule runs cactus-preprocess for every genome (tip in the tree), which does some masking
 ## Runtimes for turtles range from 8 to 15 minutes with the above resoureces
 
@@ -295,7 +306,8 @@ rule blast:
         cactus_file = os.path.join(OUTPUT_DIR, CACTUS_FILE),
         node = lambda wildcards: wildcards.internal_node,
         #job_dir = lambda wildcards: os.path.join(TMPDIR, wildcards.internal_node + "-blast")
-        job_dir = lambda wildcards: os.path.join("/tmp", wildcards.internal_node + "-blast")
+        job_dir = lambda wildcards: os.path.join("/tmp", wildcards.internal_node + "-blast"),
+        gpu_opt = GPU_OPT
     resources:
         partition = config["blast_partition"],
         gpu = config["blast_gpu"],
@@ -304,9 +316,9 @@ rule blast:
         time = config["blast_time"]
     run:
         if os.path.isdir(params.job_dir):
-            shell("{params.path} cactus-blast {params.job_dir} {params.cactus_file} {output} --root {params.node} --realTimeLogging --logInfo --retryCount 0 --maxCores {resources.cpus} --gpu --restart")
+            shell("{params.path} cactus-blast {params.job_dir} {params.cactus_file} {output} --root {params.node} --realTimeLogging --logInfo --retryCount 0 --maxCores {resources.cpus} {params.gpu_opt} --restart")
         else:
-            shell("{params.path} cactus-blast {params.job_dir} {params.cactus_file} {output} --root {params.node} --realTimeLogging --logInfo --retryCount 0 --maxCores {resources.cpus} --gpu")
+            shell("{params.path} cactus-blast {params.job_dir} {params.cactus_file} {output} --root {params.node} --realTimeLogging --logInfo --retryCount 0 --maxCores {resources.cpus} {params.gpu_opt}")
 ## This rule runs cactus-blast for every internal node
 ## Runtimes for turtles range from 1 to 10 hours with the above resources
 
