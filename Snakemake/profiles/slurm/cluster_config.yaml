@@ -100,4 +100,13 @@ taco_star:
     output: "logs/taco-star-%j.out"
     error: "logs/taco-star-%j.err"
     job-name: "tacostar"
- 
+
+################
+# transdecoder #
+# #############
+
+transdecoder_longorfs:
+    parition: "serial_requeue,shared"
+    output: "logs/transdecoder-longorfs-%j.out"
+    error: "logs/transdecider-longorfs-%j.err"
+    job-name: "longorfs"  
