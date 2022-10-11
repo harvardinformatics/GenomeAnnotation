@@ -15,15 +15,10 @@ rule hisat2_align:
     params:
         indexdir = config["Hisat2IndexDir"],
         indexprefix = config["Hisat2IndexPrefix"]
-    run:
-        if {params.strandedness} !="NA":
-            shell("hisat2 -p {threads} -x {params.indexdir}{params.indexprefix} --rna-strandness {params.strandedness} \
-                   -q --phred33 --dta --min-intronlen {params.intronmin} --max-intronlen {params.intronmax} \
-                   -1 {input.r1} -2 {input.r2} -S {output}")
-        else:
-            shell("hisat2 -p {threads} -x {params.indexdir}{params.indexprefix} -q --phred33 --dta \
-                    --min-intronlen {params.intronmin} --max-intronlen {params.intronmax} \
-                     -1 {input.r1} -2 {input.r2} -S {output}")
+    script:
+        "scripts/run_hisat2.py -p {threads} -i {params.indexdir}{params.indexprefix} -strand {params.strandedness} \
+        -minintron {params.intronmin} -maxintron {params.intronmax} -1 {input.r1} -2 {input.r2}"  
+            
 rule samsort_hisat2:
     input:
         config["Hisat2Outdir"] + "{sample}" + "_hisat2.sam"
