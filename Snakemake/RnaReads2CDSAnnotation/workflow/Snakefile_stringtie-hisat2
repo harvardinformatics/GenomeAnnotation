@@ -1,0 +1,4 @@
+include: "workflow/rules/hisat2.smk"
+include: "workflow/rules/stringtie_hisat2.smk"
+include: "workflow/rules/transdecoder.smk"
+include: "workflow/rules/blastp.smk"
