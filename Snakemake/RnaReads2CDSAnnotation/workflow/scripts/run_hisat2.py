@@ -19,6 +19,6 @@ if __name__=="__main__":
     else:
         hisat_cmd ='hisat2 -p %s -x %s --rna-strandedness %s -q --phred33 --dta --min-intronlen %s --max-intronlen %s -1 %s -2 %s -S %s'   % (opts.p,opts.hisatindex,opts.libstrand,opts.minintron,opts.maxintron,opts.r1,opts.r2,opts.sam)
 
-
+    print('hisat2 cmd is: %s' %  hisat_cmd)
     hisat_runner = Popen(hisat_cmd, shell=True, stdout=PIPE, stderr=PIPE)
     hisat_out, hisat_err = hisat_runner.communicate()
