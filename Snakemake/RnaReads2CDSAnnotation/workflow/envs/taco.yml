@@ -1,0 +1,7 @@
+channels:
+    - conda-forge
+    - bioconda
+    - defaults
+
+dependencies:
+    - taco==0.7.3

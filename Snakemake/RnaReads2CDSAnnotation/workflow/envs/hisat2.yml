@@ -1,0 +1,7 @@
+channels:
+    - conda-forge
+    - bioconda
+    - defaults
+
+dependencies:
+    - hisat2==2.2.1
