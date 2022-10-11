@@ -7,19 +7,11 @@ rule stringtie_hisat2:
         "../envs/stringtie.yml"
     threads:
         res_config['stringtie']['threads']
-
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['stringtie']['mem_mb'],
         time = res_config['stringtie']['time'] 
-    run:
-        if {params.strandedness} == "NA":
-            shell("stringtie {input} -p {threads} -o {output}")
-        elif {params.strandedness} == "FR":
-            shell("stringtie {input} --fr -p {threads} -o {output}")
-        elif {params.strandedness} == "RF":
-            shell("stringtie {input} --fr -p {threads} -o {output}")
-        else:
-            raise ValueError('strandedness value not in allowable values ["FR","RF","NA"]')  
+    script:
+        "scripts/run_stringtie.py {input} -p {threads} -strand {params.strandedness} -gtf {output}"
 
 
 rule stringtie_hisat2_merge:
