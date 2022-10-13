@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from os.path import basename
 import argparse
 from Bio import SeqIO
 
@@ -13,9 +12,9 @@ if __name__=="__main__":
     
     file_index = 1
     seqcount = 0
-    fout = open('%s_%s' % (file_index,opts.fastain),'w')
+    fout = open('%s_%s.fasta' % ('.'.join(opts.fastain.split('.')[:-1]),file_index),'w')
     filelist = open('%s' % opts.filelist,'w')
-    filelist.write('%s_%s\n' % (file_index,basename(opts.fastain)))
+    filelist.write('%s_%s.fasta' % ('.'.join(opts.fastain.split('.')[:-1]),file_index))
 
     for record in SeqIO.parse(opts.fastain,'fasta'):
         if seqcount <=opts.maxn-1:
@@ -24,8 +23,8 @@ if __name__=="__main__":
         else:
             file_index+=1
             fout.close()
-            fout = open('%s_%s' % (file_index,opts.fastain),'w') 
-            filelist.write('%s_%s\n' % (file_index,basename(opts.fastain)))
+            fout = open('%s_%s.fasta' % ('.'.join(opts.fastain.split('.')[:-1]),file_index),'w')
+            filelist.write('%s_%s.fasta' % ('.'.join(opts.fastain.split('.')[:-1]),file_index))
             SeqIO.write(record,fout,'fasta')
             seqcount=1 
     
