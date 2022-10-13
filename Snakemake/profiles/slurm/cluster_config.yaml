@@ -105,8 +105,14 @@ taco_star:
 # transdecoder #
 # #############
 
-transdecoder_longorfs:
+TransdecoderLongOrfs:
     parition: "serial_requeue,shared"
     output: "logs/transdecoder-longorfs-%j.out"
     error: "logs/transdecider-longorfs-%j.err"
-    job-name: "longorfs"  
+    job-name: "longorfs" 
+
+LongorfsBlastp:
+    parition: "serial_requeue,shared"
+    output: "logs/longorfs_blastp-%j.out"
+    error: "logs/longorfs_blastp-longorfs-%j.err"
+    job-name: "orfblastp" 

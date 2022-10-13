@@ -25,12 +25,18 @@ rule TransdecoderLongOrfs:
     shell:
         "TransDecoder.LongOrfs -t {input}
 
-    
-
 rule LongOrfsSplit:
     input:
         config["StringtieHisat2MergeDir"] + "CDSannotation/" + config["speciesname"] + "_stringtie_transcripts.fa.transdecoder_dir/longest_orfs.pep"
     output:
-        "orf_splitfile_list.txt"
+        config["StringtieHisat2MergeDir"] + "CDSannotation/blastp/orf_splitfile_list.txt"
     script:
         "FastaSplitter.py -f {input} -maxn 1000 -counter {output}
+
+rule LongorfsBlastp:
+    input:
+        config["StringtieHisat2MergeDir"] + "CDSannotation/blastp/longest_orfs_" + {subfile} + ".fasta"
+    output:
+        config["StringtieHisat2MergeDir"] + "CDSannotation/blastp/longest_orfs_" + {subfile} + ".blastp.outfmt6.tsv"
+    shell:
+        blastp -max_target_seqs 5 -num_threads 8 -evalue 1e-4 -query {input} -outfmt 6 -db config["BlastpDb"] > {output} 
