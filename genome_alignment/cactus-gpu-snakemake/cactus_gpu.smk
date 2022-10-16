@@ -81,8 +81,11 @@ INPUT_FILE = config["input_file"];
 OUTPUT_DIR = config["output_dir"];
 # The output directory specified when cactus-prepare was run
 
+OUTPUT_HAL = os.path.join(OUTPUT_DIR, config["final_hal"]);
+OUTPUT_MAF = os.path.join(OUTPUT_DIR, config["final_hal"].replace(".hal", ".maf"));
+
 CACTUS_FILE = os.path.join(OUTPUT_DIR, os.path.basename(INPUT_FILE));
-CONFIG_FILE = os.path.join(OUTPUT_DIR, "config-prepared.xml");
+#CONFIG_FILE = os.path.join(OUTPUT_DIR, "config-prepared.xml");
 # The config files genearated from cactus-prepare
 # config: XML config file probably read by some of the sub-programs...
 # output: lists the sequence files expected as output for all nodes in the tree
@@ -93,6 +96,11 @@ CONFIG_FILE = os.path.join(OUTPUT_DIR, "config-prepared.xml");
 # final_hal_file = "turtles.hal";
 # The final hal file generated on the root node -- currently still encoded as Anc00.hal
 
+if config["use_gpu"]:
+    GPU_OPT = "--gpu";
+else:
+    GPU_OPT = "";
+
 #############################################################################
 # Reading files
 
@@ -102,6 +110,10 @@ tips = {};
 
 first = True;
 for line in open(INPUT_FILE):
+    if not line.strip():
+        continue;
+    # Skip any blank lines
+
     if first:
         #tree = line.strip();
         first = False;
@@ -129,6 +141,10 @@ internals = {};
 
 first = True;
 for line in open(CACTUS_FILE):
+    if not line.strip():
+        continue;
+    # Skip any blank lines
+
     if first:
         anc_tree = line.strip();
         first = False;
@@ -233,12 +249,15 @@ rule all:
         os.path.join(OUTPUT_DIR, "hal-append-subtree.log"),
         # The log file from the append rule (halAppendSubtree)
 
+        #OUTPUT_MAF
         #os.path.join(OUTPUT_DIR, root_name + ".maf")
         # The .maf file from rul maf
 ## Rule all specifies the final output files expected
 
 # #############################################################################
 # # Pipeline rules
+
+# --configFile {params.config_file} 
 
 rule mask:
     input:
@@ -248,23 +267,29 @@ rule mask:
     params:
         path = CACTUS_PATH,
         input_file = INPUT_FILE,
-        config_file = os.path.join(OUTPUT_DIR, CONFIG_FILE),
+        #config_file = os.path.join(OUTPUT_DIR, CONFIG_FILE),
         cactus_file = os.path.join(OUTPUT_DIR, CACTUS_FILE),
         genome_name = lambda wildcards: [ name for name in tips if tips[name]['output'] == wildcards.final_tip ][0],#  tips[wildcards.final_tip]['name'],
         #job_dir = lambda wildcards: os.path.join(TMPDIR, tips[wildcards.final_tip]['name'] + "-mask")
-        job_dir = lambda wildcards: os.path.join(TMPDIR, [ name for name in tips if tips[name]['output'] == wildcards.final_tip ][0] + "-mask")
+        job_dir = lambda wildcards: os.path.join(TMPDIR, [ name for name in tips if tips[name]['output'] == wildcards.final_tip ][0] + "-mask"),
+        gpu_opt = GPU_OPT
     resources:
-        partition = "gpu",
-        gpu = 2,
-        cpus = 64,
-        mem = "100g",
-        time = "1:00:00"
+        partition = config["mask_partition"],
+        gpu = config["mask_gpu"],
+        cpus = config["mask_cpu"],
+        mem = config["mask_mem"],
+        time = config["mask_time"]
     run:
         if os.path.isdir(params.job_dir):
-            shell("{params.path} cactus-preprocess {params.job_dir} {params.input_file} {params.cactus_file} --inputNames {params.genome_name} --realTimeLogging --logInfo --retryCount 0 --configFile {params.config_file} --maxCores {resources.cpus} --gpu --restart")
+            shell("{params.path} cactus-preprocess {params.job_dir} {params.input_file} {params.cactus_file} --inputNames {params.genome_name} --realTimeLogging --logInfo --retryCount 0 --maxCores {resources.cpus} {params.gpu_opt} --restart")
         else:
-            shell("{params.path} cactus-preprocess {params.job_dir} {params.input_file} {params.cactus_file} --inputNames {params.genome_name} --realTimeLogging --logInfo --retryCount 0 --configFile {params.config_file} --maxCores {resources.cpus} --gpu")
+            shell("{params.path} cactus-preprocess {params.job_dir} {params.input_file} {params.cactus_file} --inputNames {params.genome_name} --realTimeLogging --logInfo --retryCount 0 --maxCores {resources.cpus} {params.gpu_opt}")
         # When not requesting all CPU on a node: toil.batchSystems.abstractBatchSystem.InsufficientSystemResources: The job LastzRepeatMaskJob is requesting 64.0 cores, more than the maximum of 32 cores that SingleMachineBatchSystem was configured with, or enforced by --maxCores.Scale is set to 1.0.
+
+    # shell:
+    #     """
+    #     {params.path} cactus-preprocess {params.job_dir} {params.input_file} {params.cactus_file} --inputNames {params.genome_name} --realTimeLogging --logInfo --retryCount 0 --maxCores {resources.cpus} {params.gpu_opt}
+    #     """
 ## This rule runs cactus-preprocess for every genome (tip in the tree), which does some masking
 ## Runtimes for turtles range from 8 to 15 minutes with the above resoureces
 
@@ -277,22 +302,23 @@ rule blast:
         os.path.join(OUTPUT_DIR, "{internal_node}.cigar")
     params:
         path = CACTUS_PATH_TMP,
-        config_file = os.path.join(OUTPUT_DIR, CONFIG_FILE),
+        #config_file = os.path.join(OUTPUT_DIR, CONFIG_FILE),
         cactus_file = os.path.join(OUTPUT_DIR, CACTUS_FILE),
         node = lambda wildcards: wildcards.internal_node,
         #job_dir = lambda wildcards: os.path.join(TMPDIR, wildcards.internal_node + "-blast")
-        job_dir = lambda wildcards: os.path.join("/tmp", wildcards.internal_node + "-blast")
+        job_dir = lambda wildcards: os.path.join("/tmp", wildcards.internal_node + "-blast"),
+        gpu_opt = GPU_OPT
     resources:
-        partition = "gpu",
-        gpu = 4,
-        cpus = 64,
-        mem = "400g",
-        time = "24:00:00"
+        partition = config["blast_partition"],
+        gpu = config["blast_gpu"],
+        cpus = config["blast_cpu"],
+        mem = config["blast_mem"],
+        time = config["blast_time"]
     run:
         if os.path.isdir(params.job_dir):
-            shell("{params.path} cactus-blast {params.job_dir} {params.cactus_file} {output} --root {params.node} --realTimeLogging --logInfo --retryCount 0 --configFile {params.config_file} --maxCores {resources.cpus} --gpu --restart")
+            shell("{params.path} cactus-blast {params.job_dir} {params.cactus_file} {output} --root {params.node} --realTimeLogging --logInfo --retryCount 0 --maxCores {resources.cpus} {params.gpu_opt} --restart")
         else:
-            shell("{params.path} cactus-blast {params.job_dir} {params.cactus_file} {output} --root {params.node} --realTimeLogging --logInfo --retryCount 0 --configFile {params.config_file} --maxCores {resources.cpus} --gpu")
+            shell("{params.path} cactus-blast {params.job_dir} {params.cactus_file} {output} --root {params.node} --realTimeLogging --logInfo --retryCount 0 --maxCores {resources.cpus} {params.gpu_opt}")
 ## This rule runs cactus-blast for every internal node
 ## Runtimes for turtles range from 1 to 10 hours with the above resources
 
@@ -306,22 +332,22 @@ rule align:
         os.path.join(OUTPUT_DIR, "{internal_node}.hal")
     params:
         path = CACTUS_PATH_TMP,
-        config_file = os.path.join(OUTPUT_DIR, CONFIG_FILE),
+        #config_file = os.path.join(OUTPUT_DIR, CONFIG_FILE),
         cactus_file = os.path.join(OUTPUT_DIR, CACTUS_FILE),
         node = lambda wildcards: wildcards.internal_node,
         #job_dir = lambda wildcards: os.path.join(TMPDIR, wildcards.internal_node + "-align"),
         job_dir = lambda wildcards: os.path.join("/tmp", wildcards.internal_node + "-align"),
         work_dir = TMPDIR
     resources:
-        partition = "bigmem",
-        cpus = 64,
-        mem = "450g",
-        time = "24:00:00"
+        partition = config["align_partition"],
+        cpus = config["align_cpu"],
+        mem = config["align_mem"],
+        time = config["align_time"]
     run:
         if os.path.isdir(params.job_dir):
-            shell("{params.path} cactus-align {params.job_dir} {params.cactus_file} {input.cigar_file} {output} --root {params.node} --realTimeLogging --logInfo --retryCount 0 --configFile {params.config_file} --workDir {params.work_dir} --maxCores {resources.cpus} --defaultDisk 450G --restart")
+            shell("{params.path} cactus-align {params.job_dir} {params.cactus_file} {input.cigar_file} {output} --root {params.node} --realTimeLogging --logInfo --retryCount 0 --workDir {params.work_dir} --maxCores {resources.cpus} --defaultDisk 450G --restart")
         else:
-            shell("{params.path} cactus-align {params.job_dir} {params.cactus_file} {input.cigar_file} {output} --root {params.node} --realTimeLogging --logInfo --retryCount 0 --configFile {params.config_file} --workDir {params.work_dir} --maxCores {resources.cpus} --defaultDisk 450G ")
+            shell("{params.path} cactus-align {params.job_dir} {params.cactus_file} {input.cigar_file} {output} --root {params.node} --realTimeLogging --logInfo --retryCount 0 --workDir {params.work_dir} --maxCores {resources.cpus} --defaultDisk 450G ")
 ## This rule runs cactus-align for every internal node
 ## Runtimes for turtles range from 4 to 16 hours with the above resources
 
@@ -337,10 +363,10 @@ rule convert:
         path = CACTUS_PATH,
         node = lambda wildcards: wildcards.internal_node,
     resources:
-        partition = "shared",
-        cpus = 8,
-        mem = "12g",
-        time = "1:00:00"
+        partition = config["convert_partition"],
+        cpus = config["convert_cpu"],
+        mem = config["convert_mem"],
+        time = config["convert_time"]
     shell:
         """
         {params.path} hal2fasta {input} {params.node} --hdf5InMemory > {output}
@@ -350,23 +376,38 @@ rule convert:
 
 ####################
 
+rule copy_hal:
+    input:
+        all_hals = expand(os.path.join(OUTPUT_DIR, "{internal_node}.fa"), internal_node=internals),
+        anc_hal = os.path.join(OUTPUT_DIR, root_name + ".hal")
+    output:
+        OUTPUT_HAL
+    resources:
+        partition = config["copy_partition"],
+        cpus = config["copy_cpu"],
+        mem = config["copy_mem"],
+        time = config["copy_time"]    
+    shell:
+        """
+        cp {input.anc_hal} {output}
+        """
 ## It might be a good idea to copy the root .hal file here, since failures in the subsequent rules
 ## would mean the blast/align steps have to be re-run for that node, but this means a little extra
 ## storage is required
 
 ####################
 
-
 rule append:
     input:
-        expand(os.path.join(OUTPUT_DIR, "{internal_node}.fa"), internal_node=internals)
+        #expand(os.path.join(OUTPUT_DIR, "{internal_node}.fa"), internal_node=internals)
+        OUTPUT_HAL
     output:
         touch(os.path.join(OUTPUT_DIR, "hal-append-subtree.log"))
     resources:
-        partition = "shared",
-        cpus = 8,
-        mem = "100g",
-        time = "12:00:00"
+        partition = config["append_partition"],
+        cpus = config["append_cpu"],
+        mem = config["append_mem"],
+        time = config["append_time"]
     run:
         with open(os.path.join(OUTPUT_DIR, "hal-append-subtree.log"), "w") as appendfile:
             for node in internals:
@@ -379,14 +420,15 @@ rule append:
                 # If the node is the root we don't want to append since that is the hal file we
                 # are appending to
 
-                cmd = ["singularity", "exec", "--nv", "--cleanenv", "--bind", TMPDIR + ":/tmp", config["cactus_path"], "halAppendSubtree", os.path.join(OUTPUT_DIR, root_name + ".hal"), os.path.join(OUTPUT_DIR, node + ".hal"), node, node, "--merge", "--hdf5InMemory"];
+                #cmd = ["singularity", "exec", "--nv", "--cleanenv", "--bind", TMPDIR + ":/tmp", config["cactus_path"], "halAppendSubtree", os.path.join(OUTPUT_DIR, root_name + ".hal"), os.path.join(OUTPUT_DIR, node + ".hal"), node, node, "--merge", "--hdf5InMemory"];
+                cmd = ["singularity", "exec", "--nv", "--cleanenv", "--bind", TMPDIR + ":/tmp", config["cactus_path"], "halAppendSubtree", OUTPUT_HAL, os.path.join(OUTPUT_DIR, node + ".hal"), node, node, "--merge", "--hdf5InMemory"];
                 appendfile.write("RUNNING COMMAND:\n");
                 appendfile.write(" ".join(cmd) + "\n");
                 appendfile.flush();
                 # Generate the command for the current node
 
                 result = subprocess.run(cmd, capture_output=True, text=True);
-                # Rune the command for the current node and capture the output
+                # Run the command for the current node and capture the output
 
                 appendfile.write("COMMAND STDOUT:\n")
                 appendfile.write(result.stdout + "\n");
@@ -408,20 +450,21 @@ rule append:
 
 rule maf:
     input:
-        root_hal = os.path.join(OUTPUT_DIR, root_name + ".hal"),
+        final_hal = OUTPUT_HAL,
         append_log = os.path.join(OUTPUT_DIR, "hal-append-subtree.log")
     output:
-        os.path.join(OUTPUT_DIR, root_name + ".maf")
+        OUTPUT_MAF
     params:
         path = CACTUS_PATH_TMP
     resources:
-        partition = "shared",
-        cpus = 32,
-        mem = "100g",
-        time = "24:00:00"
+        partition = config["maf_partition"],
+        cpus = config["maf_cpu"],
+        mem = config["maf_mem"],
+        time = config["maf_time"]
+        # {params.path} hal2mafMP.py --numProc {resources.cpus} {input.final_hal} {output}
     shell:
         """
-        {params.path} hal2mafMP.py --numProc {resources.cpus} {input.root_hal} {output}
+        {params.path} hal2maf {input.final_hal} {output}
         """
 
 #############################################################################

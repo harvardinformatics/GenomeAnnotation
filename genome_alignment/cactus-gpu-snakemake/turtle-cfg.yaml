@@ -9,4 +9,59 @@ input_file: /n/holylfs05/LABS/informatics/Users/gthomas/turtles/cactus/genomes.t
 
 output_dir: /n/holylfs05/LABS/informatics/Users/gthomas/turtles/cactus/turtle-output-smk/
 
+final_hal: "turtles.hal"
+
 tmp_dir: /n/holylfs05/LABS/informatics/Users/gthomas/tmp/
+
+##########################
+
+mask_partition: "gpu"
+mask_gpu: 2
+mask_cpu: 64
+mask_mem: "100g"
+mask_time: "1:00:00"
+
+##########################
+
+blast_partition: "gpu"
+blast_gpu: 4
+blast_cpu: 64
+blast_mem: "200g"
+blast_time: "12:00:00"
+
+##########################
+
+align_partition: "bigmem"
+align_cpu: 24
+align_mem: "450g"
+align_time: "24:00:00"
+
+##########################
+
+convert_partition: "shared"
+convert_cpu: 8
+convert_mem: "8g"
+convert_time: "1:00:00"
+
+##########################
+
+copy_partition: "shared"
+copy_cpu: 1
+copy_mem: "8g"
+copy_time: "1:00:00"
+
+##########################
+
+append_partition: "shared"
+append_cpu: 8
+append_mem: "48g"
+append_time: "6:00:00"
+
+##########################
+
+maf_partition: "shared"
+maf_cpu: 8
+maf_mem: "100g"
+maf_time: "24:00:00"
+
+##########################
