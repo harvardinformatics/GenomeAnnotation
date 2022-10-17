@@ -92,8 +92,6 @@ def ParseTransdecoderGff3(gff3file):
 
     return gff3_dict
 
-
-
 def ConvertGtfLinetoGff3(line):
     linelist = line.strip()[:-1].split('\t')
     fields =  ['seqname', 'source', 'type', 'start',
