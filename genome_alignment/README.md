@@ -26,10 +26,10 @@ This pipeline was built around the Singularity image of the Cactus program optim
 
 You can [install Singularity using conda](https://anaconda.org/conda-forge/singularity).
 
-With Singularity installed, you can create the image from [the Docker image provided with Cactus (GPU)](https://github.com/ComparativeGenomicsToolkit/cactus/releases) for the latest version (2.1.1 as of the writing of this file) as `cactus_v2.1.1-gpu.sif` with the following command:
+With Singularity installed, you can create the image from [the Docker image provided with Cactus (GPU)](https://github.com/ComparativeGenomicsToolkit/cactus/releases) for the latest version (2.2.0 as of the writing of this file) as `cactus_v2.2.0-gpu.sif` with the following command:
 
 ```{bash}
-singularity pull --disable-cache docker://quay.io/comparative-genomics-toolkit/cactus:v2.1.1-gpu
+singularity pull --disable-cache docker://quay.io/comparative-genomics-toolkit/cactus:v2.2.0-gpu
 ```
 
 We chose the Singularity image over Docker for security reasons.
@@ -70,7 +70,7 @@ Generally, it can be run as follows:
 Specifically, for the Singularity image, it can be run as:
 
 ```{bash}
-singularity exec --cleanenv cactus_v2.1.1-gpu.sif cactus-prepare <INPUT FILE> --outDir <OUTPUT DIRECTORY> --jobStore <TEMP DIRECTORY> --gpu
+singularity exec --cleanenv cactus_v2.2.0-gpu.sif cactus-prepare <INPUT FILE> --outDir <OUTPUT DIRECTORY> --jobStore <TEMP DIRECTORY> --gpu
 ```
 
 You will have to specify the paths defined within <>.
@@ -94,7 +94,11 @@ input_file: <input_file>
 
 output_dir: <output_dir>
 
+final_hal: <final .hal file with all genomes appended>
+
 tmp_dir: <tmp_dir>
+
+use_gpu: True
 ```
 
 Simply replace each path surrounded by <> with the path you used when running `cactus-prepare`, e.g.:
@@ -102,16 +106,39 @@ Simply replace each path surrounded by <> with the path you used when running `c
 ```
 working_dir: /path/to/directory/in/which/to/run/cactus/
 
-cactus_path: /path/to/my/cactus_v2.1.1-gpu.sif
+cactus_path: /path/to/my/cactus_v2.2.0-gpu.sif
 
 input_file: /path/to/my/input/file.txt
 
 output_dir: /path/to/my/output-directory/
 
+final_hal: /desired/path/to/final/file.hal
+
 tmp_dir: /path/to/my/tmp-directory/
+
+use_gpu: True
 ```
 
 Here, `working_dir` is whatever directory you want to be in when all the cactus commands to be run. I prefer this directory to be one level above my output directory. Snakemake will also create a folder here called `slurm-logs/` where all cluster log files will be stored.
+
+The `final_hal` file will be the one with all aligned genomes appended to it. It starts as a copy of the .hal file at the root of the tree and then the `append` rule runs `halAppendSubtree` on each other node in the tree to ad them to this file.
+
+`use_gpu` is a boolean (enter only `True` or `False` without quotes) that tells the workflow whether or not to expect the cactus GPU version to be provided in the `cactus_path`. If so, the partitions for the `mask` and `blast` rules should be GPU nodes. To use the non-GPU cactus version, provide that as the `cactus_path` and set `use_gpu: False`.
+
+### Allocating resources for each step
+
+The config file also has resource allocations for each step of the cactus pipeline, e.g. for the alignment step:
+
+```
+align_partition: "bigmem"
+align_cpu: 24
+align_mem: "450g"
+align_time: "24:00:00"
+```
+
+Be sure to adjust these to your cluster and needs!
+
+**But note that due to a [bug](https://github.com/ComparativeGenomicsToolkit/cactus/issues/709), the number of cpus assigned to the `mask` rule must be the total number of cpus on that node!**
 
 ## Getting email updates for jobs
 
