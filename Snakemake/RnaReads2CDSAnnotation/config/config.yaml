@@ -38,7 +38,7 @@ Hisat2SamsortOutdir: "results/hisat2/bams/"
 ## Minimap2 ##
 ##############
 minimap2_index_dir: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/LongReadTesting/human/pacbio/minimap2_index/"
-minimap2_datatype_dict = {"Iso-seq": "splice:hq -uf","ONT-2DcDNA": "splice" ,"ONT-directRNA": "splice -uf -k14"}
+minimap2_datatype_dict = {"Iso-seq": "splice:hq -uf","ONT-2DcDNA": "splice -L " ,"ONT-directRNA": "splice -uf -k14 -L"}
 minimap2_index_datatype: "Iso-seq"
 minimap_outdir: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/LongReadTesting/human/pacbio/minimap2_alignments/"
 
