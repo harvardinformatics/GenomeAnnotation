@@ -41,6 +41,7 @@ minimap2_index_dir: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project
 minimap2_datatype_dict = {"Iso-seq": "splice:hq -uf","ONT-2DcDNA": "splice -L " ,"ONT-directRNA": "splice -uf -k14 -L"}
 minimap2_index_datatype: "Iso-seq"
 minimap_outdir: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/LongReadTesting/human/pacbio/minimap2_alignments/"
+minimap2SamsortOutdir: /n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/LongReadTesting/human/pacbio/minimap2_alignments/bams/"
 
 #############
 # STRINGTIE #
@@ -53,9 +54,8 @@ StringtieStarAssemblyDir: "results/stringtie/star/individual_assemblies/"
 StringtieStarMergeDir: "results/stringtie/star/merged_assembly/"
 
 # Minimap2/Long Reads #
-StringtieLongReadsAssemblyDir: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/LongReadTesting/human/pacbio/stringtie/"
+StringtieLongReadsAssemblyDir: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/LongReadTesting/human/pacbio/stringtie/inidividual_assemblies/"
 StringtieLongReadsMergeDir: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/LongReadTesting/human/pacbio/stringtie/mergedassembly/"
-
 ##############
 ##  SCALLOP ##
 #############

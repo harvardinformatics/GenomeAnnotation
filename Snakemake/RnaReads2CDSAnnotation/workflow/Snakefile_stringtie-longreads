@@ -1,0 +1,15 @@
+from glob import glob
+from os.path import basename
+import yaml
+from os import system
+
+configfile: "../config/config.yaml"
+res_config = yaml.load(open("../config/resources.yaml"),Loader=yaml.FullLoader)
+SAMPLES = list(set([basename(i.split('/')[-1].split('.f')[0]) for i in glob("%s*[fq,fa,fastq]" % config["longreadsDir"])]))
+
+system("mkdir -p %stmp" % config["minimap2SamsortOutdir"])
+
+rule all:
+    input:
+
+include: "workflow/rules/minimap2.smk "

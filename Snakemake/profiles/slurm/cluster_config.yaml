@@ -115,4 +115,36 @@ LongorfsBlastp:
     parition: "serial_requeue,shared"
     output: "logs/longorfs_blastp-%j.out"
     error: "logs/longorfs_blastp-longorfs-%j.err"
-    job-name: "orfblastp" 
+    job-name: "orfblastp"
+
+############
+# minimap2 #
+############
+
+minimap2_index:
+    partition: "serial_requeue,shared"
+    output: "logs/minimap2_index-%j.out"
+    error: "logs/minimap2_index-%j.err"
+    job-name: "mmindex"
+
+minimap2_align:
+    partition: "serial_requeue,shared"
+    output: "logs/minimap2_align-%j.out"
+    error: "logs/minimap2_align-%j.err"
+    job-name: "minialign"
+
+#######################
+# stringtie longreads #
+# ####################
+stringtie_longreads:
+    partition: "serial_requeue,shared"
+    output: "logs/stielong_align-%j.out"
+    error: "logs/stielong_align-%j.err"
+    job-name: "stielong"
+
+stringtie_longreads_merge:
+    partition: "serial_requeue,shared"
+    output: "logs/stieLongmerge_align-%j.out"
+    error: "logs/stieLongmerge_align-%j.err"
+    job-name: "stieLmerge"
+   
