@@ -23,6 +23,8 @@ rule stringtie_star_merge:
         config["StringtieStarMergeDir"] + config["speciesname"] + "_stringtie_merge.gtf"
     conda:
         "../envs/stringtie.yml"
+    threads:
+        res_config['stringtie_merge']['threads']
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['stringtie_merge']['mem_mb'],
         time = res_config['stringtie_merge']['time']
