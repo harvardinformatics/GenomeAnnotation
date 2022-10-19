@@ -17,7 +17,7 @@ rule minimap2_index:
 rule minimap2_align:
     input:
         minimap2index = config["minimap2_index_dir"] + config["species"] + "_" + config["minimap2_index_datatype"] + ".mmi",
-        longreads = expand({datadir}{sample}.{ext},datadir=config["longreadsDir"],ext=[".fa",".fq"])
+        longreads = expand({datadir}{sample}.{ext},datadir=config["longreadsDir"],ext=[".fa",".fq",".fastq"])
     output:
        config["minimap_outdir"] + "{sample}" + config["minimap2_index_datatype"] + ".sam"
     conda:
