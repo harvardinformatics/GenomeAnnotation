@@ -12,7 +12,7 @@ speciesname: "human"
 fastqDir: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/fastq/human/trimmed_reads/"
 
 # long reads #
-longreadsDir: ""
+longreadsDir: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/LongReadTesting/human/pacbio/reads/"
 
 # genome #
 genome: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/genomes/human/headcleaned_GCF_000001405.39_GRCh38.p13_genomic.fna"
@@ -37,10 +37,10 @@ Hisat2SamsortOutdir: "results/hisat2/bams/"
 ##############
 ## Minimap2 ##
 ##############
-minimap2_index_dir: ""
+minimap2_index_dir: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/LongReadTesting/human/pacbio/minimap2_index/"
 minimap2_datatype_dict = {"Iso-seq": "splice:hq -uf","ONT-2DcDNA": "splice" ,"ONT-directRNA": "splice -uf -k14"}
 minimap2_index_datatype: "Iso-seq"
-minimap_outdir: 
+minimap_outdir: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/LongReadTesting/human/pacbio/minimap2_alignments/"
 
 #############
 # STRINGTIE #
@@ -53,8 +53,8 @@ StringtieStarAssemblyDir: "results/stringtie/star/individual_assemblies/"
 StringtieStarMergeDir: "results/stringtie/star/merged_assembly/"
 
 # Minimap2/Long Reads #
-StringtieLongReadsAssemblyDir:
-StringtieLongReadsMergeDir:
+StringtieLongReadsAssemblyDir: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/LongReadTesting/human/pacbio/stringtie/"
+StringtieLongReadsMergeDir: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/LongReadTesting/human/pacbio/stringtie/mergedassembly/"
 
 ##############
 ##  SCALLOP ##
