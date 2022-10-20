@@ -11,7 +11,6 @@ rule stringtie_longreads:
         mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config["stringtie"]["mem_mb"],
         time =  res_config["stringtie"]["time"]
     params:
-        datatype = config["minimap2_index_datatype"],
         outdir = config["minimap2_outdir"]
     shell:
         "stringtie {input} -p {threads} -L -o {output}"
@@ -32,9 +31,9 @@ rule stringtie_longreads_merge:
     params:
         mergedir = config["StringtieLongReadsMergeDir"],
         species = config["speciesname"],
-        datatype = config["minimap2_index_datatype"]
+        input_type = config["minimap2_index_datatype"]
     shell:
         "rm -f stringtie-longreads_gtflist.txt \n"
         "for sample in {input}; do echo $sample >> stringtie-longreads_gtflist.txt;done \n"
-        "stringtie -p {threads} --merge stringtie-longreads_gtflist.txt -o {params.mergedir}{params.species}_{datatype}_stringtie-minimap2_merge.gtf" 
+        "stringtie -p {threads} --merge stringtie-longreads_gtflist.txt -o {params.mergedir}{params.species}_{params.input_type}_stringtie-minimap2_merge.gtf" 
 
