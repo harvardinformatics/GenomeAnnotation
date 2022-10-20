@@ -15,6 +15,12 @@ fastqDir: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/f
 # long reads #
 longreadsDir: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/LongReadTesting/human/pacbio/reads/"
 longreads_file_extension: "fastq"
+
+minimap2_datatype2params:  
+    Iso-seq: "splice:hq -uf"
+    ONT-2DcDNA: "splice -L"
+    ONT-directRNA: "splice -uf -k14 -L"
+
 # genome #
 genome: "/n/holylfs05/LABS/informatics/Lab/genome_annotation_project/mammals/genomes/human/headcleaned_GCF_000001405.39_GRCh38.p13_genomic.fna"
 

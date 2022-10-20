@@ -2,7 +2,7 @@ rule stringtie_longreads:
     input:
         config["minimap2SamsortOutdir"] + "sorted_" + "{sample}" + "_" + config["minimap2_index_datatype"] + ".bam"
     output:
-       config["StringtieLongReadsAssemblyDir"] + "{sample}" + "_' + config["minimap2_index_datatype"] + "_stringtie-mimimap2.gtf"
+       config["StringtieLongReadsAssemblyDir"] + "{sample}" + "_" + config["minimap2_index_datatype"] + "_stringtie-minimap2.gtf"
     conda:
         "../envs/stringtie.yml"
     threads:
@@ -11,15 +11,15 @@ rule stringtie_longreads:
         mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config["stringtie"]["mem_mb"],
         time =  res_config["stringtie"]["time"]
     params:
-        datatype = config["minimap2_index_datatype"]
-        outdir = config["minimap_outdir"]
+        datatype = config["minimap2_index_datatype"],
+        outdir = config["minimap2_outdir"]
     shell:
         "stringtie {input} -p {threads} -L -o {output}"
 
 
 rule stringtie_longreads_merge:
     input:
-        expand("{outdir}{sample}_stringtie-star.gtf",outdir=config["StringtieLongReadsAssemblyDir"],sample=SAMPLES)
+        expand("{outdir}{sample}_{datatype}_stringtie-minimap2.gtf",outdir=config["StringtieLongReadsAssemblyDir"],sample=SAMPLES,datatype=config["minimap2_index_datatype"])
     output:
         config["StringtieLongReadsMergeDir"] + config["speciesname"] + "_" + config["minimap2_index_datatype"] + "_stringtie-minimap2_merge.gtf"
     conda:
@@ -27,8 +27,8 @@ rule stringtie_longreads_merge:
     threads:
         res_config["stringtie_merge"]["threads"]
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config['stringtie_longreads_merge']['mem_mb'],
-        time = res_config['stringtie_longreads_merge']['time']
+        mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config["stringtie_merge"]["mem_mb"],
+        time = res_config["stringtie_merge"]["time"]
     params:
         mergedir = config["StringtieLongReadsMergeDir"],
         species = config["speciesname"],
