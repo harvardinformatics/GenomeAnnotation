@@ -1,4 +1,4 @@
 minimap2_datatype2params:  
     Iso-seq: "splice:hq -uf"
-    ONT-2DcDNA": "splice -L"
-    ONT-directRNA": "splice -uf -k14 -L"
+    ONT-2DcDNA: "splice -L"
+    ONT-directRNA: "splice -uf -k14 -L"
