@@ -6,14 +6,12 @@ rule stringtie_longreads:
     conda:
         "../envs/stringtie.yml"
     threads:
-        threads = res_config["stringtie"]["threads"]
+        threads = res_config["stringtie_longreads"]["threads"]
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 1.5 * res_config["stringtie"]["mem_mb"],
         time =  res_config["stringtie"]["time"]
-    params:
-        outdir = config["minimap2_outdir"]
     shell:
-        "stringtie {input} -p {threads} -L -o {output}"
+        "stringtie -L -p {threads} -o {output} {input}"
 
 
 rule stringtie_longreads_merge:
