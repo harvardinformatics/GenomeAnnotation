@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH -J BUSCOaugtrain
 #SBATCH -N 1                   
-#SBATCH -n 16                  
-#SBATCH -t 48:00:00              
+#SBATCH -n 24                  
+#SBATCH -t 72:00:00              
 #SBATCH -p shared      
-#SBATCH --mem=16000            
+#SBATCH --mem=125000            
 #SBATCH -o BUSCO_augustus_train.%A.out  
 #SBATCH -e BUSCO_augustus_train.%A.err  
 
@@ -17,6 +17,6 @@ speciesmodel=$2
 lineage_database=$3
 
 
-busco -c 16 -m genome --long --augustus --augustus_species $speciesmodel --augustus_parameters='--progress=true' -o busco_${outstring} -i $tscriptsfa -l $lineage_database
+busco -c 24 -m genome --long --augustus --augustus_species $speciesmodel --augustus_parameters='--progress=true' -o busco_${outstring} -i $tscriptsfa -l $lineage_database
 
 
