@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -J toga
 #SBATCH -n 1                  
-#SBATCH -t 12:00:00              
+#SBATCH -t 23:00:00              
 #SBATCH -p shared      
 #SBATCH --mem=3000           
 #SBATCH -o toga.%A.out  
@@ -9,7 +9,7 @@
 
 module purge
 module load python
-soure activate TOGA
+source activate TOGA
 
 chainfile=$1
 targetCDSbed=$2
