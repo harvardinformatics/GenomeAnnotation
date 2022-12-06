@@ -24,4 +24,8 @@ Braker provides a variety of options for how to integrate RNA-seq based evidence
 Once this hints file is generated, on can simply execute Braker, supplying the genome fasta, the hints gff, and the merged bam file. An example script for running Braker with *D. plexippus* is [braker_danaus_plexippus_rnaseq_example.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/Braker/slurm_scripts/braker_danaus_plexippus_rnaseq_example.sh). Note, the merged bam file is the unfiltered bam file, not the filtered bam file produced during the course of generating the hints gff. Execution of the slurm script is simply as follows:
 ```bash
 sbatch braker_danaus_plexippus_rnaseq_example.sh
-``` 
+```
+
+### General cautionary notes
+Particular features of braker outputs may lead to idisyncratic and undesireable behavior for downstream tools utilizing the braker annotation. A few that we have detected are as follows:
+* Braker annotations come from AUGUSTUS and GeneMark. For single-exon gene, GeneMark does not appear to generate features of the type "exon", only "transcript" and "CDS" features. As a result, tool that extract nucleotide sequences based upon exon features (and their parent "transcript" features) will fail to report these. RSEM falls into this category.
