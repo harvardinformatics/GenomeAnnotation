@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -n 1
 #SBATCH --mem 5000
-#SBATCH -p serial_requeue,shared,holy-smokes
+#SBATCH -p serial_requeue,shared
 #SBATCH -o tdecod_longorfs_%A.out
 #SBATCH -e tdecod_longorfs_%A.err
 #SBATCH -t 23:00:00
