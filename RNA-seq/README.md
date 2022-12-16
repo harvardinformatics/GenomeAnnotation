@@ -25,26 +25,3 @@ trim_galore --path_to_cutadapt /FULL/PATH/TO/cutadapt --paired --retain_unpaired
 We do not trim on a base quality threshold (*-q 0*), and require a minimum read length of 35 bases. Trimmed reads < 35bp are discarded leading to unpaired "orphan" reads. While in our command line we keep unpaired reads, we do not use these reads subsequently for downstream analysis. The *stringency* and *-e* arguments influence the stringency of criteria for matching to hypothetical adapter sequences; see the *Trim Galore!* or *cutadapt* documentation for more details.
 
 In our assessment of genome annotation methods, all methods that use RNA-seq data based upon read alignments generated with either [HISAT2](https://daehwankimlab.github.io/hisat2/) v. 2.2.1 or [STAR](https://github.com/alexdobin/STAR) v. 2.7.5c. After running fastqc and trim_galore, we generate alignments using both methods, as well as transcript assemblies with [stringtie](https://github.com/gpertea/stringtie) and [scallop](https://github.com/Kingsford-Group/scallop) using a snakemake workflow available [here](https://github.com/harvardinformatics/GenomeAnnotation-RNAseqAssembly).
-
-#### Build HISAT2 genome index
-
-We do this as follows
-
-```bash
-conda create -n hisat2 -c bioconda hisat2
-source activate hisat2
-hisat2-build -p 6 /PATH/TO/GENOME/genome.fasta IndexBaseName
-conda deactivate
-```
-where IndexBaseName is simply the name you assign as the prefix for the various index files, and -p indicates the number of threads.
-
-#### Build STAR genome index
-
-```bash
-conda create -n STAR -c bioconda STAR
-source activate STAR
-STAR --runMode genomeGenerate --genomeSAindexNbases 13 --genomeDir $(pwd) --genomeFastaFiles /PATH/TO/GENOME/genome.fasta --runThreadN 12
-conda deactivate
-```
-
-The --genomeSAindexNbases argument is necessary for smaller genomes, otherwise the *genomeGenerate* tools will raise an exception.
