@@ -92,10 +92,10 @@ if __name__=="__main__":
             overlapdict[predgene].append('%s-oppstrand' % refgene)            
             cds_overlapdict[predcds].append('%s-oppstrand' % refgene)
 
-    genestats = open('geneoverlapstats.txt','w')
+    genestats = open('geneoverlapstats_%s_fusions.tsv' % opts.summary,'w')
     gene_overlap_count_list = []
     gene_opposite_strand_overlap_counter = 0
-    fout = open(opts.summary,'w')
+    fout = open('%s_genelevel_fusions.tsv' % opts.summary,'w')
     fout.write('predgene\trefgenes\tnumfusions\n')
     for predgene in overlapdict:
         overlapset = set(overlapdict[predgene])
@@ -132,10 +132,10 @@ if __name__=="__main__":
     fout.close()
 
     ### CDS level ###
-    cdsstats = open('cdsoverlapstats.txt','w')
+    cdsstats = open('cdsoverlapstats_%s_fusions.tsv' % opts.summary,'w')
     cds_overlap_count_list = []
     cds_opposite_strand_overlap_counter = 0
-    cdsfout = open('cds_%s' % opts.summary,'w')
+    cdsfout = open('%s_cdslevel_fusions.tsv' % opts.summary,'w')
     cdsfout.write('predcds\tpredgene\trefgenes\tnumfusions\n')
     for predcds in cds_overlapdict:
         predgene = predictor_ts2gene[predcds]
