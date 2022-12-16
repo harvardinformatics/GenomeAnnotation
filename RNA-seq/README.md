@@ -48,16 +48,3 @@ conda deactivate
 ```
 
 The --genomeSAindexNbases argument is necessary for smaller genomes, otherwise the *genomeGenerate* tools will raise an exception.
-
-Next, we perform 1st pass mapping:
-
-```bash
-STAR --runThreadN 8 --genomeDir /STAR/INDEX/DIRECTORY --outFileNamePrefix SRAId_STAR1stpass --readFilesIn SRAId_adaptertrimmed_R1.fq SRAId_adaptertrimmed_R2.fq
-```
-
-Finally, we perform 2nd-pass mapping, using the splice tables obtained for all samples in an experiment (i.e. species) to increase sensitivity with respect to possible splice sites. To do this, we make a director entitled *1stpass*,and move all the outputs from 1st pass alignment into that directory. We then feed a space-separated list of those tables to STAR:
-
-```bash
-tables=$(ls 1stpass/*tab)
-STAR --runThreadN 8 --genomeDir /STAR/INDEX/DIRECTORY --sjdbFileChrStartEnd $tables --outFileNamePrefix SRAId_STAR2ndpass  --readFilesIn SRAId_adaptertrimmed_R1.fq SRAId_adaptertrimmed_R2.fq
-```
