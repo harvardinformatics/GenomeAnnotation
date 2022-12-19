@@ -11,15 +11,15 @@ module purge
 module load python
 source activate axtChain
 pos_target_psl=$1
-echo $pos_target_psl
+echo "psl file is $pos_target_psl"
 
 target2bit=$2
-echo $target2bit
+echo "target 2bit is $target2bit"
 
-source2bit=$3
-echo $source2bit
+query2bit=$3
+echo "query 2bit is $query2bit"
 
 chainout=$4
-echo $chainout
+echo "output chain file is $chainout"
 
-axtChain -psl -verbose=0 -linearGap=medium $pos_target_psl $target2bit $source2bit $chainout
+axtChain -psl -verbose=0 -linearGap=loose $pos_target_psl $target2bit $query2bit $chainout
