@@ -42,14 +42,14 @@ if __name__=="__main__":
 
                 # transcript level #
                 if tsid not in ts_dict:
-                    ts_dict[tsid] = {'chr': line_dict['seqid'],'start': int(line_dict['start']), 'end': int(line_dict['end'])}
+                    ts_dict[tsid] = {'strand': line_dict['strand'],'chr': line_dict['seqid'],'start': int(line_dict['start']), 'end': int(line_dict['end'])}
                 else:
                     ts_dict[tsid]['start'] = min(int(line_dict['start']),ts_dict[tsid]['start'])
                     ts_dict[tsid]['end'] = max(int(line_dict['end']),ts_dict[tsid]['end'])
                 
                 # gene level #
                 if geneid not in gene_dict:
-                    gene_dict[geneid] = {'chr': line_dict['seqid'],'start': int(line_dict['start']), 'end': int(line_dict['end'])} 
+                    gene_dict[geneid] = {'strand': line_dict['strand'],'chr': line_dict['seqid'],'start': int(line_dict['start']), 'end': int(line_dict['end'])} 
                 else:
                     gene_dict[geneid]['start'] = min(int(line_dict['start']),gene_dict[geneid]['start'])
                     gene_dict[geneid]['end'] = max(int(line_dict['end']),gene_dict[geneid]['end']) 
@@ -58,9 +58,9 @@ if __name__=="__main__":
     geneout = open('%s_CDS_gene_interval.bed' % opts.bedprefix,'w') 
 
     for transcript in ts_dict:
-        tsout.write('%s\t%s\t%s\t%s\t%s\n' % (ts_dict[transcript]['chr'],ts_dict[transcript]['start']-1,ts_dict[transcript]['end'],transcript,ts2gene[transcript]))
+        tsout.write('%s\t%s\t%s\t%s\t.\t%s\n' % (ts_dict[transcript]['chr'],ts_dict[transcript]['start']-1,ts_dict[transcript]['end'],transcript,ts_dict[transcript]['strand']))
     for gene in gene_dict:
-        geneout.write('%s\t%s\t%s\t%s\n' % (gene_dict[gene]['chr'],gene_dict[gene]['start']-1,gene_dict[gene]['end'],gene))
+        geneout.write('%s\t%s\t%s\t%s\t.\t%s\n' % (gene_dict[gene]['chr'],gene_dict[gene]['start']-1,gene_dict[gene]['end'],gene,gene_dict[gene]['strand']))
 
     tsout.close()
     geneout.close()                         
