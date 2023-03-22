@@ -22,7 +22,7 @@ for record in SeqIO.parse(input,'fasta'):
         startcodon = 'Y'
     else:
         startcodon='N'
-    if record.seq[-1] in ['.','*']:
+    if record.seq[-1] in ['.','*','X']:
         stopcodon = 'Y'
     else:
         stopcodon = 'N'
