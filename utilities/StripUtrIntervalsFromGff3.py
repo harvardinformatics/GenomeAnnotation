@@ -42,11 +42,11 @@ def BuildTranscriptCDSIntervalDict(cdsbed):
         if ';' in tsid: # this deals with transdecoder and other tools where gff3 has a cds id and and parent in attributes
             tsid = tsid.split(';')[1]
         if tsid in tscript_cds_intervals:
-            tscript_cds_intervals[tsid]['start'] = min(tscript_cds_intervals[tsid]['start'],int(start))
+            tscript_cds_intervals[tsid]['start'] = min(tscript_cds_intervals[tsid]['start'],int(start)+1)
             tscript_cds_intervals[tsid]['end'] = max(tscript_cds_intervals[tsid]['end'],int(end))
         else:
             tscript_cds_intervals[tsid] = {}
-            tscript_cds_intervals[tsid]['start'] = int(start)
+            tscript_cds_intervals[tsid]['start'] = int(start)+1
             tscript_cds_intervals[tsid]['end'] = int(end)       
     
     return tscript_cds_intervals
