@@ -18,8 +18,8 @@ for record in SeqIO.parse(tsfasta,'fasta'):
             hardmask_base_count+=1
         elif base.islower() == True and base != 'n':
             softmask_base_count+=1
-        elif base not in ['A','C','G','T']:
-            print('%s found in %s, is not an accepted nucleotide' % (base,record.id))
+        #elif base not in ['A','C','G','T']:
+            #print('%s found in %s, is not an accepted nucleotide' % (base,record.id))
 
     softmaskprop = softmask_base_count/float(transcript_length)
     hardmaskprop = hardmask_base_count/float(transcript_length)

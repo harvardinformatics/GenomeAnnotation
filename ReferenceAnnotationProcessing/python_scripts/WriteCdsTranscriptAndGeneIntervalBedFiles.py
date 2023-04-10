@@ -33,26 +33,36 @@ if __name__=="__main__":
                 ts2gene[tsid] = geneid
             elif line_dict['type'] == 'CDS':
                 attribute_dict = ParseAttributes(line_dict['attributes'])
-                tsid = attribute_dict['Parent']
-                try:
-                    geneid = ts2gene[tsid]
-                except:
-                    tsid = tsid.replace('gene','rna')
-                    geneid = ts2gene[tsid]
+                if 'Parent' not in attribute_dict:
+                    pass
+                else:
+                    tsid = attribute_dict['Parent']
+                    try:
+                        geneid = ts2gene[tsid]
+                    except:
+                        if 'gene' in tsid:
+                            geneid = tsid
+                            tsid = tsid.replace('gene','rna')
 
-                # transcript level #
-                if tsid not in ts_dict:
-                    ts_dict[tsid] = {'strand': line_dict['strand'],'chr': line_dict['seqid'],'start': int(line_dict['start']), 'end': int(line_dict['end'])}
-                else:
-                    ts_dict[tsid]['start'] = min(int(line_dict['start']),ts_dict[tsid]['start'])
-                    ts_dict[tsid]['end'] = max(int(line_dict['end']),ts_dict[tsid]['end'])
+                        if tsid in ts2gene:
+                            geneid = ts2gene[tsid]
+                        else:
+                            ts2gene[tsid] = geneid
+                    
+
+                    # transcript level #
+                    if tsid not in ts_dict:
+                        ts_dict[tsid] = {'strand': line_dict['strand'],'chr': line_dict['seqid'],'start': int(line_dict['start']), 'end': int(line_dict['end'])}
+                    else:
+                        ts_dict[tsid]['start'] = min(int(line_dict['start']),ts_dict[tsid]['start'])
+                        ts_dict[tsid]['end'] = max(int(line_dict['end']),ts_dict[tsid]['end'])
                 
-                # gene level #
-                if geneid not in gene_dict:
-                    gene_dict[geneid] = {'strand': line_dict['strand'],'chr': line_dict['seqid'],'start': int(line_dict['start']), 'end': int(line_dict['end'])} 
-                else:
-                    gene_dict[geneid]['start'] = min(int(line_dict['start']),gene_dict[geneid]['start'])
-                    gene_dict[geneid]['end'] = max(int(line_dict['end']),gene_dict[geneid]['end']) 
+                    # gene level #
+                    if geneid not in gene_dict:
+                        gene_dict[geneid] = {'strand': line_dict['strand'],'chr': line_dict['seqid'],'start': int(line_dict['start']), 'end': int(line_dict['end'])} 
+                    else:
+                        gene_dict[geneid]['start'] = min(int(line_dict['start']),gene_dict[geneid]['start'])
+                        gene_dict[geneid]['end'] = max(int(line_dict['end']),gene_dict[geneid]['end']) 
     
     tsout = open('%s_CDS_transcript_interval.bed' % opts.bedprefix,'w')
     geneout = open('%s_CDS_gene_interval.bed' % opts.bedprefix,'w') 

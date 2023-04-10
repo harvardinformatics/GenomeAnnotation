@@ -12,12 +12,12 @@ module load hal/20160415-fasrc01
 ### halLiftover:  Map BED genome interval coordinates between two genomes ###
 
 halfile=$1
-sourcegenome=$2 # name of source genome in hal file
-sourcebed=$3 # chrom length bed file of source genome
+querygenome=$2 # name of genome to be annotated in hal file
+querybed=$3 # chrom length bed file of query genome
 targetgenome=$4 # target is the reference genome to which one is lifting
 pslout=$5
 
-halLiftover --outPSL $halfile $sourcegenome $sourcebed $targetgenome $pslout 
+halLiftover --outPSL $halfile $querygenome $querybed $targetgenome $pslout 
 
 
 

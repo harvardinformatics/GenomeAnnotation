@@ -3,7 +3,7 @@
 #SBATCH -n 1                  
 #SBATCH -t 23:00:00              
 #SBATCH -p shared      
-#SBATCH --mem=3000           
+#SBATCH --mem=30000           
 #SBATCH -o toga.%A.out  
 #SBATCH -e toga.%A.err  
 
