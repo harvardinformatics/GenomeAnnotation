@@ -18,7 +18,7 @@ def ParseAttributes(attributes):
 
 if __name__=="__main__": 
     parser = argparse.ArgumentParser(description="Generate CDS transcript and gene interval bed without UTRs")
-    parser.add_argument('-refgff3','--reference-annotation-gff3',dest='refgff3',type=str,help='reference gff3')
+    parser.add_argument('-refgff3','--reference-annotation-gff3',dest='refgff3',type=str,help='gffread-produced protein-coding reference gff3')
     parser.add_argument('-o','--output-bed-prefix',dest='bedprefix',type=str,help='prefix for output bed files')
     opts = parser.parse_args()
     
@@ -29,7 +29,7 @@ if __name__=="__main__":
             if line_dict['type'] == 'mRNA':
                 attribute_dict = ParseAttributes(line_dict['attributes'])
                 tsid = attribute_dict['ID']
-                geneid = attribute_dict['Parent']
+                geneid = attribute_dict['geneID']
                 ts2gene[tsid] = geneid
             elif line_dict['type'] == 'CDS':
                 attribute_dict = ParseAttributes(line_dict['attributes'])

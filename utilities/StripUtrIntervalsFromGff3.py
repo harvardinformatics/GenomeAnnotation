@@ -13,7 +13,7 @@ def ParseAttributes(linedict):
         key,value = attribute.split('=')
         attribute_dict[key] = value
     return attribute_dict
-
+"""
 def BuildGeneIntervalDict(gene_interval_dict,mrna_linedict,mrna_attribute_dict):
     if 'geneID' in mrna_attribute_dict:
         geneid = mrna_attribute_dict['geneID']
@@ -31,7 +31,7 @@ def BuildGeneIntervalDict(gene_interval_dict,mrna_linedict,mrna_attribute_dict):
         gene_interval_dict[geneid] = {'start': start, 'end': end}
     
     return gene_interval_dict   
-
+"""
 
 
 def BuildTranscriptCDSIntervalDict(cdsbed):
@@ -82,13 +82,22 @@ if __name__=="__main__":
                 linedict = dict(zip(fields,line.strip().split('\t')))
                 if linedict['type'] in ['mRNA','transcript']:
                     attribute_dict = ParseAttributes(linedict)
-                    gene_interval_dict = BuildGeneIntervalDict(gene_interval_dict,linedict,attribute_dict)
+                    #gene_interval_dict = BuildGeneIntervalDict(gene_interval_dict,linedict,attribute_dict)
                     if 'geneID' in attribute_dict:
                         ts2gene[attribute_dict['ID']]  = attribute_dict['geneID']
                     elif 'Parent' in attribute_dict:
                         ts2gene[attribute_dict['ID']]  = attribute_dict['Parent']
     firstpass.close()
-    # 2nd pass #
+
+    for ts in ts2gene:
+        gene = ts2gene[ts]
+        if gene not in gene_interval_dict:
+            gene_interval_dict[gene] = {'start': tscript_intervals[ts]['start'],'end': tscript_intervals[ts]['end']}
+        else:
+            gene_interval_dict[gene]['start'] = min(tscript_intervals[ts]['start'],gene_interval_dict[gene]['start'])
+            gene_interval_dict[gene]['end'] = max(tscript_intervals[ts]['end'],gene_interval_dict[gene]['end'])    
+
+# 2nd pass #
     genes_2ndpass = set()
     fout = open('utr-stripped_%s' % opts.gff3,'w')
     with open(opts.gff3,'r') as secondpass:
@@ -112,22 +121,24 @@ if __name__=="__main__":
                     linelist = []
                     for key in linedict:
                         linelist.append(str(linedict[key]))
-                    fout.write('%s\n' % ('\t'.join(linelist)))
+                    #fout.write('%s\n' % ('\t'.join(linelist)))
                     if 'geneID' in attribute_dict:
                         geneid = attribute_dict['geneID']
+                        
                     else:
                         geneid = attribute_dict['Parent']
                     if geneid not in genes_2ndpass:
-                        #print(geneid)
-                        linedict['type'] = 'gene'
-                        linedict['start'] =  gene_interval_dict[geneid]['start']
-                        linedict['end'] =  gene_interval_dict[geneid]['end']
-                        linedict['attributes'] = 'ID=%s' % geneid
-                        linelist = []
-                        for key in linedict:
-                            linelist.append(str(linedict[key]))
-                        fout.write('%s\n' % ('\t'.join(linelist)))
+                        genedict = linedict.copy()
+                        genedict['type'] = 'gene'
+                        genedict['start'] =  gene_interval_dict[geneid]['start']
+                        genedict['end'] =  gene_interval_dict[geneid]['end']
+                        genedict['attributes'] = 'ID=%s' % geneid
+                        gene_linelist = []
+                        for key in genedict:
+                            gene_linelist.append(str(genedict[key]))
+                        fout.write('%s\n' % ('\t'.join(gene_linelist)))
                         genes_2ndpass.add(geneid)
+                    fout.write('%s\n' % ('\t'.join(linelist).replace('geneID=','Parent=')))
                 elif linedict['type'] == 'exon':
                     pass
                 elif linedict['type'] == 'CDS':
@@ -141,5 +152,6 @@ if __name__=="__main__":
                     fout.write('%s\n' % ('\t'.join(exon_linelist)))
                     fout.write('%s\n' % ('\t'.join(cds_linelist)))
                 else:
-                    print('WARNING: other line type: %s' % linedict['type'])
+                    pass
+                    #print('WARNING: other line type: %s' % linedict['type'])
     fout.close()    
