@@ -82,7 +82,6 @@ if __name__=="__main__":
                 linedict = dict(zip(fields,line.strip().split('\t')))
                 if linedict['type'] in ['mRNA','transcript']:
                     attribute_dict = ParseAttributes(linedict)
-                    #gene_interval_dict = BuildGeneIntervalDict(gene_interval_dict,linedict,attribute_dict)
                     if 'geneID' in attribute_dict:
                         ts2gene[attribute_dict['ID']]  = attribute_dict['geneID']
                     elif 'Parent' in attribute_dict:
