@@ -1,7 +1,5 @@
 import argparse
 from collections import defaultdict
-#from numpy import mean,median
-
 
 def ProcessGeneFusions(predicted_gene,fusion_dict):
    master_set = set()
@@ -28,7 +26,7 @@ def ProcessGeneFusions(predicted_gene,fusion_dict):
        multi_cds_fusion = False
 
    number_fusion_cds = sum(i > 1 for i in fusion_array) 
-   if multi_cds_fusion == True and number_fusion_cds >1:
+   if multi_cds_fusion == True and number_fusion_cds >0:
        mixed_fusion = True
    else:
        mixed_fusion =  False
@@ -129,7 +127,6 @@ if __name__=="__main__":
         elif predgene in fusion_dict and predcds not in fusion_dict[predgene]:
             fusion_dict[predgene][predcds] = {'samestrand' : set(), 'oppstrand' : set()}
         
-
         #################################
         
         ## parse bed overlap data ##
@@ -147,7 +144,7 @@ if __name__=="__main__":
         elif linedict['predstrand'] != linedict['refstrand']:
             refgene = ref_mrna2gene[linelist[-1].replace('Parent=','')]
             fusion_dict[predgene][predcds]['oppstrand'].add(refgene)
-
+    
     fout = open('%s_fusionsummary.tsv' % opts.summary,'w')
     fout.write('PredictedGeneId\tcds_fusions\tmulti_cds_fusion\tmulti_mixed_fusion\trefgenes\n')
     
