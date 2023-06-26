@@ -49,14 +49,16 @@ def BuildPredictorTranscript2GeneDict(predictorgff3,method):
     for line in fopen:
         if line[0] != '#':
             linelist = line.strip().split('\t')
-            if linelist[2] == 'mRNA':
-                ts,gene = linelist[8].replace('geneID=','').replace('ID=','').replace('Parent=','').split(';')
+            if linelist[2] in ['mRNA','transcript']:
+                if method == 'maker':
+                    ts,gene = linelist[8].replace('ID=','').replace('Parent=','').split(';')[0:2]
+                    print(ts,gene)
+                else:    
+                    ts,gene = linelist[8].replace('geneID=','').replace('ID=','').replace('Parent=','').split(';')
                 if method == 'stringtie':
                     ts = '.'.join(ts.split('.')[0:3])
                 elif method == 'scallop':
                     ts = ts.split('.')[0]
-                elif method == 'braker':
-                    pass
                 ts2gene[ts] = gene
     return ts2gene     
 
@@ -67,11 +69,30 @@ def ExtractPredictorGeneID(linedict,method,ts2gene):
     elif method == 'scallop':
         predcds = linedict['pred_attributes'].replace('ID=','').split(';')[0].split('.')[1]
         predgene = ts2gene[predcds]
-    elif method == 'braker':
+    elif method in ['braker','maker','toga','TOGA','cgp','CGP']:
         predcds = linedict['pred_attributes'].replace('Parent=','')
         predgene = ts2gene[predcds]
     return predgene,predcds
 
+def gene_nested_test(newgene,geneset):
+    test = False
+    for gene in geneset:
+        if newgene in gene:
+            test = True
+    if test == True:
+        return geneset
+    else:
+        removes = []
+        for gene in geneset:
+            if gene in newgene:
+                removes.append(gene)
+        for gene in removes:
+            geneset.remove(gene)
+        geneset.add(newgene)
+        return geneset
+    
+
+        
 
 
 if __name__=="__main__": 
@@ -81,10 +102,12 @@ if __name__=="__main__":
     parser.add_argument('-overlaps','--overlap-bed-file',dest='overlapbed',type=str,help='output of intersectBed -loj -a prediction -b ncbi')
     parser.add_argument('-method','--gene-predction-method',dest='method',type=str,help='bioinformatics tool for predicting genes')
     parser.add_argument('-o','--overlap-summary-outfile',dest='summary',type=str,help='name of output overlap summary file')
+    parser.add_argument('-filter-nested','--filter-nested-fusion-genes',dest='filter',action='store_true',help='switch to filter ref genes nested in annotated fusions')
     opts = parser.parse_args()
 
     ### build annotation method mRNA-to-gene mappings dictionary ###
     predictor_ts2gene = BuildPredictorTranscript2GeneDict(opts.predgff3,opts.method)
+    
     ###############################################################
 
     ### build reference annotation mRNA-to-gene mappings dictionary ###
@@ -137,18 +160,28 @@ if __name__=="__main__":
         # same strand #
         elif linedict['predstrand'] == linedict['refstrand']:
             refgene = ref_mrna2gene[linelist[-1].replace('Parent=','')]
-            fusion_dict[predgene][predcds]['samestrand'].add(refgene)
-            fusion_dict[predgene]['refgenes'].add(refgene)
-        
+            if opts.filter == False:
+                fusion_dict[predgene][predcds]['samestrand'].add(refgene)
+                fusion_dict[predgene]['refgenes'].add(refgene)
+            else:
+                fusion_dict[predgene][predcds]['samestrand'] = gene_nested_test(refgene,fusion_dict[predgene][predcds]['samestrand'])
+                fusion_dict[predgene]['refgenes'] = gene_nested_test(refgene,fusion_dict[predgene]['refgenes'])
+
+
         # opposite strand
         elif linedict['predstrand'] != linedict['refstrand']:
             refgene = ref_mrna2gene[linelist[-1].replace('Parent=','')]
-            fusion_dict[predgene][predcds]['oppstrand'].add(refgene)
-    
+            if opts.filter == False:
+                fusion_dict[predgene][predcds]['oppstrand'].add(refgene)
+            else:
+                fusion_dict[predgene][predcds]['oppstrand'] = gene_nested_test(refgene,fusion_dict[predgene][predcds]['oppstrand'])
+
     fout = open('%s_fusionsummary.tsv' % opts.summary,'w')
     fout.write('PredictedGeneId\tcds_fusions\tmulti_cds_fusion\tmulti_mixed_fusion\trefgenes\n')
     
     genecounter=0
+    #gene_list = list(fusion_dict.keys())
+    #gene_list.sort()
     for gene in fusion_dict:
         genecounter+=1
         if genecounter%100 == 0:
