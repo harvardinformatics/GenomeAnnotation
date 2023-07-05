@@ -72,6 +72,8 @@ def ExtractPredictorGeneID(linedict,method,ts2gene):
     elif method in ['braker','maker','toga','TOGA','cgp','CGP']:
         predcds = linedict['pred_attributes'].replace('Parent=','')
         predgene = ts2gene[predcds]
+    else:
+        raise ValueError("%s an invalid method" % method)    
     return predgene,predcds
 
 def gene_nested_test(newgene,geneset):
@@ -118,7 +120,7 @@ if __name__=="__main__":
             linelist = line.strip().split('\t')
             if linelist[2] =='mRNA':
                 attribute_dict = CreateGffAttributeDict(linelist)
-                ref_mrna2gene[attribute_dict['ID']] = attribute_dict['geneID']
+                ref_mrna2gene[attribute_dict['ID']] = attribute_dict['geneID'].replace('gene-','')
     ###################################################################
     
     ### load left join intersectBed table for ref CDS exons joined ###
