@@ -1,6 +1,38 @@
 import argparse
 from collections import defaultdict
-from numpy import mean,median
+
+def ProcessGeneFusions(predicted_gene,fusion_dict):
+   master_set = set()
+   cds_to_refgenes = []
+   fusion_array = []
+   cdslist = list(fusion_dict[predicted_gene].keys())
+   cdslist.remove('refgenes')
+   for cds in cdslist:
+       fusion_array.append(len(fusion_dict[predicted_gene][cds]['samestrand']))
+       master_set = master_set.union(fusion_dict[predicted_gene][cds]['samestrand'])
+       cds_to_refgenes.append(fusion_dict[predicted_gene][cds]['samestrand'])
+
+   count_differences = []
+   for entry in cds_to_refgenes:
+       count_differences.append(len(master_set.difference(entry)))
+       
+
+   if len(master_set) != 0:
+       if min(count_differences) > 0:
+           multi_cds_fusion = True
+       else:
+           multi_cds_fusion = False
+   else:
+       multi_cds_fusion = False
+
+   number_fusion_cds = sum(i > 1 for i in fusion_array) 
+   if multi_cds_fusion == True and number_fusion_cds >0:
+       mixed_fusion = True
+   else:
+       mixed_fusion =  False
+   
+   return {'mixed_fusion': mixed_fusion,'multi_cds_fusion': multi_cds_fusion,'number_cds_fusions' : number_fusion_cds}
+       
 
 def CreateGffAttributeDict(linelist):
     attribute_list = linelist[8].split(';')
@@ -17,14 +49,16 @@ def BuildPredictorTranscript2GeneDict(predictorgff3,method):
     for line in fopen:
         if line[0] != '#':
             linelist = line.strip().split('\t')
-            if linelist[2] == 'mRNA':
-                ts,gene = linelist[8].replace('geneID=','').replace('ID=','').replace('Parent=','').split(';')
+            if linelist[2] in ['mRNA','transcript']:
+                if method == 'maker':
+                    ts,gene = linelist[8].replace('ID=','').replace('Parent=','').split(';')[0:2]
+                    print(ts,gene)
+                else:    
+                    ts,gene = linelist[8].replace('geneID=','').replace('ID=','').replace('Parent=','').split(';')
                 if method == 'stringtie':
                     ts = '.'.join(ts.split('.')[0:3])
                 elif method == 'scallop':
                     ts = ts.split('.')[0]
-                elif method == 'braker':
-                    pass
                 ts2gene[ts] = gene
     return ts2gene     
 
@@ -35,11 +69,32 @@ def ExtractPredictorGeneID(linedict,method,ts2gene):
     elif method == 'scallop':
         predcds = linedict['pred_attributes'].replace('ID=','').split(';')[0].split('.')[1]
         predgene = ts2gene[predcds]
-    elif method == 'braker':
+    elif method in ['braker','maker','toga','TOGA','cgp','CGP']:
         predcds = linedict['pred_attributes'].replace('Parent=','')
         predgene = ts2gene[predcds]
+    else:
+        raise ValueError("%s an invalid method" % method)    
     return predgene,predcds
 
+def gene_nested_test(newgene,geneset):
+    test = False
+    for gene in geneset:
+        if newgene in gene:
+            test = True
+    if test == True:
+        return geneset
+    else:
+        removes = []
+        for gene in geneset:
+            if gene in newgene:
+                removes.append(gene)
+        for gene in removes:
+            geneset.remove(gene)
+        geneset.add(newgene)
+        return geneset
+    
+
+        
 
 
 if __name__=="__main__": 
@@ -49,10 +104,15 @@ if __name__=="__main__":
     parser.add_argument('-overlaps','--overlap-bed-file',dest='overlapbed',type=str,help='output of intersectBed -loj -a prediction -b ncbi')
     parser.add_argument('-method','--gene-predction-method',dest='method',type=str,help='bioinformatics tool for predicting genes')
     parser.add_argument('-o','--overlap-summary-outfile',dest='summary',type=str,help='name of output overlap summary file')
+    parser.add_argument('-filter-nested','--filter-nested-fusion-genes',dest='filter',action='store_true',help='switch to filter ref genes nested in annotated fusions')
     opts = parser.parse_args()
 
-
+    ### build annotation method mRNA-to-gene mappings dictionary ###
     predictor_ts2gene = BuildPredictorTranscript2GeneDict(opts.predgff3,opts.method)
+    
+    ###############################################################
+
+    ### build reference annotation mRNA-to-gene mappings dictionary ###
     refannot = open(opts.refgff3,'r')
     ref_mrna2gene = {}
     for line in refannot:
@@ -60,114 +120,79 @@ if __name__=="__main__":
             linelist = line.strip().split('\t')
             if linelist[2] =='mRNA':
                 attribute_dict = CreateGffAttributeDict(linelist)
-                ref_mrna2gene[attribute_dict['ID']] = attribute_dict['geneID']
-
+                ref_mrna2gene[attribute_dict['ID']] = attribute_dict['geneID'].replace('gene-','')
+    ###################################################################
     
-
+    ### load left join intersectBed table for ref CDS exons joined ###
+    ### to annotation method CDS intervals ###
+     
     intersectbed = open(opts.overlapbed,'r')
-    overlapdict = defaultdict(list)
-    cds_overlapdict = defaultdict(list)
-
+   
+    ### create dictionaries to store overlap ids ###
+    #overlapdict = defaultdict(list) # gene-level
+    #cds_overlapdict = defaultdict(list) # cds transcsript level
+   
     fields = ['predchrom','predstart','predend','predstrand',
               'pred_attributes','refchrom','refstart','refend',
               'refstrand','ref_attributes']
+
+    ###
+
+    fusion_dict = {}
 
     for line in intersectbed:
         linelist = line.strip().split('\t') 
         linedict = dict(zip(fields,linelist))
         predgene,predcds = ExtractPredictorGeneID(linedict,opts.method,predictor_ts2gene)
-        if opts.method == 'scallop':
-            predgene = predictor_ts2gene[predcds]    
-        if linelist[-1] == '.':
-            overlapdict[predgene].append('None')
-            cds_overlapdict[predcds].append('None')
-
+        # build gene/cds dict structures #
+        if predgene not in fusion_dict:
+            fusion_dict[predgene] = {} 
+            fusion_dict[predgene][predcds] = {'samestrand' : set(), 'oppstrand' : set()}
+            fusion_dict[predgene]['refgenes'] = set()
+        elif predgene in fusion_dict and predcds not in fusion_dict[predgene]:
+            fusion_dict[predgene][predcds] = {'samestrand' : set(), 'oppstrand' : set()}
+        
+        #################################
+        
+        ## parse bed overlap data ##
+        # no overlap #
+        if linelist[-1] == '.': 
+            pass
+        
+        # same strand #
         elif linedict['predstrand'] == linedict['refstrand']:
             refgene = ref_mrna2gene[linelist[-1].replace('Parent=','')]
-            overlapdict[predgene].append(refgene)
-            cds_overlapdict[predcds].append(refgene)
-  
+            if opts.filter == False:
+                fusion_dict[predgene][predcds]['samestrand'].add(refgene)
+                fusion_dict[predgene]['refgenes'].add(refgene)
+            else:
+                fusion_dict[predgene][predcds]['samestrand'] = gene_nested_test(refgene,fusion_dict[predgene][predcds]['samestrand'])
+                fusion_dict[predgene]['refgenes'] = gene_nested_test(refgene,fusion_dict[predgene]['refgenes'])
+
+
+        # opposite strand
         elif linedict['predstrand'] != linedict['refstrand']:
             refgene = ref_mrna2gene[linelist[-1].replace('Parent=','')]
-            overlapdict[predgene].append('%s-oppstrand' % refgene)            
-            cds_overlapdict[predcds].append('%s-oppstrand' % refgene)
-
-    genestats = open('geneoverlapstats.txt','w')
-    gene_overlap_count_list = []
-    gene_opposite_strand_overlap_counter = 0
-    fout = open(opts.summary,'w')
-    fout.write('predgene\trefgenes\tnumfusions\n')
-    for predgene in overlapdict:
-        overlapset = set(overlapdict[predgene])
-        if len(overlapset) == 1 and overlapset == set(['None']): 
-            fout.write('%s\tNone\t0\n' % predgene)
-            gene_overlap_count_list.append(0)
-        else:
-            if 'None' in overlapset:
-                overlapset.remove('None')
-            
-            opposite_strands = 0
-            overlaplist = list(overlapset)
-            for gene in overlaplist:
-                if 'oppstrand' in gene:
-                    overlaplist.remove(gene)
-                    opposite_strands+=1
-            overlapset = set(overlaplist)
-            if opposite_strands > 0 and len(overlapset) == 0:
-                gene_opposite_strand_overlap_counter+=1
-                fout.write('%s\tOppositeStrand\t0\n' % predgene)   
+            if opts.filter == False:
+                fusion_dict[predgene][predcds]['oppstrand'].add(refgene)
             else:
-                fout.write('%s\t%s\t%s\n' % (predgene,';'.join(list(overlapset)),len(overlapset)))
-            gene_overlap_count_list.append(len(overlapset)) 
-     
-    numberfusions = len([i for i in gene_overlap_count_list if i >1])
-    novelgenes = len([i for i in gene_overlap_count_list if i ==0])
-    genestats.write('number of predicted genes: %s\n' % len(overlapdict.keys()))
-    genestats.write('number of putative fusions: %s\n' % numberfusions)
-    genestats.write('number novel predicted genes %s\n' % novelgenes)
-    genestats.write('mean overlapping reference genes: %s\n' % mean(gene_overlap_count_list))
-    genestats.write('median overlapping reference genes: %s\n' % median(gene_overlap_count_list))
-    genestats.write('number opposite strand overlaps: %s\n' % gene_opposite_strand_overlap_counter) 
-    genestats.close()
-    fout.close()
+                fusion_dict[predgene][predcds]['oppstrand'] = gene_nested_test(refgene,fusion_dict[predgene][predcds]['oppstrand'])
 
-    ### CDS level ###
-    cdsstats = open('cdsoverlapstats.txt','w')
-    cds_overlap_count_list = []
-    cds_opposite_strand_overlap_counter = 0
-    cdsfout = open('cds_%s' % opts.summary,'w')
-    cdsfout.write('predcds\tpredgene\trefgenes\tnumfusions\n')
-    for predcds in cds_overlapdict:
-        predgene = predictor_ts2gene[predcds]
-        overlapset = set(cds_overlapdict[predcds])
-        if len(overlapset) == 1 and overlapset == set(['None']):
-            cdsfout.write('%s\t%s\tNone\t0\n' % (predcds,predgene))
-            cds_overlap_count_list.append(0)
-        else:
-            if 'None' in overlapset:
-                overlapset.remove('None')
-
-            opposite_strands = 0
-            overlaplist = list(overlapset)
-            for gene in overlaplist:
-                if 'oppstrand' in gene:
-                    overlaplist.remove(gene)
-                    opposite_strands+=1
-            overlapset = set(overlaplist)
-            if opposite_strands > 0 and len(overlapset) == 0:
-                cds_opposite_strand_overlap_counter+=1
-                cdsfout.write('%s\t%s\tOppositeStrand\t0\n' % (predcds,predgene))
-            else:
-                cdsfout.write('%s\t%s\t%s\t%s\n' % (predcds,predgene,';'.join(list(overlapset)),len(overlapset)))
-            cds_overlap_count_list.append(len(overlapset))
+    fout = open('%s_fusionsummary.tsv' % opts.summary,'w')
+    fout.write('PredictedGeneId\tcds_fusions\tmulti_cds_fusion\tmulti_mixed_fusion\trefgenes\n')
     
-    numberfusions = len([i for i in cds_overlap_count_list if i >1])
-    novelcds = len([i for i in cds_overlap_count_list if i ==0])
-    cdsstats.write('number of predicted cds: %s\n' % len(overlapdict.keys()))
-    cdsstats.write('number of putative fusions: %s\n' % numberfusions)
-    cdsstats.write('number novel predicted cds %s\n' % novelcds)
-    cdsstats.write('mean overlapping reference genes: %s\n' % mean(cds_overlap_count_list))
-    cdsstats.write('median overlapping reference genes: %s\n' % median(cds_overlap_count_list))
-    cdsstats.write('number opposite strand overlaps: %s\n' % cds_opposite_strand_overlap_counter)
-    cdsstats.close()
-    cdsfout.close()
+    genecounter=0
+    #gene_list = list(fusion_dict.keys())
+    #gene_list.sort()
+    for gene in fusion_dict:
+        genecounter+=1
+        if genecounter%100 == 0:
+            print('processing gene %s' % genecounter)
+        genestats = ProcessGeneFusions(gene,fusion_dict)
+        if len(list(fusion_dict[gene]['refgenes'])) > 0:
+            fout.write('%s\t%s\t%s\t%s\t%s\n' % (gene,genestats['number_cds_fusions'],
+        str(genestats['multi_cds_fusion']),str(genestats['mixed_fusion']),';'.join(list(fusion_dict[gene]['refgenes']))))
+        else:
+            fout.write('%s\t%s\t%s\t%s\tNone\n' % (gene,genestats['number_cds_fusions'],
+            str(genestats['multi_cds_fusion']),str(genestats['mixed_fusion'])))
+    fout.close()

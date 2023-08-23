@@ -14,7 +14,7 @@ if __name__=="__main__":
     seqcount = 0
     fout = open('%s_%s.fasta' % ('.'.join(opts.fastain.split('.')[:-1]),file_index),'w')
     filelist = open('%s' % opts.filelist,'w')
-    filelist.write('%s_%s.fasta' % ('.'.join(opts.fastain.split('.')[:-1]),file_index))
+    filelist.write('%s_%s.fasta\n' % ('.'.join(opts.fastain.split('.')[:-1]),file_index))
 
     for record in SeqIO.parse(opts.fastain,'fasta'):
         if seqcount <=opts.maxn-1:
@@ -24,7 +24,7 @@ if __name__=="__main__":
             file_index+=1
             fout.close()
             fout = open('%s_%s.fasta' % ('.'.join(opts.fastain.split('.')[:-1]),file_index),'w')
-            filelist.write('%s_%s.fasta' % ('.'.join(opts.fastain.split('.')[:-1]),file_index))
+            filelist.write('%s_%s.fasta\n' % ('.'.join(opts.fastain.split('.')[:-1]),file_index))
             SeqIO.write(record,fout,'fasta')
             seqcount=1 
     
