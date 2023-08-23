@@ -65,6 +65,44 @@ for i in range(9):
 
 by_method_pair.close()
 
+### Create RNAseq vs Protein recovery table ###
+protein_vs_rna_table = open('%s_proteinonly_vs_rnaseq_buscorecovery.tsv' % sys.argv[1],'w')
+protein_vs_rna_table.write('species\tgroup\tdatatype\tbusco_score\n')
+#by_data_type = {'protein':set(), 'rnaseq': set(), 'toga': set()}
 
+by_data_type = {'protein':set(), 'rnaseq-assembler': set(), 'rnaseq-abinit': set(), 'toga': set()}
 
+for key in busco_dict:
+    if key in [0,2]:
+        by_data_type['protein'] = by_data_type['protein'].union(busco_dict[key])
+    elif key in [1,3]:
+        by_data_type['rnaseq-abinit'] = by_data_type['rnaseq-abinit'].union(busco_dict[key])
+    elif key in [4,5,6,7]:
+        by_data_type['rnaseq-assembler'] = by_data_type['rnaseq-assembler'].union(busco_dict[key])
+    elif key == 8:
+        by_data_type['toga'] = by_data_type['toga'].union(busco_dict[key])
+
+for i in ['protein','rnaseq-abinit','rnaseq-assembler','toga']:
+    protein_vs_rna_table.write('%s\t%s\t%s\t%s\n' % (sys.argv[1],sys.argv[2],i,len(by_data_type[i])/len(buscos_searched)))
+
+protein_vs_rna_table.close()
+
+## Generate Busco id by data type table ##
+buscoid_by_type_table = open('%s_buscoid_by_type.tsv' % sys.argv[1],'w')
+buscoid_by_type_table.write('buscoid\tprotein\trnaseq_abinit\t\trnaseq_assembler\ttoga\n')
+
+print(len(buscos_searched))
+for id in buscos_searched:
+    present = {'protein' : 'missing', 'rnaseq-abinit' : 'missing' ,'rnaseq-assembler': 'missing', 'toga': 'missing'}
+    if id in by_data_type['protein']:
+        present['protein'] = 'present'
+    if id in by_data_type['rnaseq-abinit']:
+        present['rnaseq-abinit'] = 'present'
+    if id in by_data_type['rnaseq-assembler']:
+        present['rnaseq-assembler'] = 'present'    
+    if id in by_data_type['toga']:
+        present['toga'] = 'present'
+    buscoid_by_type_table.write('%s\t%s\t%s\t%s\t%s\n' % (id,present['protein'],present['rnaseq-abinit'],present['rnaseq-assembler'],present['toga']))
+
+buscoid_by_type_table.close()    
 
