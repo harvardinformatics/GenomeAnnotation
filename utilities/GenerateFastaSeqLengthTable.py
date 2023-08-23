@@ -10,9 +10,9 @@ if __name__=="__main__":
 
     lengths=[]
     fout = open('%s_seqlengths.tsv' % (opts.frecords),'w')
-    fout.write('%s\n' % opts.colname)
+    fout.write('seqid\tlength\tmethod\n')
     for record in SeqIO.parse(opts.frecords,'fasta'):
-        fout.write('%s\n' % len(record.seq))
+        fout.write('%s\t%s\t%s\n' % (record.id,len(record.seq),opts.colname))
         lengths.append(len(record.seq))
     print('median: %s\n' % median(lengths))
     print('max: %s\n' % max(lengths))
