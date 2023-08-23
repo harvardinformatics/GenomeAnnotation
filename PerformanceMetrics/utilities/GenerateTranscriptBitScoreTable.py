@@ -24,7 +24,7 @@ if __name__=="__main__":
     blastin = open(opts.blastp,'r')
     for line in blastin:
         linedict = dict(zip(fields,line.strip().split('\t')))
-        if linedict['qseqid'] not in hit_dict:
+        if linedict['qseqid'] in protein_list and linedict['qseqid'] not in hit_dict:
             hit_dict[linedict['qseqid']] = {'evalue': linedict['evalue'],'bitscore': linedict['bitscore']}
 
     # write output #
