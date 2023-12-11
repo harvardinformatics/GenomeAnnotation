@@ -18,7 +18,6 @@ Our specific objectives with respect to methods comparisons are to:
     * Transcript assembly from RNA-seq
         * [StringTie](https://ccb.jhu.edu/software/stringtie/)
         * [Scallop](https://github.com/Kingsford-Group/scallop)
-        * [PsiCLASS](https://github.com/splicebox/PsiCLASS)
 * Assess impact of RNA-seq integration on annotation quality
     * Maker3,Braker, Comparative Augustus
 * Assess impact on annotation quality of integrating multiple annotation sources
@@ -28,26 +27,30 @@ Our specific objectives with respect to methods comparisons are to:
     * Snakemake pipelines
     * Singularity containers
 
-## Data
-Some tools and pipelines presented here integrate RNA-seq data, either as splice site hints, ESTs or transcript models directly inferred from read alignments. Thus,for each species we downloaded paired-end RNA-seq data from the [NCBI Sequence Read Archive (SRA)](https://www.ncbi.nlm.nih.gov/sra).
-### Butterflies
-We perform annotation for 3 heliconine butterflies, *Heliconius erato demophoon*, *Bombyx mori*, and *Danaus plexippus*. We use the genome (and annotation) for *Heliconius melpomene* as a high-quality reference genome, and the anchor for the whole genome alignment used by some tools. We used soft-masked versions of these genomes published in [Edelman *et al.* (2019)](https://science.sciencemag.org/content/366/6465/594), that were filtered such that the minimum scaffold size was 1kb.Whole-genome alignment was based upon the relationships depicted in [tree.nwk](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/genome_alignment/tree.nwk). We aligned the four genomes using [cactus](https://github.com/ComparativeGenomicsToolkit/cactus), executing the script in a SLURM script on Harvard's Cannon HPC with [cactus.sh](https://github.com/harvardinformatics/GenomeAnnotation/tree/master/genome_alignment/cactus.sh). To serve as a source of annotation and protein information for the reference species, *H. melponene*, we downloaded the "renamed" protein fasta and gff3 files from [lepbase](http://download.lepbase.org/v4/provider/). SRA RNA-seq accessions are listed [here](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/RNA-seq/butterfly_SRA_accession_ids.tsv).
 
-### Human
-We annotate the human genome with RNA-seq data generated for a study of gene expression in human and four non-human primate species, in eight brain regions [Xu et al. 2018](https://genome.cshlp.org/content/early/2018/06/13/gr.231357.117). 
+## Target species and data
+The standard approach for evaluating annotation tool performance has been to generation transcript predictions for a limited number of model organisms will high-quality well-curated annotations, such as human, *Caenorhabditis elegans*, and *Saccharomyces cerevisiae*. By generating annotations across a broader swath of the tree of life, we sought to make more general inferences about the performance of annotation tools, what types of genome features might impact annotation quality (and the optimal choice of method), and whether there are taxonomic effects on annotation quality. We generated annotations for 21 species spanning six broad taxonomic groups: heliconiine butterflies, drosophilids (Diptera), mammals, birds, rosids and monocots. With the exception of the heliconiine butterflies, genomes and annotations were obtained from NCBI. We treat NCBI annotations as the true annotations when evaluating outputs from annotation tools we tested. Information on the specific species, genome versions, and download links for genome fastas and annotation files are available [here](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/genomes.md). The species chosen had relatively high-quality genome assemblies, but for each group, we included one species with a genome known to be of extremely high quality and with an annotation unlikely to be missing any real CDS transcripts. These species were used as the "reference" species for whole genome alignments used with Comparative Augustus (CGP), and provided the annotations for the majority of annotations generated with TOGA. Furthermore, we perform a subset of performance assessments only using theses species where the results might be sensitive to the completeness of the real (NCBI annotation), e.g. estimating the frequency of intergenic predictions.  
+
+Some tools and pipelines presented here integrate RNA-seq data, either as splice site hints, ESTs or transcript models directly inferred from read alignments. Thus,for each species we downloaded paired-end RNA-seq data from the [NCBI Sequence Read Archive (SRA)](https://www.ncbi.nlm.nih.gov/sra). 
+
+### Test data: heliconiine butterflies
+We used the heliconine butterflies to test and optimize our implementation of annotation tools. Because the most recent genome releases are hosted by [lebpase](lepbase.org), and because annotations have been derived by tools other than the NCBI annotation pipeline, we did not treat these annotations as truth sets as we do with NCBI annotations. In particular, the annotation for  *Heliconius melpomene* was generated using BRAKER, one of the tools we evaluate, such that comparing our BRAKER predictions to a BRAKER predictions would lead to an inflation of performance metrics. We used soft-masked versions of these genomes published in [Edelman *et al.* (2019)](https://science.sciencemag.org/content/366/6465/594), that were filtered such that the minimum scaffold size was 1kb.
+
+## Whole-genome alignments
+CGP and TOGA require whole-genome alignment (WGA). WGAs for each taxonomic group were produced with[cactus](https://github.com/ComparativeGenomicsToolkit/cactus), using guide trees representing known phylogenetic relationships, that can be found here. Details on running the GPU version of cactus can be found [here](https://github.com/harvardinformatics/GenomeAnnotation-WholeGenomeAlignment).
+
 ## Performance evaluation
-  - NCBI genome and annotation benchmarks
-  - Sensitivity to method choice
-    - best combination of tools
-    - quality trimming RNA-seq reads
-    - peformance gains with integration methosd 
   - Evaluation metrics
-    - annotation BUSCO score / genome BUSCO score
-    - percenttranscripts recovered as function of percent correct bases threshold
-    - recall
-    - precision
-    - F1 score
-    - false negative rate
-    - expression correlations with benchmark genes
-    - comparison of DE testing to benchmark
-    - conditional on same orthologous gene symbol assignment
+    - BUSCO recovery
+    - CDS length distributions
+    - proportion intergenic (false positive) predictions
+    - proportion of protein predictions with proper start and stop codons
+    - proportion of genes representing bioinformatics-error gene fusions
+    - RNA-seq read alignment rates
+    - repeat and GC content
+    - proportion of predicted open reading frames with BLAST hits
+    - proportion of expressed, NCBI-annotated transcript with no overlapping prediction
+
+    
+     
+
