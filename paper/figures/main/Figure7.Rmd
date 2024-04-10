@@ -1,6 +1,6 @@
 ---
   title: "Genome Annotation Project"
-subtitle: "Figure 3: CDS intergenic gene rates"
+subtitle: "Figure 7: expression"
 date: "April 10, 2024"
 author: "Adam Freedman"
 output: 
@@ -58,21 +58,45 @@ methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(C
                 expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
 ```
 
-
-## Figure 3
+### Figure 7A: low TPM gene frequencies
 ```{r}
-intergenic_plot <- data %>% ggplot(aes(x=species,y=intergenic_genes/protcod_genes)) + geom_point(aes(fill=method),color="black",pch=21,position = position_jitter(w = 0.25,h = 0),alpha=0.7,size=1.75) +
-    scale_fill_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray50","#000000")) + 
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+
+gene_lowtpm_plot <- data %>% ggplot(aes(x=species,y=gene_TPMlthan1_noUTR)) + geom_point(aes(fill=method),color="black",pch=21,position = position_jitter(w = 0.18,h = 0),alpha=0.7,size=2) +
+    scale_fill_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray76","#000000")) + 
 theme(legend.text.align = 0) + 
-theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.32,face="italic")) + 
-ylab("Proportion genes intergenic") +
+theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,face="italic")) + 
+ylab("Proportion genes median TPM < 1") +
 xlab("") + 
+labs(fill = "Method") +
 geom_vline(xintercept=3.5,linetype="solid") +
 geom_vline(xintercept=7.5,linetype="solid")+
 geom_vline(xintercept=11.5,linetype="solid") +
-geom_vline(xintercept=14.5,linetype="solid") +
-guides(fill = guide_legend(title = "Method"))
+geom_vline(xintercept=14.5,linetype="solid") 
 
-print(intergenic_plot)
-ggsave(intergenic_plot,file="Figure3.pdf",width=7,height=5)
+print(gene_lowtpm_plot)
+ggsave(gene_lowtpm_plot,file="global_gene_lowtpm_plot.pdf",width=6,height=4)
+```
+
+### Figure 7B: alignment rates
+```{r}
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+
+alignrate_noutr_plot <- data %>% filter(group!="heliconines") %>% ggplot() +
+geom_point(aes(x=species,y=RefAlignRateNoUTR),shape=4,color="black",size=3.5) +
+geom_point(aes(x=species,y=median_annot_align_noutr,fill=method),color="black",pch=21,position = position_jitter(w = 0.2,h = 0),alpha=0.7,size=2) +
+scale_fill_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray76","#000000")) + 
+theme(legend.text.align = 0) + 
+theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,face="italic")) + 
+ylab(expression(paste(RNA[seq]," alignment rate"))) +
+xlab("") + 
+guides(fill = guide_legend(title = "Method")) +
+geom_vline(xintercept=3.5,linetype="solid") +
+geom_vline(xintercept=7.5,linetype="solid")+
+geom_vline(xintercept=11.5,linetype="solid") +
+geom_vline(xintercept=14.5,linetype="solid") 
+
+
+print(alignrate_noutr_plot)
+ggsave(alignrate_noutr_plot,file="alignrate_noutr_plot.pdf",width=6,height=4)
 ```
