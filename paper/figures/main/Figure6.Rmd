@@ -60,8 +60,8 @@ methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(C
 
 ## Figure 6A: proportion blast hits to NCBI scatterplot
 ```{r}
-blastphit_plot <- data %>% ggplot(aes(x=species,y=100*blastp2NCBIfraction)) + geom_point(aes(color=method),position = position_jitter(w = 0.18,h = 0),alpha=0.7,size=2.5) +
-    scale_color_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray76","#000000")) + 
+blastphit_plot <- data %>% ggplot(aes(x=species,y=100*blastp2NCBIfraction)) + geom_point(aes(fill=method),color="black",pch=21,position = position_jitter(w = 0.19,h = 0),alpha=0.7,size=2.3) +
+    scale_fill_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray76","#000000")) + 
 theme(legend.text.align = 0) + 
 theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,face="italic")) + 
 ylab("% predicted proteins blastp to NCBI") +
@@ -70,10 +70,10 @@ geom_vline(xintercept=3.5,linetype="solid") +
 geom_vline(xintercept=7.5,linetype="solid")+
 geom_vline(xintercept=11.5,linetype="solid") +
 geom_vline(xintercept=14.5,linetype="solid") +
-guides(color = guide_legend(title = "Method"))
+guides(fill = guide_legend(title = "Method"))
 
 print(blastphit_plot)
-ggsave(blastphit_plot,file="Figure_6A.pdf",width=7,height=5)
+ggsave(blastphit_plot,file="Fgiure_6A.pdf",width=7,height=5)
 ```
 
 ## Figure 6B: protein match coverage: *H. sapiens*
