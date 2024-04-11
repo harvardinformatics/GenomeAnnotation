@@ -1,0 +1,79 @@
+---
+  title: "Genome Annotation Project"
+subtitle: "Figure S12: test vs. train align rates"
+date: "April 10, 2024"
+author: "Adam Freedman"
+output: 
+  html_document: default
+---
+  
+## Set up
+```{r,,message=FALSE, warning=FALSE}
+currentdir=getwd()
+setwd(currentdir)
+library(tidyverse)
+``` 
+
+## Data
+```{r,,message=FALSE, warning=FALSE}
+annotations <-read_csv("GenomeAnnotationMetrics_final.csv")
+annotations <- annotations %>% filter(!method %in% c("BrkProt-unfilt","BrkProt-fullsupport","BrkRNA-unfilt",
+                                                     "BrkRNA-fullsupport","CGPdenovo","TSEBRA","MakerNoRnaNoEvm",
+                                                     "MakerRnaEvm","MakerNoRnaEvm")) 
+
+genomeQC <-read_csv("GenomeQcMetrics_final.csv") 
+data <- annotations<-left_join(annotations,genomeQC,by = join_by(species==Species))
+
+data$method <- factor(data$method,levels=c("BrkProt","BrkRNA","CGPprotein","CGPrnaseq",
+                                           "ScalHisat","ScalStar","StrHisat","StrStar","MakerRnaNoEvm","TOGA"))
+
+data <- data %>% mutate(species = str_replace(species, "dmelanogaster", "D. melanogaster")) %>%
+     mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
+     mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
+     mutate(species = str_replace(species, "human", "H. sapiens")) %>%
+     mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
+     filter(species %in% c("H. sapiens","D. melanogaster","Z. mays","A. thaliana","G. gallus"))
+     
+
+data <- data %>% mutate_at(vars(species),factor,levels=c("D. melanogaster","A. thaliana",
+                                                         "Z. mays", "G. gallus","H. sapiens"))
+```
+
+## Panel A
+```{r}
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+
+eval_vs_train_noutr_plot <- data %>% filter(species %in% c("D. melanogaster","G. gallus","H. sapiens","A. thaliana","Z. mays")) %>% ggplot(aes(x=median_annot_align_noutr,y=medianalign_noutr_eval)) + geom_point(aes(color=method,shape=species),alpha=0.7,size=2.5) +
+    scale_color_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray76","#000000")) +
+guides(color = guide_legend(title = "Method")) +
+xlab("Training data alignment rate (no UTR)") +
+ylab("Test data alignment rate (no UTR)") +
+theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm"))  +
+geom_abline(slope=1, intercept = 0) +
+guides(color = guide_legend(title = "Method",order=1,label.theme = element_text(angle = 0, size=8,face = "plain"))) +
+guides(shape = guide_legend(title = "Species",order=2,label.theme = element_text(angle = 0, size=8,face = "italic"))) +
+scale_shape_manual(values = c(6, 4, 15, 16, 17)) 
+
+print(eval_vs_train_noutr_plot)
+ggsave(eval_vs_train_noutr_plot,file="Figure_S12A.pdf",width=5,height=4)
+```
+
+## Panel B
+```{r}
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+species_labels=c("D. melanogaster","A. thaliana","Z. mays","G. gallus","H. sapiens")
+
+alignratechange_noutr_plot <- data %>% filter(species %in% c("D. melanogaster","G. gallus","H. sapiens","A. thaliana","Z. mays")) %>%
+        ggplot(aes(x=method,y=100*(medianalign_noutr_eval-median_annot_align_noutr))) + 
+        geom_point(aes(color=species),position = position_jitter(w = 0.25,h = 0),alpha=0.7,size=2.5) +
+        scale_x_discrete("",labels=methodlabels) + 
+        scale_color_manual(labels=species_labels,values=c("darkorange","firebrick4", "lightskyblue", "darkorchid3", "magenta")) +
+        theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,face="plain")) +
+        ylab("Test - training alignment rate (%)") +
+        #guides(color = guide_legend(title = "Species")) +
+        guides(color = guide_legend(title = "Species",label.theme = element_text(angle = 0, size=8,face = "italic"))) +
+        geom_hline(yintercept=0,linetype="dotted")
+
+print(alignratechange_noutr_plot)
+ggsave(alignratechange_noutr_plot,file="Figure_S12B.pdf",width=5,height=4)
+```
