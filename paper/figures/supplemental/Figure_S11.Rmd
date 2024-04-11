@@ -1,0 +1,106 @@
+---
+  title: "Genome Annotation Project"
+subtitle: "Figure S11: TPM ecdfs"
+date: "April 10, 2024"
+author: "Adam Freedman"
+output: 
+  html_document: default
+---
+  
+## Set up
+```{r,,message=FALSE, warning=FALSE}
+currentdir=getwd()
+setwd(currentdir)
+library(tidyverse)
+``` 
+
+## Panel A: *H. sapiens*
+```{r}
+human_tpm_concat <- read_table("human_tpm_allmethods.tsv")
+types<-c(rep("solid",9),"dotted")
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+human_tpm_concat$method <- factor(human_tpm_concat$method,levels=c("brkprot","brkrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga"))
+
+human_tpm_concat <- human_tpm_concat %>% mutate(log10tpm=log10(medianTPM+0.0001))
+human_tpm_ecdf_plot<- human_tpm_concat %>% ggplot() + stat_ecdf(mapping=aes(x=log10tpm,color=method),geom = "step") +
+                scale_color_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray76","#000000")) +
+                guides(color = guide_legend(title = "Method")) + xlab(expression(paste(log[10], "TPM"))) + 
+                ylab("Empirical cumuluative density") +
+                geom_vline(xintercept=log10(1.0001),linetype="dotted") 
+                theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) 
+print(human_tpm_ecdf_plot)
+ggsave(human_tpm_ecdf_plot,file="Figure_S11A.pdf",width=3.5,height=4)
+```
+
+## Panel B: *G. gallus*
+```{r}
+chicken_tpm_concat <- read_table("chicken_tpm_allmethods.tsv")
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+chicken_tpm_concat$method <- factor(chicken_tpm_concat$method,levels=c("brkprot","brkrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga"))
+
+chicken_tpm_concat <- chicken_tpm_concat %>% mutate(log10tpm=log10(medianTPM+0.0001))
+chicken_tpm_ecdf_plot<- chicken_tpm_concat %>% ggplot() + stat_ecdf(mapping=aes(x=log10tpm,color=method),geom = "step") +
+                scale_color_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray76","#000000")) +
+                guides(color = guide_legend(title = "Method")) + xlab(expression(paste(log[10], "TPM"))) + 
+                ylab("Empirical cumuluative density") +
+                geom_vline(xintercept=log10(1.0001),linetype="dotted") 
+                theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) 
+print(chicken_tpm_ecdf_plot)
+ggsave(chicken_tpm_ecdf_plot,file="Figure_S11B.pdf",width=3.5,height=4)
+```
+
+## Panel C: *A. thaliana*
+```{r}
+athaliana_tpm_concat <- read_table("athaliana_tpm_allmethods.tsv")
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+athaliana_tpm_concat$method <- factor(athaliana_tpm_concat$method,levels=c("brkprot","brkrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga"))
+
+athaliana_tpm_concat <- athaliana_tpm_concat %>% mutate(log10tpm=log10(medianTPM+0.0001))
+athaliana_tpm_ecdf_plot<- athaliana_tpm_concat %>% ggplot() + stat_ecdf(mapping=aes(x=log10tpm,color=method),geom = "step") +
+                scale_color_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray76","#000000")) +
+                guides(color = guide_legend(title = "Method")) + xlab(expression(paste(log[10], "TPM"))) + 
+                ylab("Empirical cumuluative density") +
+                geom_vline(xintercept=log10(1.0001),linetype="dotted") 
+                theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) 
+print(athaliana_tpm_ecdf_plot)
+ggsave(athaliana_tpm_ecdf_plot,file="Figure_S11C.pdf",width=3.5,height=4)
+```
+
+## Panel D: *Z. mays*
+```{r}
+zmays_tpm_concat <- read_table("zmays_tpm_allmethods.tsv")
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+zmays_tpm_concat$method <- factor(zmays_tpm_concat$method,levels=c("brkprot","brkrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga"))
+
+zmays_tpm_concat <- zmays_tpm_concat %>% mutate(log10tpm=log10(medianTPM+0.0001))
+zmays_tpm_ecdf_plot<- zmays_tpm_concat %>% ggplot() + stat_ecdf(mapping=aes(x=log10tpm,color=method),geom = "step") +
+                scale_color_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray76","#000000")) +
+                guides(color = guide_legend(title = "Method")) + xlab(expression(paste(log[10], "TPM"))) + 
+                ylab("Empirical cumuluative density") +
+                geom_vline(xintercept=log10(1.0001),linetype="dotted") 
+                theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) 
+print(zmays_tpm_ecdf_plot)
+ggsave(zmays_tpm_ecdf_plot,file="Figure_S11D.pdf",width=3.5,height=4)
+```
+
+## Panel E: *D. melanogaster*
+```{r}
+dmel_tpm_concat <- read_table("dmel_tpm_allmethods.tsv")
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+dmel_tpm_concat$method <- factor(dmel_tpm_concat$method,levels=c("brkprot","brkrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga"))
+
+dmel_tpm_concat <- dmel_tpm_concat %>% mutate(log10tpm=log10(medianTPM+0.0001))
+dmel_tpm_ecdf_plot<- dmel_tpm_concat %>% ggplot() + stat_ecdf(mapping=aes(x=log10tpm,color=method),geom = "step") +
+                scale_color_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray76","#000000")) +
+                guides(color = guide_legend(title = "Method")) + xlab(expression(paste(log[10], "TPM"))) + 
+                ylab("Empirical cumuluative density") +
+                geom_vline(xintercept=log10(1.0001),linetype="dotted") 
+                theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) 
+print(dmel_tpm_ecdf_plot)
+ggsave(dmel_tpm_ecdf_plot,file="Figure_S11E.pdf",width=3.5,height=4)
+```
