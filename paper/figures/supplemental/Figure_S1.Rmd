@@ -1,6 +1,6 @@
 ---
   title: "Genome Annotation Project"
-subtitle: "Figure 1: BUSCO Venn diagrams"
+subtitle: "Figure S1: BUSCO Venn diagrams"
 date: "April 10, 2024"
 author: "Adam Freedman"
 output: 
