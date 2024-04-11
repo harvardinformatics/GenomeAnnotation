@@ -1,0 +1,59 @@
+---
+  title: "Genome Annotation Project"
+subtitle: "Figure S7: gini index dot plot more species"
+date: "April 10, 2024"
+author: "Adam Freedman"
+output: 
+  html_document: default
+---
+  
+## Set up
+```{r,,message=FALSE, warning=FALSE}
+currentdir=getwd()
+setwd(currentdir)
+library(tidyverse)
+``` 
+
+## Data
+```{r}
+importance_data <- read_table("genic_intergenic_importance_concat.tsv")
+importance_data <- importance_data %>% mutate(predictor=factor(predictor,levels=c("blastphit","GCcontent","totalrepprop","length","maxTPM",
+                              "medianTPM","fractTPMlessThan1","number_exons","Complete","StopCodon","StartCodon","NumInternalStops")))
+
+importance_data <- importance_data %>% mutate(method=factor(method,levels=c("brakerprot","brakerrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga")))
+
+importance_data <- importance_data %>% mutate(species = str_replace(species, "dmel", "D. melanogaster")) %>%
+    mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
+    mutate(species = str_replace(species, "zmays", "Z. mays")) %>% 
+    mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
+    mutate(species = str_replace(species, "human", "H. sapiens"))
+
+importance_data$species<- factor(importance_data$species,levels=c("D. melanogaster","G. gallus","H. sapiens","A. thaliana","Z. mays"))
+```
+
+## Figure S7
+
+```{r}
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+
+gini_dotplot_otherref <- importance_data %>% filter(species!="H. sapiens") %>% filter(species!="Z. mays") %>% ggplot() + 
+   theme_classic() + 
+    geom_point(aes(x=method,y=log10(.01+MeanDecreaseGini),color=predictor),position = position_jitter(w = 0.18,h = 0),alpha=0.65,size=1.6) +
+    theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,size=9)) +
+    scale_color_manual(labels=predictor_labels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "blue","deepskyblue4","gold4","darkorchid3", "magenta","gray70","black")) +
+
+    theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+    ylab(expression(paste(log[10]," mean decrease in Gini index"))) + xlab("") +
+    #ylab("Mean decrease in Gini index") +
+    scale_x_discrete(breaks=levels(importance_data$method),labels=methodlabels) +
+    guides(fill = guide_legend(byrow = TRUE)) +
+    labs(color = "Predictor") + 
+    theme(strip.text = element_text(face="italic")) +
+    
+    facet_wrap(~species) 
+    
+print(gini_dotplot_otherref)
+
+ggsave(gini_dotplot_otherref,file="Figure_S7.pdf",width=7,height=4)
+```
