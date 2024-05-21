@@ -1,6 +1,6 @@
 ---
   title: "Genome Annotation Project"
-subtitle: "Figure 4: genic vs. intergenic random forest Gini index"
+subtitle: "Figure 4: fusion frequency "
 date: "April 10, 2024"
 author: "Adam Freedman"
 output: 
@@ -15,65 +15,64 @@ library(tidyverse)
 ``` 
 
 ## Data
-```{r}
-importance_data <- read_table("genic_intergenic_importance_concat.tsv")
-importance_data <- importance_data %>% mutate(predictor=factor(predictor,levels=c("blastphit","GCcontent","totalrepprop","length","maxTPM",
-                              "medianTPM","fractTPMlessThan1","number_exons","Complete","StopCodon","StartCodon","NumInternalStops")))
+```{r,,message=FALSE, warning=FALSE}
+annotations <-read_csv("GenomeAnnotationMetrics_final.csv")
+annotations <- annotations %>% filter(group!="heliconines")
+annotations <- annotations %>% filter(!method %in% c("BrkProt-unfilt","BrkProt-fullsupport","BrkRNA-unfilt",
+                                                     "BrkRNA-fullsupport","CGPdenovo","TSEBRA","MakerNoRnaNoEvm",
+                                                     "MakerRnaEvm","MakerNoRnaEvm")) 
 
-importance_data <- importance_data %>% mutate(method=factor(method,levels=c("brakerprot","brakerrna","cgpprot","cgprna",
-                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga")))
+genomeQC <-read_csv("GenomeQcMetrics_final.csv") 
+data <- annotations<-left_join(annotations,genomeQC,by = join_by(species==Species))
 
-importance_data <- importance_data %>% mutate(species = str_replace(species, "dmel", "D. melanogaster")) %>%
-    mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
-    mutate(species = str_replace(species, "zmays", "Z. mays")) %>% 
-    mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
-    mutate(species = str_replace(species, "human", "H. sapiens"))
+data$method <- factor(data$method,levels=c("BrkProt","BrkRNA","CGPprotein","CGPrnaseq",
+                                           "ScalHisat","ScalStar","StrHisat","StrStar","MakerRnaNoEvm","TOGA"))
 
-importance_data$species<- factor(importance_data$species,levels=c("D. melanogaster","G. gallus","H. sapiens","A. thaliana","Z. mays"))
+data <- data %>% mutate(species = str_replace(species, "dmelanogaster", "D. melanogaster")) %>%
+     mutate(species = str_replace(species, "dpseudoobscura", "D. pseudoobscura")) %>%  
+     mutate(species = str_replace(species, "dyakuba", "D. yakuba")) %>%
+     mutate(species = str_replace(species, "alyrata", "A. lyrata")) %>%
+     mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
+     mutate(species = str_replace(species, "boleracea", "B. oleracea")) %>%
+     mutate(species = str_replace(species, "crubella", "C. rubella")) %>%
+     mutate(species = str_replace(species, "osativa", "O. sativa")) %>%
+     mutate(species = str_replace(species, "sitalica", "S. italica")) %>%
+     mutate(species = str_replace(species, "bdistachyon", "B. distachyon")) %>%
+     mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
+     mutate(species = str_replace(species, "human", "H. sapiens")) %>%
+     mutate(species = str_replace(species, "macaque", "M. mulatta")) %>%
+     mutate(species = str_replace(species, "dog", "C. familiaris")) %>%
+     mutate(species = str_replace(species, "mouse", "M. musculus")) %>%
+     mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
+     mutate(species = str_replace(species, "quail", "C. japonica")) %>%
+     mutate(species = str_replace(species, "mallard", "A. platyrhynchos"))
 
-methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+data <- data %>% mutate_at(vars(species),factor,levels=c("D. melanogaster","D. pseudoobscura","D. yakuba",
+                                                         "A. thaliana", "A. lyrata","B. oleracea","C. rubella",
+                                                         "Z. mays","O. sativa","S. italica","B. distachyon",
+                                                         "G. gallus","A. platyrhynchos","C. japonica","H. sapiens",
+                                                         "M. mulatta","C. familiaris","M. musculus"))
 
-predictor_labels <- c("BLASTP match","GC content","Repeat fraction","Length","Maximum TPM",
-                              "Median TPM","% samples TPM <1","# exons","Complete ORF","Stop codon","Start codon","# internal stops")
-
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),
+                expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),
+                expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
 ```
 
-## Figure 4A: *H. sapiens*
+## Figure 4
 ```{r}
-gini_dotplot_human <- importance_data %>% filter(species=="H. sapiens") %>% ggplot() + 
-    theme_classic() + 
-    geom_point(aes(x=method,y=MeanDecreaseGini,color=predictor),position = position_jitter(w = 0.18,h = 0),alpha=0.65,size=1.6) +
-    theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,size=9)) +
-    scale_color_manual(labels=predictor_labels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "blue","deepskyblue4","gold4","darkorchid3", "magenta","gray70","black")) +
+fusions_scatter <- data %>% ggplot(aes(x=species,y=(cds_gene_fusions+multi_cds_gene_fusions+multi_mix_gene_fusions)/protcod_genes)) + geom_point(aes(fill=method),color="black",pch=21,position = position_jitter(w = 0.3,h = 0),alpha=0.7,size=1.75) +
+    scale_fill_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray50","#000000")) + 
+theme(legend.text = element_text(hjust=0)) + 
+theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.32,face="italic")) + 
+ylab("Fusion frequency") +
+xlab("") + 
+geom_vline(xintercept=3.5,linetype="solid") +
+geom_vline(xintercept=7.5,linetype="solid")+
+geom_vline(xintercept=11.5,linetype="solid") +
+geom_vline(xintercept=14.5,linetype="solid") +
+guides(fill = guide_legend(title = "Method"))
 
-    theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
-    ylab("Mean decrease in Gini index") + xlab("") +
-    scale_x_discrete(breaks=levels(importance_data$method),labels=methodlabels) +
-    guides(fill = guide_legend(byrow = TRUE)) +
-    labs(color = "Predictor") + 
-    theme(strip.text = element_text(face="italic"))
-print(gini_dotplot_human)
 
-ggsave(gini_dotplot_human,file="Figure_4A.pdf",width=4.75,height=4)
-```
-
-## Figure 4B: *Z. mays* 
-```{r}
-gini_dotplot_zmays <- importance_data %>% filter(species=="Z. mays") %>% ggplot() + 
-    theme_classic() + 
-    geom_point(aes(x=method,y=MeanDecreaseGini,color=predictor),position = position_jitter(w = 0.18,h = 0),alpha=0.65,size=1.6) +
-    theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,size=9)) +
-    scale_color_manual(labels=predictor_labels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "blue","deepskyblue4","gold4","darkorchid3", "magenta","gray70","black")) +
-
-    theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
-    ylab("Mean decrease in Gini index") + xlab("") +
-    scale_x_discrete(breaks=levels(importance_data$method),labels=methodlabels) +
-    guides(fill = guide_legend(byrow = TRUE)) +
-    labs(color = "Predictor") + 
-    theme(strip.text = element_text(face="italic"))
-print(gini_dotplot_zmays)
-
-ggsave(gini_dotplot_zmays,file="Figure_4B.pdf",width=4.75,height=4)
-```
-
+print(fusions_scatter)
+ggsave(fusions_scatter,file="Figure4.pdf",width=6,height=4)
 ```

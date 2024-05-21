@@ -12,65 +12,74 @@ output:
 currentdir=getwd()
 setwd(currentdir)
 library(tidyverse)
+library(scales)
 ``` 
 
 ## Data
-```{r,,message=FALSE, warning=FALSE}
-annotations <-read_csv("../GenomeAnnotationMetrics_final.csv") 
-annotations <- annotations %>% select(!c(busco_score_raw,busco_score_ratio_raw))
-annotations <- annotations %>% filter(group!="heliconines") %>% filter(method %in% c("ScalHisat","ScalStar","StrHisat","StrStar"))
-pred_utrs <- annotations %>% select(species,group,method,MedianUtrCdsRatio,NumberCdsWithAnnotatedUtrs,NumberTscriptUtrBlastxHitToSpecies)
-pred_utrs <- pred_utrs %>% rename(PredUtrCdsRatio=MedianUtrCdsRatio)
-genomeQC <-read_csv("../GenomeQcMetrics_final.csv")
-genome_utr <- genomeQC %>% select(Species,RefMedianUtrCdsRatio)
+data <- read_csv("methodsintegration.csv")
 
-data <-left_join(pred_utrs,genome_utr,by = join_by(species==Species))
-data <- data %>% mutate(species = str_replace(species, "dmelanogaster", "D. melanogaster")) %>%
-              mutate(species = str_replace(species, "dpseudoobscura", "D. pseudoobscura")) %>%  
-              mutate(species = str_replace(species, "dyakuba", "D. yakuba")) %>%
-              mutate(species = str_replace(species, "alyrata", "A. lyrata")) %>%
-              mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
-              mutate(species = str_replace(species, "boleracea", "B. oleracea")) %>%
-              mutate(species = str_replace(species, "crubella", "C. rubella")) %>%
-              mutate(species = str_replace(species, "osativa", "O. sativa")) %>%
-              mutate(species = str_replace(species, "sitalica", "S. italica")) %>%
-              mutate(species = str_replace(species, "bdistachyon", "B. distachyon")) %>%
-              mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
-              mutate(species = str_replace(species, "human", "H. sapiens")) %>%
-              mutate(species = str_replace(species, "macaque", "M. mulatta")) %>%
-              mutate(species = str_replace(species, "dog", "C. familiaris")) %>%
-              mutate(species = str_replace(species, "mouse", "M. musculus")) %>%
-              mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
-              mutate(species = str_replace(species, "quail", "C. japonica")) %>%
-              mutate(species = str_replace(species, "mallard", "A. platyrhynchos"))
-
-data <- data %>% mutate_at(vars(species),factor,levels=c("D. melanogaster","D. pseudoobscura",
-                                                        "D. yakuba", "A. thaliana", "A. lyrata","B. oleracea",
-                                                        "C. rubella","Z. mays","O. sativa","S. italica",
-                                                         "B. distachyon", "G. gallus","A. platyrhynchos",
-                                                         "C. japonica","H. sapiens","M. mulatta","C. familiaris",
-                                                         "M. musculus"))
+## Figure 8A
+```{r}
+methodlabels<-c(expression(Stringtie[STAR]),"Stringtie+TOGA",expression(paste("Stringtie+TOGA+",BRAKER[protein])))
+stie1st_biplot <- data %>% filter(method %in% c("stiestar","stietoga","stietogabprot")) %>%
+      mutate(method=factor(method,levels=c("stiestar","stietoga","stietogabprot")))%>%
+      ggplot(aes(x=busco_score,y=align_rate,color=method)) + 
+      geom_point(alpha=0.5,size=1.5) + 
+      ylim(0.75,0.78) +
+      scale_color_manual(labels=methodlabels,values=c("magenta","dodgerblue","blue")) +
+      theme(text=element_text(size=8),legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+      guides(color = guide_legend(title = "Method")) +
+      xlab("BUSCO score") +
+      ylab(expression(paste(RNA[seq], " alignment rate"))) 
+print(stie1st_biplot)
+ggsave(stie1st_biplot,file="Figure_8A.pdf",width=5.05,height=1.5)
 ```
 
-## Figure 8: transcripts with UTR blast hits over assembler UTRtoCDS / NCBI UTRtoCDS ratios
+## Figure 8B
 ```{r}
-cortest<-cor.test(data4sp$PcentTscriptsUtrBlastx,data4sp$PredUtrCdsRatio/data4sp$MedianUtrCdsRatio_ncbi)
-print(cortest)
-method_labels <- c(expression(Scallop[HISAT2]),expression(Scallop[STAR]),
-    expression(Stringtie[HISAT2]),expression(Stringtie[STAR]))
-data4sp <- data %>% filter(species %in% c("D. melanogaster","Z. mays","H. sapiens","A. thaliana")) %>%
-mutate(PcentTscriptsUtrBlastx=100*NumberTscriptUtrBlastxHitToSpecies/NumberCdsWithAnnotatedUtrs)
+methodlabels<-c("TOGA","TOGA+Stringtie",expression(paste("TOGA+Stringtie+",BRAKER[protein])))
+toga1st_biplot <- data %>% filter(method %in% c("toga","togastie","togastiebprot")) %>%
+      mutate(method=factor(method,levels=c("toga","togastie","togastiebprot")))%>%
+      ggplot(aes(x=busco_score,y=align_rate,color=method)) + 
+      geom_point(alpha=0.5,size=1.5) + 
+      scale_color_manual(labels=methodlabels,values=c("black","dodgerblue","blue")) +
+      theme(text=element_text(size=8),legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+      guides(color = guide_legend(title = "Method")) +
+      xlab("BUSCO score") +
+      ylab(expression(paste(RNA[seq], " alignment rate"))) 
+print(toga1st_biplot)
+ggsave(toga1st_biplot,file="Figure_8B.pdf",width=5,height=1.5)
+```
 
-utrratio_toblastxfrac_plot <- data4sp %>% ggplot() + 
-      geom_point(mapping=aes(y=PcentTscriptsUtrBlastx,x=PredUtrCdsRatio/MedianUtrCdsRatio_ncbi,color=method,shape=species)) +
-      xlab("Asssembler UTR-to-CDS ratio/NCBI UTR-to-CDS ratio") +
-      ylab("% transcripts with UTR BLASTX hits") +
-      scale_color_manual(labels=method_labels,values=c("lightskyblue", "royalblue3","darkorchid3", "magenta")) +
-     guides(color = guide_legend(title = "Method",order=1,label.theme = element_text(angle = 0, size=8,face = "plain"))) +
-     guides(shape = guide_legend(title = "Species",order=2,label.theme = element_text(angle = 0, size=8,face = "italic"))) +
-     theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm"))  +
-     theme(text = element_text(size=9)) +
-  geom_text(x=1.97,y=35,label=expression(paste("Pearson's ",rho,"=0.70, p=0.0026")),size=2.7)
+## Figure 8C
+```{r}
+methodlabels<-c(expression(Stringtie[STAR]),expression(paste("Stringtie+",BRAKER[RNA])),expression(paste("Stringtie+",BRAKER[RNA],"+",BRAKER[protein])))
+notoga_biplot <- data %>% filter(method %in% c("stiestar","stiebrna","stiebrnabprot"))  %>%
+      mutate(method=factor(method,levels=c("stiestar","stiebrna","stiebrnabprot")))%>%
+      ggplot(aes(x=busco_score,y=align_rate,color=method)) + 
+      geom_point(alpha=0.5,size=1.5) + 
+      scale_color_manual(labels=methodlabels,values=c("magenta","dodgerblue","blue")) +
+      theme(text=element_text(size=8),legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+      guides(color = guide_legend(title = "Method")) +
+      xlab("BUSCO score") +
+      ylim(0.76,0.77) +
+      ylab(expression(paste(RNA[seq], " alignment rate"))) 
+print(notoga_biplot)
+ggsave(notoga_biplot,file="Figure_8C.pdf",width=5.375,height=1.5)
+```
 
-print(utrratio_toblastxfrac_plot)
-ggsave(utrratio_toblastxfrac_plot,file="Figure8.tiff",width=5,height=3.5)
+## Figure 8D
+```{r}
+methodlabels<-c("TOGA",expression(paste("TOGA+",BRAKER[protein])))
+proteinonly_biplot <- data %>% filter(method %in% c("toga","togabprot")) %>%
+      mutate(method=factor(method,levels=c("toga","togabprot"))) %>%
+      ggplot(aes(x=busco_score,y=align_rate,color=method)) + 
+      geom_point(alpha=0.5,size=1.5) + 
+      scale_color_manual(labels=methodlabels,values=c("black","blue")) +
+      theme(text=element_text(size=8),legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+      guides(color = guide_legend(title = "Method")) +
+      xlab("BUSCO score") +
+      ylab(expression(paste(RNA[seq], " alignment rate"))) 
+print(proteinonly_biplot)
+ggsave(proteinonly_biplot,file="Figure_8D.pdf",width=4.75,height=1.5)
+```

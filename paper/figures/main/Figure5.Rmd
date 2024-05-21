@@ -1,6 +1,6 @@
 ---
   title: "Genome Annotation Project"
-subtitle: "Figure 5: fusion frequency "
+subtitle: "Figure 5: blast hit match coverage"
 date: "April 10, 2024"
 author: "Adam Freedman"
 output: 
@@ -58,13 +58,13 @@ methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(C
                 expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
 ```
 
-## Figure 5
+## Figure 5A: proportion blast hits to NCBI scatterplot
 ```{r}
-fusions_scatter <- data %>% ggplot(aes(x=species,y=(cds_gene_fusions+multi_cds_gene_fusions+multi_mix_gene_fusions)/protcod_genes)) + geom_point(aes(fill=method),color="black",pch=21,position = position_jitter(w = 0.3,h = 0),alpha=0.7,size=1.75) +
-    scale_fill_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray50","#000000")) + 
-theme(legend.text = element_text(hjust=0)) + 
-theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.32,face="italic")) + 
-ylab("Fusion frequency") +
+blastphit_plot <- data %>% ggplot(aes(x=species,y=100*blastp2NCBIfraction)) + geom_point(aes(fill=method),color="black",pch=21,position = position_jitter(w = 0.19,h = 0),alpha=0.7,size=2.3) +
+    scale_fill_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray76","#000000")) + 
+theme(legend.text.align = 0) + 
+theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,face="italic")) + 
+ylab("% predicted proteins blastp to NCBI") +
 xlab("") + 
 geom_vline(xintercept=3.5,linetype="solid") +
 geom_vline(xintercept=7.5,linetype="solid")+
@@ -72,7 +72,164 @@ geom_vline(xintercept=11.5,linetype="solid") +
 geom_vline(xintercept=14.5,linetype="solid") +
 guides(fill = guide_legend(title = "Method"))
 
+print(blastphit_plot)
+ggsave(blastphit_plot,file="Fgiure_5A.pdf",width=7,height=5)
+```
 
-print(fusions_scatter)
-ggsave(fusions_scatter,file="Figure5.pdf",width=6,height=4)
+## Figure 5B: protein match coverage: *H. sapiens*
+### data
+```{r}
+humandata <- read_table("human_blast_allmethods_output.tsv")
+humandata <- humandata %>% mutate(method=factor(method,levels=c("brkprot","brkrna","cgpprot",
+             "cgprna","scalhisat","scalstar","stiehisat","stiestar","maker","toga")))
+
+human_bystats <-read_table("human_byproteinstats_allmethods.tsv")
+human_bystats_blastmerge <-left_join(human_bystats,humandata,by = join_by(SeqId==qseqid,method)) %>%
+        mutate(matchtotarget=pident*length/ref_target_length) %>% 
+        drop_na() %>%
+        mutate(method=factor(method,levels=c("brkprot","brkrna","cgpprot",
+             "cgprna","scalhisat","scalstar","stiehisat","stiestar","maker","toga"))) %>%
+        mutate(Complete=factor(Complete,levels=c("N","Y"))) %>%
+        mutate(compositefactor=paste(method,Complete,sep=""))
+```
+#### pairwise wilcoxon tests by method
+```{r}
+brkprotY=human_bystats_blastmerge %>% filter(method=="brkprot" & Complete=="Y") %>% select(matchtotarget)
+brkprotN=human_bystats_blastmerge %>% filter(method=="brkprot" & Complete=="N") %>% select(matchtotarget)
+
+brkrnaY=human_bystats_blastmerge %>% filter(method=="brkrna" & Complete=="Y") %>% select(matchtotarget)
+brkrnaN=human_bystats_blastmerge %>% filter(method=="brkrna" & Complete=="N") %>% select(matchtotarget)
+
+cgpprotY=human_bystats_blastmerge %>% filter(method=="cgpprot" & Complete=="Y") %>% select(matchtotarget)
+cgpprotN=human_bystats_blastmerge %>% filter(method=="cgpprot" & Complete=="N") %>% select(matchtotarget)
+#
+cgprnaY=human_bystats_blastmerge %>% filter(method=="cgprna" & Complete=="Y") %>% select(matchtotarget)
+cgprnaN=human_bystats_blastmerge %>% filter(method=="cgprna" & Complete=="N") %>% select(matchtotarget)
+
+scalhisatY=human_bystats_blastmerge %>% filter(method=="scalhisat" & Complete=="Y") %>% select(matchtotarget)
+scalhisatN=human_bystats_blastmerge %>% filter(method=="scalhisat" & Complete=="N") %>% select(matchtotarget)
+
+scalstarY=human_bystats_blastmerge %>% filter(method=="scalstar" & Complete=="Y") %>% select(matchtotarget)
+scalstarN=human_bystats_blastmerge %>% filter(method=="scalstar" & Complete=="N") %>% select(matchtotarget)
+
+stiehisatY=human_bystats_blastmerge %>% filter(method=="stiehisat" & Complete=="Y") %>% select(matchtotarget)
+stiehisatN=human_bystats_blastmerge %>% filter(method=="stiehisat" & Complete=="N") %>% select(matchtotarget)
+
+stiestarY=human_bystats_blastmerge %>% filter(method=="stiestar" & Complete=="Y") %>% select(matchtotarget)
+stiestarN=human_bystats_blastmerge %>% filter(method=="stiestar" & Complete=="N") %>% select(matchtotarget)
+
+makerY=human_bystats_blastmerge %>% filter(method=="maker" & Complete=="Y") %>% select(matchtotarget)
+makerN=human_bystats_blastmerge %>% filter(method=="maker" & Complete=="N") %>% select(matchtotarget)
+
+togaY=human_bystats_blastmerge %>% filter(method=="toga" & Complete=="Y") %>% select(matchtotarget)
+togaN=human_bystats_blastmerge %>% filter(method=="toga" & Complete=="N") %>% select(matchtotarget)
+
+wilcox_pvalues <-c(wilcox.test(brkprotN$matchtotarget,brkprotY$matchtotarget)$p.value,wilcox.test(brkrnaN$matchtotarget,brkrnaY$matchtotarget)$p.value,wilcox.test(cgpprotN$matchtotarget,cgpprotY$matchtotarget)$p.value,wilcox.test(cgprnaN$matchtotarget,cgprnaY$matchtotarget)$p.value,wilcox.test(scalhisatN$matchtotarget,scalhisatY$matchtotarget)$p.value,wilcox.test(scalstarN$matchtotarget,scalstarY$matchtotarget)$p.value,wilcox.test(stiehisatN$matchtotarget,stiehisatY$matchtotarget)$p.value,wilcox.test(stiestarN$matchtotarget,stiestarY$matchtotarget)$p.value,wilcox.test(makerN$matchtotarget,makerY$matchtotarget)$p.value,wilcox.test(togaN$matchtotarget,togaY$matchtotarget)$p.value)
+
+bh_pvals <- p.adjust(wilcox_pvalues,method="BH")
+```
+### plot
+```{r}
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+human_matchoverlength_boxplot <- human_bystats_blastmerge %>% ggplot(aes(x=method,y=matchtotarget,fill=Complete)) +
+                  geom_boxplot(outlier.shape=NA) +
+                  xlab("") +
+                  ylab("NCBI protein match coverage (%)") +
+                  scale_x_discrete(labels=methodlabels) +
+                  theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.5,size=9)) +
+                  annotate("text",x=1,y=105, label="*",size=4) +
+                  annotate("text",x=2,y=105, label="*",size=4) + 
+                  annotate("text",x=3,y=105, label="*",size=4) + 
+                  annotate("text",x=4,y=105, label="*",size=4) + 
+                  annotate("text",x=5,y=105, label="*",size=4) +
+                  annotate("text",x=6,y=105, label="*",size=4) +
+                  annotate("text",x=7,y=105, label="*",size=4) +
+                  annotate("text",x=8,y=105, label="*",size=4) +
+                  annotate("text",x=10,y=105, label="*",size=4) +
+                  coord_cartesian(ylim=c(0,105),clip="off")
+      
+
+print(human_matchoverlength_boxplot)
+ggsave(human_matchoverlength_boxplot,file="Figure_5B.pdf",width=3.5,height=3.5)
+```
+
+## Figure 5c: protein match coverage: *Z. mays*
+### data
+```{r}
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+
+zmaysdata <- read_table("zmays/zmays_blast_allmethods_output.tsv")
+zmaysdata <- zmaysdata %>% mutate(method=factor(method,levels=c("brkprot","brkrna","cgpprot",
+             "cgprna","scalhisat","scalstar","stiehisat","stiestar","maker","toga")))
+
+zmays_bystats <-read_table("zmays/zmays_byproteinstats_allmethods.tsv")
+zmays_bystats_blastmerge <-left_join(zmays_bystats,zmaysdata,by = join_by(SeqId==qseqid,method)) %>%
+        mutate(matchtotarget=pident*length/ref_target_length) %>% 
+        drop_na() %>% 
+        mutate(method=factor(method,levels=c("brkprot","brkrna","cgpprot",
+             "cgprna","scalhisat","scalstar","stiehisat","stiestar","maker","toga")))  %>%
+        mutate(Complete=factor(Complete,levels=c("N","Y"))) %>%
+        mutate(compositefactor=paste(method,Complete,sep=""))
+```
+#### pairwise wilcoxon tests by method
+
+```{r}
+brkprotY=zmays_bystats_blastmerge %>% filter(method=="brkprot" & Complete=="Y") %>% select(matchtotarget)
+brkprotN=zmays_bystats_blastmerge %>% filter(method=="brkprot" & Complete=="N") %>% select(matchtotarget)
+
+brkrnaY=zmays_bystats_blastmerge %>% filter(method=="brkrna" & Complete=="Y") %>% select(matchtotarget)
+brkrnaN=zmays_bystats_blastmerge %>% filter(method=="brkrna" & Complete=="N") %>% select(matchtotarget)
+
+cgpprotY=zmays_bystats_blastmerge %>% filter(method=="cgpprot" & Complete=="Y") %>% select(matchtotarget)
+cgpprotN=zmays_bystats_blastmerge %>% filter(method=="cgpprot" & Complete=="N") %>% select(matchtotarget)
+
+cgprnaY=zmays_bystats_blastmerge %>% filter(method=="cgprna" & Complete=="Y") %>% select(matchtotarget)
+cgprnaN=zmays_bystats_blastmerge %>% filter(method=="cgprna" & Complete=="N") %>% select(matchtotarget)
+
+scalhisatY=zmays_bystats_blastmerge %>% filter(method=="scalhisat" & Complete=="Y") %>% select(matchtotarget)
+scalhisatN=zmays_bystats_blastmerge %>% filter(method=="scalhisat" & Complete=="N") %>% select(matchtotarget)
+
+scalstarY=zmays_bystats_blastmerge %>% filter(method=="scalstar" & Complete=="Y") %>% select(matchtotarget)
+scalstarN=zmays_bystats_blastmerge %>% filter(method=="scalstar" & Complete=="N") %>% select(matchtotarget)
+
+stiehisatY=zmays_bystats_blastmerge %>% filter(method=="stiehisat" & Complete=="Y") %>% select(matchtotarget)
+stiehisatN=zmays_bystats_blastmerge %>% filter(method=="stiehisat" & Complete=="N") %>% select(matchtotarget)
+
+stiestarY=zmays_bystats_blastmerge %>% filter(method=="stiestar" & Complete=="Y") %>% select(matchtotarget)
+stiestarN=zmays_bystats_blastmerge %>% filter(method=="stiestar" & Complete=="N") %>% select(matchtotarget)
+
+makerY=zmays_bystats_blastmerge %>% filter(method=="maker" & Complete=="Y") %>% select(matchtotarget)
+makerN=zmays_bystats_blastmerge %>% filter(method=="maker" & Complete=="N") %>% select(matchtotarget)
+
+togaY=zmays_bystats_blastmerge %>% filter(method=="toga" & Complete=="Y") %>% select(matchtotarget)
+togaN=zmays_bystats_blastmerge %>% filter(method=="toga" & Complete=="N") %>% select(matchtotarget)
+
+wilcox_pvalues <-c(wilcox.test(brkprotN$matchtotarget,brkprotY$matchtotarget)$p.value,wilcox.test(brkrnaN$matchtotarget,brkrnaY$matchtotarget)$p.value,wilcox.test(cgpprotN$matchtotarget,cgpprotY$matchtotarget)$p.value,wilcox.test(cgprnaN$matchtotarget,cgprnaY$matchtotarget)$p.value,wilcox.test(scalhisatN$matchtotarget,scalhisatY$matchtotarget)$p.value,wilcox.test(scalstarN$matchtotarget,scalstarY$matchtotarget)$p.value,wilcox.test(stiehisatN$matchtotarget,stiehisatY$matchtotarget)$p.value,wilcox.test(stiestarN$matchtotarget,stiestarY$matchtotarget)$p.value,wilcox.test(makerN$matchtotarget,makerY$matchtotarget)$p.value,wilcox.test(togaN$matchtotarget,togaY$matchtotarget)$p.value)
+
+bh_pvals <- p.adjust(wilcox_pvalues,method="BH")
+```
+### plot
+```{r}
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+zmays_matchoverlength_boxplot <- zmays_bystats_blastmerge %>% ggplot(aes(x=method,y=matchtotarget,fill=Complete)) +
+                  geom_boxplot(outlier.shape=NA) +
+                  xlab("") +
+                  ylab("NCBI protein match coverage (%)") +
+                  scale_x_discrete(labels=methodlabels) +
+                  theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.5,size=9)) +
+                  annotate("text",x=1,y=105, label="*",size=4) +
+                  annotate("text",x=2,y=105, label="*",size=4) + 
+                  annotate("text",x=3,y=105, label="*",size=4) + 
+                  annotate("text",x=4,y=105, label="*",size=4) + 
+                  annotate("text",x=5,y=105, label="*",size=4) +
+                  annotate("text",x=6,y=105, label="*",size=4) +
+                  annotate("text",x=7,y=105, label="*",size=4) +
+                  annotate("text",x=8,y=105, label="*",size=4) +
+                  annotate("text",x=9,y=105, label="*",size=4) +
+                  annotate("text",x=10,y=105, label="*",size=4) +
+                  coord_cartesian(ylim=c(0,105),clip="off")
+      
+
+print(zmays_matchoverlength_boxplot)
+ggsave(zmays_matchoverlength_boxplot,file="Figure_5C.pdf",width=3.5,height=3.5)
 ```
