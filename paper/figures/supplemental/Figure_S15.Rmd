@@ -1,0 +1,109 @@
+---
+  title: "Genome Annotation Project"
+subtitle: "Figure S15: TSEBRA performance metrics"
+date: "April 28,2024"
+author: "Adam Freedman"
+output: 
+  html_document: default
+---
+  
+  ## Set up
+```{r,,message=FALSE, warning=FALSE}
+setwd("/Users/adamfreedman/Dropbox/informatics/genome_annotation_evaluation/2023_plotsandcode/TSEBRA")
+library(tidyverse)
+```
+
+## Data cleaning
+```{r,,message=FALSE, warning=FALSE}
+annotations <-read_csv("../AnnotationMetricsMaster_2024.01.17.csv") 
+annotations <- annotations %>% select(!c(busco_score_raw,busco_score_ratio_raw,ts_match,ts_c,ts_k,ts_xs,
+                                         ts_m,ts_n,ts_j,ts_e,ts_o,ts_i,ts_u,ts_p,ts_y,ts_sensitivity_adj,
+                                         ts_precision_adj,locus_sensitivity_adj,locus_precision_adj,
+                                         ts_precision,locus_sensitivity,ts_sensitivity,locus_precision))
+
+annotations <- annotations %>% filter(method %in% c("BrkProt","BrkRNA","TSEBRA")) %>% 
+                               filter(group!="heliconines")
+
+genomeQC <-read_csv("../GenomeQcMetrics_2023.09.15.csv") 
+data <- annotations<-left_join(annotations,genomeQC,by = join_by(species==Species))
+
+data$method <- factor(data$method,levels=c("BrkProt","BrkRNA","TSEBRA"))
+
+data <- data %>% mutate(species = str_replace(species, "dmelanogaster", "D. melanogaster")) %>%
+              mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
+              mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
+              mutate(species = str_replace(species, "human", "H. sapiens")) %>%
+              mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
+              filter(species %in% c("H. sapiens","D. melanogaster","Z. mays","A. thaliana","G. gallus"))
+      
+             
+
+data <- data %>% mutate_at(vars(species),factor,levels=c("D. melanogaster", "A. thaliana", "Z. mays",
+                            "G. gallus","H. sapiens"))
+```
+
+### Figure S15_A: BUSCOs
+```{r}
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),"TSEBRA")
+busco_plot<-data %>% ggplot() + theme(text = element_text(size = 8))  +
+       geom_bar(aes(species,y=busco_score,fill=method),width=0.7,stat="identity",position="dodge",color="black") +
+       scale_fill_manual(labels=methodlabels,values=c("yellow2","#e69f00","blue")) +
+    theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,size=8,face="italic")) + 
+    ylab("BUSCO score") + xlab("") + scale_y_continuous(expand=c(0,0),limits=c(0,1.05)) + 
+    theme(legend.text.align = 0,legend.text=element_text(size=8),legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) + 
+    guides(fill = guide_legend(byrow = TRUE)) +
+    labs(fill = "Method") 
+print(busco_plot)
+ggsave(busco_plot,file="Figure_S15A.pdf",width=3,height=3)
+```
+
+
+### Figure S15B: proportion blastp hits
+```{r}
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),"TSEBRA")
+blastp_plot<-data %>% ggplot() + theme(text = element_text(size = 8))  +
+       geom_bar(aes(species,y=100*blastp2NCBIfraction,fill=method),width=0.7,stat="identity",position="dodge",color="black") +
+     scale_fill_manual(labels=methodlabels,values=c("yellow2","#e69f00","blue")) +
+    theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,size=8,face="italic")) + 
+    ylab("% proteins BLASTP to NCBI") + xlab("") + scale_y_continuous(expand=c(0,0),limits=c(0,105)) + 
+    theme(legend.text.align = 0,legend.text=element_text(size=8),legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) + 
+    guides(fill = guide_legend(byrow = TRUE)) +
+    labs(fill = "Method") 
+print(blastp_plot)
+ggsave(blastp_plot,file="Figure_S15B.pdf",width=3,height=3)
+```
+
+### Figure S15C: predicted genes intergenic
+```{r}
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),"TSEBRA")
+intergenic_plot<-data %>% ggplot() + theme(text = element_text(size = 8))  +
+       geom_bar(aes(species,y=100*intergenic_genes/protcod_genes,fill=method),width=0.7,stat="identity",position="dodge",color="black") +
+     scale_fill_manual(labels=methodlabels,values=c("yellow2","#e69f00","blue")) +
+    theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,size=8,face="italic")) + 
+    ylab("% predicted genes intergenic") + xlab("") + scale_y_continuous(expand=c(0,0),limits=c(0,105)) + 
+    theme(legend.text.align = 0,legend.text=element_text(size=8),legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) + 
+    guides(fill = guide_legend(byrow = TRUE)) +
+    labs(fill = "Method") 
+print(intergenic_plot)
+ggsave(intergenic_plot,file="Figure_S15C.pdf",width=3,height=3)
+```
+
+### Figure S15D: RNA-seq alignment rate
+```{r}
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),"TSEBRA")
+alignment_plot<-data %>% ggplot() + theme(text = element_text(size = 8))  +
+       geom_bar(aes(species,y=median_annot_align_noutr,fill=method),width=0.7,stat="identity",position="dodge",color="black") +
+     scale_fill_manual(labels=methodlabels,values=c("yellow2","#e69f00","blue")) +
+    theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,size=8,face="italic")) + 
+    ylab(expression(paste(RNA[seq]," alignment rate"))) + xlab("") + scale_y_continuous(expand=c(0,0),limits=c(0,0.75)) + 
+    theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.text=element_text(size=8),legend.key.size= unit(0.5, "cm")) + 
+    guides(fill = guide_legend(byrow = TRUE)) +
+    labs(fill = "Method") 
+print(alignment_plot)
+ggsave(alignment_plot,file="Figure_S15D.pdf",width=3,height=3)
+```
+
+
+
+
+
