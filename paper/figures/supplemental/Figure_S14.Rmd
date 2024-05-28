@@ -1,0 +1,75 @@
+---
+title: "Genome Annotation Project"
+subtitle: "Figure S14: predicted UTR-CDS length ratio vs NCBI ratio"
+date: "April 28, 2024"
+author: "Adam Freedman"
+output: 
+  html_document: default
+---
+
+## Set up
+```{r,message=FALSE, warning=FALSE}
+setwd("/Users/adamfreedman/Dropbox/informatics/genome_annotation_evaluation/2023_plotsandcode/utrs")
+library(tidyverse)
+```
+
+## Data cleaning
+```{r,,message=FALSE, warning=FALSE}
+annotations <-read_csv("../AnnotationMetricsMaster_2024.01.17.csv") 
+annotations <- annotations %>% select(!c(busco_score_raw,busco_score_ratio_raw))
+annotations <- annotations %>% filter(group!="heliconines") %>% filter(method %in% c("ScalHisat","ScalStar","StrHisat","StrStar"))
+pred_utrs <- annotations %>% select(species,group,method,MedianUtrCdsRatio,NumberCdsWithAnnotatedUtrs,NumberTscriptUtrBlastxHitToSpecies)
+pred_utrs <- pred_utrs %>% rename(PredUtrCdsRatio=MedianUtrCdsRatio)
+genomeQC <-read_csv("../GenomeQcMetrics_2023.09.15.csv")
+genome_utr <- genomeQC %>% select(Species,RefMedianUtrCdsRatio)
+
+data <-left_join(pred_utrs,genome_utr,by = join_by(species==Species))
+data <- data %>% mutate(species = str_replace(species, "dmelanogaster", "D. melanogaster")) %>%
+              mutate(species = str_replace(species, "dpseudoobscura", "D. pseudoobscura")) %>%  
+              mutate(species = str_replace(species, "dyakuba", "D. yakuba")) %>%
+              mutate(species = str_replace(species, "alyrata", "A. lyrata")) %>%
+              mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
+              mutate(species = str_replace(species, "boleracea", "B. oleracea")) %>%
+              mutate(species = str_replace(species, "crubella", "C. rubella")) %>%
+              mutate(species = str_replace(species, "osativa", "O. sativa")) %>%
+              mutate(species = str_replace(species, "sitalica", "S. italica")) %>%
+              mutate(species = str_replace(species, "bdistachyon", "B. distachyon")) %>%
+              mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
+              mutate(species = str_replace(species, "bmori", "B. mori")) %>%
+              mutate(species = str_replace(species, "herato", "H. erato")) %>%
+              mutate(species = str_replace(species, "dplexippus", "D. plexippus")) %>%
+              mutate(species = str_replace(species, "human", "H. sapiens")) %>%
+              mutate(species = str_replace(species, "macaque", "M. mulatta")) %>%
+              mutate(species = str_replace(species, "dog", "C. familiaris")) %>%
+              mutate(species = str_replace(species, "mouse", "M. musculus")) %>%
+              mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
+              mutate(species = str_replace(species, "quail", "C. japonica")) %>%
+              mutate(species = str_replace(species, "mallard", "A. platyrhynchos"))
+
+data <- data %>% mutate_at(vars(species),factor,levels=c("D. melanogaster","D. pseudoobscura",
+              "D. yakuba", "A. thaliana", "A. lyrata","B. oleracea","C. rubella","Z. mays","O. sativa","S. italica",
+               "B. distachyon", "G. gallus","A. platyrhynchos","C. japonica","H. sapiens","M. mulatta","C. familiaris","M. musculus","B. mori","H. erato","D. plexippus"))
+
+```
+## Figure
+```{r}
+method_labels <- c(expression(Scallop[HISAT2]),expression(Scallop[STAR]),
+    expression(Stringtie[HISAT2]),expression(Stringtie[STAR]))
+    
+pred_vs_ref_utrcds_plot<- data %>% ggplot() + 
+      geom_point(mapping=aes(x=species,y=PredUtrCdsRatio/RefMedianUtrCdsRatio,color=method),position = position_jitter(w = 0.15,h = 0),alpha=0.8,size=2) +
+      geom_hline(yintercept=1,linetype="dotted") +
+      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1,face="italic")) +
+      guides(color = guide_legend(title = "Method")) +
+      ylab("predicted UTR-CDS ratio/NCBI UTR-CDS ratio") +
+      xlab("") +
+      scale_color_manual(labels=method_labels,values=c("lightskyblue", "royalblue3","darkorchid3", "magenta")) +
+      theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm"))  +
+      geom_vline(xintercept=3.5,linetype="solid") +
+      geom_vline(xintercept=7.5,linetype="solid")+
+      geom_vline(xintercept=11.5,linetype="solid") +
+      geom_vline(xintercept=14.5,linetype="solid") 
+
+print(pred_vs_ref_utrcds_plot)
+ggsave(file="Figure_S14.pdf",width=6,height=5)
+```
