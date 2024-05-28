@@ -1,0 +1,233 @@
+---
+  title: "Genome Annotation Project"
+subtitle: "Figure S2: CDS length distributions"
+date: "April 10, 2024"
+author: "Adam Freedman"
+output: 
+  html_document: default
+---
+  
+## Set up
+```{r,,message=FALSE, warning=FALSE}
+currentdir=getwd()
+setwd(currentdir)
+library(tidyverse)
+``` 
+
+## Panel A
+```{r}
+concat_data <-read_table("wmethod_human_lengths_allmethods.tsv")
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"TOGA", "NCBI")
+
+linetypes<-c("brkprot" = "dotdash","brkrna"="dotdash","cgpprot"="dotdash","cgprna"="dotdash",
+             "scalhisat"="dotdash","scalstar"="dotdash","stiehisat"="dotdash","stiestar"="dotdash",
+              "maker"="dotdash","toga"="dotdash","ncbi"="solid")
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga","ncbi"))
+human_lengths_plot<-concat_data %>% ggplot(aes(x=length,after_stat(density),color=method,linetype=method)) + geom_freqpoly(binwidth=500,linewidth=0.8) +
+                theme_classic() +
+                xlim(0,5000) +
+                scale_color_manual(name="Method",labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray60","#000000","darkolivegreen4")) +
+                scale_linetype_manual(name="Method", labels=methodlabels, values=linetypes) +
+                xlab("CDS length") + ylab("Density") +
+                theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+                guides(color = guide_legend(override.aes = list(linetype = linetypes)))
+print(human_lengths_plot)
+ggsave(human_lengths_plot,file="Figure_S2A.pdf",width=4.5,height=3)
+```
+
+## Panel B
+```{r}
+concat_data <-read_table("dog_allmethods_lengths.tsv")
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"TOGA", "NCBI")
+
+linetypes<-c("brkprot" = "dotdash","brkrna"="dotdash","cgpprot"="dotdash","cgprna"="dotdash",
+             "scalhisat"="dotdash","scalstar"="dotdash","stiehisat"="dotdash","stiestar"="dotdash","toga"="dotdash","ncbi"="solid")
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","toga","ncbi"))
+dog_lengths_plot<-concat_data %>% ggplot(aes(x=length,after_stat(density),color=method,linetype=method)) + geom_freqpoly(binwidth=500,linewidth=0.8) +
+                theme_classic() +
+                xlim(0,5000) +
+                scale_color_manual(name="Method",labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","#000000","darkolivegreen4")) +
+                scale_linetype_manual(name="Method", labels=methodlabels, values=linetypes) +
+                xlab("CDS length") + ylab("Density") +
+                theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+                guides(color = guide_legend(override.aes = list(linetype = linetypes)))
+print(dog_lengths_plot)
+ggsave(dog_lengths_plot,file="Figure_S2B.pdf",width=4.5,height=3)
+```
+
+## Panel C
+```{r}
+concat_data <-read_table("wmethod_chicken_lengths_allmethods.tsv")
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA", "NCBI")
+
+linetypes<-c("brkprot" = "dotdash","brkrna"="dotdash","cgpprot"="dotdash","cgprna"="dotdash",
+             "scalhisat"="dotdash","scalstar"="dotdash","stiehisat"="dotdash","stiestar"="dotdash",
+              "maker"="dotdash","toga"="dotdash","ncbi"="solid")
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga","ncbi"))
+
+chicken_lengths_plot<-concat_data %>% ggplot(aes(x=length,after_stat(density),color=method,linetype=method)) + geom_freqpoly(binwidth=500,linewidth=0.8) +
+                theme_classic() +
+                xlim(0,5000) +
+                scale_color_manual(name="Method",labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray60","#000000","darkolivegreen4")) +
+                scale_linetype_manual(name="Method", labels=methodlabels, values=linetypes) +
+                xlab("CDS length") + ylab("Density") +
+                theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+                guides(color = guide_legend(override.aes = list(linetype = linetypes)))
+print(chicken_lengths_plot)
+ggsave(chicken_lengths_plot,file="Figure_S2C.pdf",width=4.5,height=3)
+```
+
+## Panel D
+```{r}
+concat_data <-read_table("wmethod_mallard_allmethods_lengths.tsv")
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"TOGA", "NCBI")
+
+linetypes<-c("brkprot" = "dotdash","brkrna"="dotdash","cgpprot"="dotdash","cgprna"="dotdash",
+             "scalhisat"="dotdash","scalstar"="dotdash","stiehisat"="dotdash","stiestar"="dotdash",
+              "toga"="dotdash","ncbi"="solid")
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","toga","ncbi"))
+mallard_lengths_plot<-concat_data %>% ggplot(aes(x=length,after_stat(density),color=method,linetype=method)) + geom_freqpoly(binwidth=500,linewidth=0.8) +
+                theme_classic() +
+                xlim(0,5000) +
+                scale_color_manual(name="Method",labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","#000000","darkolivegreen4")) +
+                scale_linetype_manual(name="Method", labels=methodlabels, values=linetypes) +
+                xlab("CDS length") + ylab("Density") +
+                theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+                guides(color = guide_legend(override.aes = list(linetype = linetypes)))
+print(mallard_lengths_plot)
+ggsave(mallard_lengths_plot,file="Figure_S2D.pdf",width=4.5,height=3)
+```
+
+## Panel E
+```{r}
+concat_data <-read_table("wmethod_zmays_allmethods.tsv")
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA","NCBI")
+
+linetypes<-c("brkprot" = "dotdash","brkrna"="dotdash","cgpprot"="dotdash","cgprna"="dotdash",
+             "scalhisat"="dotdash","scalstar"="dotdash","stiehisat"="dotdash","stiestar"="dotdash",
+              "maker"="dotdash","toga"="dotdash","ncbi"="solid")
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga","ncbi"))
+zmays_lengths_plot<-concat_data %>% ggplot(aes(x=length,after_stat(density),color=method,linetype=method)) + geom_freqpoly(binwidth=500,linewidth=0.8) +
+                theme_classic() +
+                xlim(0,5000) +
+                scale_color_manual(name="Method",labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray60","#000000","darkolivegreen4")) +
+                scale_linetype_manual(name="Method", labels=methodlabels, values=linetypes) +
+                xlab("CDS length") + ylab("Density") +
+                theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+                guides(color = guide_legend(override.aes = list(linetype = linetypes)))
+print(zmays_lengths_plot)
+ggsave(zmays_lengths_plot,file="Figure_S2E.pdf",width=4.5,height=3)
+```
+
+## Panel F
+```{r}
+concat_data <-read_table("osativa_allmethods_cdslengths.tsv")
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"TOGA", "NCBI")
+
+linetypes<-c("brkprot" = "dotdash","brkrna"="dotdash","cgpprot"="dotdash","cgprna"="dotdash",
+             "scalhisat"="dotdash","scalstar"="dotdash","stiehisat"="dotdash","stiestar"="dotdash","toga"="dotdash","ncbi"="solid")
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","toga","ncbi"))
+osativa_lengths_plot<-concat_data %>% ggplot(aes(x=length,after_stat(density),color=method,linetype=method)) + geom_freqpoly(binwidth=500,linewidth=0.8) +
+                theme_classic() +
+                xlim(0,5000) +
+                scale_color_manual(name="Method",labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","#000000","darkolivegreen4")) +
+                scale_linetype_manual(name="Method", labels=methodlabels, values=linetypes) +
+                xlab("CDS length") + ylab("Density") +
+                theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+                guides(color = guide_legend(override.aes = list(linetype = linetypes)))
+print(osativa_lengths_plot)
+ggsave(osativa_lengths_plot,file="Figure_S2F.pdf",width=4.5,height=3)
+```
+
+## Panel G
+```{r}
+concat_data <-read_table("wmethod_athaliana_allmethods_lengthtable.tsv")
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA", "NCBI")
+
+linetypes<-c("brkprot" = "dotdash","brkrna"="dotdash","cgpprot"="dotdash","cgprna"="dotdash",
+             "scalhisat"="dotdash","scalstar"="dotdash","stiehisat"="dotdash","stiestar"="dotdash",
+              "maker"="dotdash","toga"="dotdash","ncbi"="solid")
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga","ncbi"))
+athaliana_lengths_plot<-concat_data %>% ggplot(aes(x=length,after_stat(density),color=method,linetype=method)) + geom_freqpoly(binwidth=500,linewidth=0.8) +
+                theme_classic() +
+                xlim(0,5000) +
+                scale_color_manual(name="Method",labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray60","#000000","darkolivegreen4")) +
+                scale_linetype_manual(name="Method", labels=methodlabels, values=linetypes) +
+                xlab("CDS length") + ylab("Density") +
+                theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+                guides(color = guide_legend(override.aes = list(linetype = linetypes)))
+print(athaliana_lengths_plot)
+ggsave(athaliana_lengths_plot,file="Figure_S2G.pdf",width=4.5,height=3)
+```
+
+## Panel H
+```{r}
+concat_data <-read_table("crubella_allmethods_cdslengths.tsv")
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"TOGA", "NCBI")
+
+linetypes<-c("brkprot" = "dotdash","brkrna"="dotdash","cgpprot"="dotdash","cgprna"="dotdash",
+             "scalhisat"="dotdash","scalstar"="dotdash","stiehisat"="dotdash","stiestar"="dotdash","toga"="dotdash","ncbi"="solid")
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","toga","ncbi"))
+crubella_lengths_plot<-concat_data %>% ggplot(aes(x=length,after_stat(density),color=method,linetype=method)) + geom_freqpoly(binwidth=500,linewidth=0.8) +
+                theme_classic() +
+                xlim(0,5000) +
+                scale_color_manual(name="Method",labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","#000000","darkolivegreen4")) +
+                scale_linetype_manual(name="Method", labels=methodlabels, values=linetypes) +
+                xlab("CDS length") + ylab("Density") +
+                theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+                guides(color = guide_legend(override.aes = list(linetype = linetypes)))
+print(crubella_lengths_plot)
+ggsave(crubella_lengths_plot,file="Figure_S2H.pdf",width=4.5,height=3)
+```
+
+## Panel I
+```{r}
+concat_data <-read_table("wmethod_dmel_allmethods_lengths.tsv")
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER", "TOGA", "NCBI")
+
+linetypes<-c("brkprot" = "dotdash","brkrna"="dotdash","cgpprot"="dotdash","cgprna"="dotdash",
+             "scalhisat"="dotdash","scalstar"="dotdash","stiehisat"="dotdash","stiestar"="dotdash",
+              "maker"="dotdash","toga"="dotdash","ncbi"="solid")
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga","ncbi"))
+
+dmel_lengths_plot<-concat_data %>% ggplot(aes(x=length,after_stat(density),color=method,linetype=method)) + geom_freqpoly(binwidth=500,linewidth=0.8) +
+                theme_classic() +
+                xlim(0,5000) +
+                scale_color_manual(name="Method",labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray60","#000000","darkolivegreen4")) +
+                scale_linetype_manual(name="Method", labels=methodlabels, values=linetypes) +
+                xlab("CDS length") + ylab("Density") +
+                theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+                guides(color = guide_legend(override.aes = list(linetype = linetypes)))
+print(dmel_lengths_plot)
+ggsave(dmel_lengths_plot,file="Figure_S2I.pdf",width=4.5,height=3)
+```
+
+## Panel J
+```{r}
+concat_data <-read_table("dpseudo_allmethods_lengthtable.tsv")
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"TOGA", "NCBI")
+
+linetypes<-c("brkprot" = "dotdash","brkrna"="dotdash","cgpprot"="dotdash","cgprna"="dotdash",
+             "scalhisat"="dotdash","scalstar"="dotdash","stiehisat"="dotdash","stiestar"="dotdash","toga"="dotdash","ncbi"="solid")
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","toga","ncbi"))
+dpseudo_lengths_plot<-concat_data %>% ggplot(aes(x=length,after_stat(density),color=method,linetype=method)) + geom_freqpoly(binwidth=500,linewidth=0.8) +
+                theme_classic() +
+                xlim(0,5000) +
+                scale_color_manual(name="Method",labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","#000000","darkolivegreen4")) +
+                scale_linetype_manual(name="Method", labels=methodlabels, values=linetypes) +
+                xlab("CDS length") + ylab("Density") +
+                theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+                guides(color = guide_legend(override.aes = list(linetype = linetypes)))
+print(dpseudo_lengths_plot)
+ggsave(dpseudo_lengths_plot,file="Figure_S2J.pdf",width=4.5,height=3)
+```

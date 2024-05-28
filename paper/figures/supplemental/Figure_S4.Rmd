@@ -1,0 +1,50 @@
+---
+  title: "Genome Annotation Project"
+subtitle: "Figure S4: OOB error estimates for random forest ts classifiers"
+date: "April 10, 2024"
+author: "Adam Freedman"
+output: 
+  html_document: default
+---
+  
+## Set up
+```{r,,message=FALSE, warning=FALSE}
+currentdir=getwd()
+setwd(currentdir)
+library(tidyverse)
+``` 
+
+## Data
+```{r}
+confusion_matrix_data <-read_table("RandomForestErrorRatesMaster.tsv")
+confusion_matrix_data <- confusion_matrix_data %>% mutate(genic_class_error=genicFN/(genicFN+genicTP)) %>%
+     mutate(intergenic_class_error=intergenicFN/(intergenicFN+intergenicTP)) %>%
+     mutate(OOBerror=(genicFN+intergenicFN)/(genicFN+genicTP+intergenicFN+intergenicTP))
+
+confusion_matrix_data <- confusion_matrix_data %>% mutate(species = str_replace(species, "dmel", "D. melanogaster")) %>%
+    mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
+    mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
+    mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
+    mutate(species = str_replace(species, "human", "H. sapiens"))
+
+confusion_matrix_data$method <- factor(confusion_matrix_data$method,levels=c("brakerprot","brakerrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga"))
+
+confusion_matrix_data <- confusion_matrix_data %>% mutate(species=factor(species,levels=c("D. melanogaster","G. gallus","H. sapiens","A. thaliana","Z. mays")))
+```
+
+## Figure S4
+```{r}
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+oobplot <- confusion_matrix_data %>% ggplot(aes(x=species,y=OOBerror)) + geom_point(aes(color=method),position = position_jitter(w = 0.25,h = 0),alpha=0.75,size=2) +
+    scale_color_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray50","#000000")) + 
+    theme(legend.text.align = 0) + 
+    theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.32,size=10)) + 
+    ylab("Out-of-bag error rate") +
+    xlab("") + 
+    theme(legend.key = element_rect(fill = NA)) +
+    theme(axis.text.x = element_text(face = c("italic"))) + 
+    guides(color = guide_legend(title = "Method",order=1))
+print(oobplot)
+ggsave(oobplot,file="Figure_S4.pdf",width=5,height=6)
+```

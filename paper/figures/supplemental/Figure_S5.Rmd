@@ -1,0 +1,58 @@
+---
+  title: "Genome Annotation Project"
+subtitle: "Figure S5: OOB error estimates by class"
+date: "April 10, 2024"
+author: "Adam Freedman"
+output: 
+  html_document: default
+---
+  
+## Set up
+```{r,,message=FALSE, warning=FALSE}
+currentdir=getwd()
+setwd(currentdir)
+library(tidyverse)
+``` 
+
+## Data
+```{r}
+confusion_matrix_data <-read_table("RandomForestErrorRatesMaster.tsv")
+confusion_matrix_data <- confusion_matrix_data %>% mutate(genic_class_error=genicFN/(genicFN+genicTP)) %>%
+     mutate(intergenic_class_error=intergenicFN/(intergenicFN+intergenicTP)) %>%
+     mutate(OOBerror=(genicFN+intergenicFN)/(genicFN+genicTP+intergenicFN+intergenicTP))
+
+confusion_matrix_data <- confusion_matrix_data %>% mutate(species = str_replace(species, "dmel", "D. melanogaster")) %>%
+    mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
+    mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
+    mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
+    mutate(species = str_replace(species, "human", "H. sapiens"))
+
+confusion_matrix_data$method <- factor(confusion_matrix_data$method,levels=c("brakerprot","brakerrna","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga"))
+
+confusion_matrix_data <- confusion_matrix_data %>% mutate(species=factor(species,levels=c("D. melanogaster","G. gallus","H. sapiens","A. thaliana","Z. mays")))
+
+confusion_long <- pivot_longer(confusion_matrix_data, c(genic_class_error,intergenic_class_error), names_to="classtype", values_to="errorrate")
+confusion_long <- confusion_long %>% mutate(classtype=factor(classtype,levels=c("genic_class_error","intergenic_class_error")))
+```
+
+## Figure S5
+```{r}
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+
+error_labels=c("genic","intergenic")
+classerror_barplot <- confusion_long %>% 
+  ggplot() + geom_bar(aes(x=method,y=errorrate,fill=classtype),width=0.7,stat="identity",position="dodge",color="black") +
+    theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,size=8)) + 
+    scale_fill_manual(labels=error_labels,values=c("white","black")) +
+    ylab("Class error rate") + xlab("") + scale_y_continuous(expand=c(0,0),limits=c(0,1.05)) + 
+    theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) + 
+    guides(fill = guide_legend(byrow = TRUE)) +
+    labs(fill = "Genomic region") + scale_x_discrete(breaks=levels(confusion_long$method),labels=methodlabels) + 
+    facet_wrap(~species) +
+    theme(strip.text = element_text(face="italic"))
+  
+    print(classerror_barplot)
+    ggsave(classerror_barplot,file="Figure_S5.pdf",width=7,height=6)
+```
+

@@ -1,0 +1,85 @@
+---
+  title: "Genome Annotation Project"
+subtitle: "Figure 8: undetected CDS in UTRs"
+date: "April 10, 2024"
+author: "Adam Freedman"
+output: 
+  html_document: default
+---
+  
+## Set up
+```{r,,message=FALSE, warning=FALSE}
+currentdir=getwd()
+setwd(currentdir)
+library(tidyverse)
+library(scales)
+``` 
+
+## Data
+data <- read_csv("methodsintegration.csv")
+
+## Figure 8A
+```{r}
+methodlabels<-c(expression(Stringtie[STAR]),"Stringtie+TOGA",expression(paste("Stringtie+TOGA+",BRAKER[protein])))
+stie1st_biplot <- data %>% filter(method %in% c("stiestar","stietoga","stietogabprot")) %>%
+      mutate(method=factor(method,levels=c("stiestar","stietoga","stietogabprot")))%>%
+      ggplot(aes(x=busco_score,y=align_rate,color=method)) + 
+      geom_point(alpha=0.5,size=1.5) + 
+      ylim(0.75,0.78) +
+      scale_color_manual(labels=methodlabels,values=c("magenta","dodgerblue","blue")) +
+      theme(text=element_text(size=8),legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+      guides(color = guide_legend(title = "Method")) +
+      xlab("BUSCO score") +
+      ylab(expression(paste(RNA[seq], " alignment rate"))) 
+print(stie1st_biplot)
+ggsave(stie1st_biplot,file="Figure_8A.pdf",width=5.05,height=1.5)
+```
+
+## Figure 8B
+```{r}
+methodlabels<-c("TOGA","TOGA+Stringtie",expression(paste("TOGA+Stringtie+",BRAKER[protein])))
+toga1st_biplot <- data %>% filter(method %in% c("toga","togastie","togastiebprot")) %>%
+      mutate(method=factor(method,levels=c("toga","togastie","togastiebprot")))%>%
+      ggplot(aes(x=busco_score,y=align_rate,color=method)) + 
+      geom_point(alpha=0.5,size=1.5) + 
+      scale_color_manual(labels=methodlabels,values=c("black","dodgerblue","blue")) +
+      theme(text=element_text(size=8),legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+      guides(color = guide_legend(title = "Method")) +
+      xlab("BUSCO score") +
+      ylab(expression(paste(RNA[seq], " alignment rate"))) 
+print(toga1st_biplot)
+ggsave(toga1st_biplot,file="Figure_8B.pdf",width=5,height=1.5)
+```
+
+## Figure 8C
+```{r}
+methodlabels<-c(expression(Stringtie[STAR]),expression(paste("Stringtie+",BRAKER[RNA])),expression(paste("Stringtie+",BRAKER[RNA],"+",BRAKER[protein])))
+notoga_biplot <- data %>% filter(method %in% c("stiestar","stiebrna","stiebrnabprot"))  %>%
+      mutate(method=factor(method,levels=c("stiestar","stiebrna","stiebrnabprot")))%>%
+      ggplot(aes(x=busco_score,y=align_rate,color=method)) + 
+      geom_point(alpha=0.5,size=1.5) + 
+      scale_color_manual(labels=methodlabels,values=c("magenta","dodgerblue","blue")) +
+      theme(text=element_text(size=8),legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+      guides(color = guide_legend(title = "Method")) +
+      xlab("BUSCO score") +
+      ylim(0.76,0.77) +
+      ylab(expression(paste(RNA[seq], " alignment rate"))) 
+print(notoga_biplot)
+ggsave(notoga_biplot,file="Figure_8C.pdf",width=5.375,height=1.5)
+```
+
+## Figure 8D
+```{r}
+methodlabels<-c("TOGA",expression(paste("TOGA+",BRAKER[protein])))
+proteinonly_biplot <- data %>% filter(method %in% c("toga","togabprot")) %>%
+      mutate(method=factor(method,levels=c("toga","togabprot"))) %>%
+      ggplot(aes(x=busco_score,y=align_rate,color=method)) + 
+      geom_point(alpha=0.5,size=1.5) + 
+      scale_color_manual(labels=methodlabels,values=c("black","blue")) +
+      theme(text=element_text(size=8),legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
+      guides(color = guide_legend(title = "Method")) +
+      xlab("BUSCO score") +
+      ylab(expression(paste(RNA[seq], " alignment rate"))) 
+print(proteinonly_biplot)
+ggsave(proteinonly_biplot,file="Figure_8D.pdf",width=4.75,height=1.5)
+```

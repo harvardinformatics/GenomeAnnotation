@@ -1,0 +1,112 @@
+---
+  title: "Genome Annotation Project"
+subtitle: "Figure 1: BUSCO barplots"
+date: "April 10, 2024"
+author: "Adam Freedman"
+output: 
+  html_document: default
+---
+  
+## Set up
+```{r,,message=FALSE, warning=FALSE}
+currentdir=getwd()
+setwd(currentdir)
+library(tidyverse)
+``` 
+
+## Data
+```{r,,message=FALSE, warning=FALSE}
+annotations <-read_csv("GenomeAnnotationMetrics_final.csv")
+annotations <- annotations %>% filter(!method %in% c("BrkProt-unfilt","BrkProt-fullsupport","BrkRNA-unfilt",
+                                                     "BrkRNA-fullsupport","CGPdenovo","TSEBRA","MakerNoRnaNoEvm",
+                                                     "MakerRnaEvm","MakerNoRnaEvm")) 
+
+genomeQC <-read_csv("GenomeQcMetrics_final.csv") 
+data <- annotations<-left_join(annotations,genomeQC,by = join_by(species==Species))
+
+data$method <- factor(data$method,levels=c("BrkProt","BrkRNA","CGPprotein","CGPrnaseq",
+                                           "ScalHisat","ScalStar","StrHisat","StrStar","MakerRnaNoEvm","TOGA"))
+
+data <- data %>% mutate(species = str_replace(species, "dmelanogaster", "D. melanogaster")) %>%
+     mutate(species = str_replace(species, "dpseudoobscura", "D. pseudoobscura")) %>%  
+     mutate(species = str_replace(species, "dyakuba", "D. yakuba")) %>%
+     mutate(species = str_replace(species, "alyrata", "A. lyrata")) %>%
+     mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
+     mutate(species = str_replace(species, "boleracea", "B. oleracea")) %>%
+     mutate(species = str_replace(species, "crubella", "C. rubella")) %>%
+     mutate(species = str_replace(species, "osativa", "O. sativa")) %>%
+     mutate(species = str_replace(species, "sitalica", "S. italica")) %>%
+     mutate(species = str_replace(species, "bdistachyon", "B. distachyon")) %>%
+     mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
+     mutate(species = str_replace(species, "bmori", "B. mori")) %>%
+     mutate(species = str_replace(species, "herato", "H. erato")) %>%
+     mutate(species = str_replace(species, "dplexippus", "D. plexippus")) %>%
+     mutate(species = str_replace(species, "human", "H. sapiens")) %>%
+     mutate(species = str_replace(species, "macaque", "M. mulatta")) %>%
+     mutate(species = str_replace(species, "dog", "C. familiaris")) %>%
+     mutate(species = str_replace(species, "mouse", "M. musculus")) %>%
+     mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
+     mutate(species = str_replace(species, "quail", "C. japonica")) %>%
+     mutate(species = str_replace(species, "mallard", "A. platyrhynchos"))
+
+data <- data %>% mutate_at(vars(species),factor,levels=c("D. melanogaster","D. pseudoobscura",
+                                                         "D. yakuba", "A. thaliana", "A. lyrata","B. oleracea",
+                                                         "C. rubella","Z. mays","O. sativa","S. italica",
+                                                         "B. distachyon", "G. gallus","A. platyrhynchos",
+                                                         "C. japonica","H. sapiens","M. mulatta","C. familiaris",
+                                                         "M. musculus","B. mori","H. erato","D. plexippus"))
+```
+
+## 1A: vertebrates
+```{r}
+vertebrates_busco_barplot <- data %>% filter(group =="mammals" | group=="birds") %>% ggplot() + theme(text = element_text(size = 10))  +
+    geom_bar(aes(species,y=busco_score,fill=method),width=0.7,stat="identity",position="dodge",color="black") +
+     scale_fill_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray50","#000000")) +
+    theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1,size=8,face="italic")) + 
+    theme(axis.text.y=element_text(size=8)) + 
+    ylab("BUSCO score") + xlab("") + scale_y_continuous(expand=c(0,0),limits=c(0,1.05)) + 
+    theme(legend.text.align = 0,legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.35, "cm")) + 
+    guides(fill = guide_legend(byrow = TRUE)) +
+    labs(fill = "Method") 
+    
+
+
+print(vertebrates_busco_barplot)
+ggsave(file="Figure_1A.pdf",width=6,height=2.8)
+```
+
+## 1B: plants
+```{r}
+plants_busco_barplot <- data %>% filter(group =="rosids" | group=="monocots") %>% ggplot() + theme(text = element_text(size = 10))  +
+    geom_bar(aes(species,y=busco_score,fill=method),width=0.7,stat="identity",position="dodge",color="black") +
+     scale_fill_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray50","#000000")) +
+    theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1,size=8,face="italic")) + 
+    theme(axis.text.y=element_text(size=8)) + 
+    ylab("BUSCO score") + xlab("") + scale_y_continuous(expand=c(0,0),limits=c(0,1.05)) + 
+    theme(legend.text.align = 0,legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.35, "cm")) + 
+    guides(fill = guide_legend(byrow = TRUE)) +
+    labs(fill = "Method") 
+    
+
+
+print(plants_busco_barplot)
+ggsave(file="Figure_1B.pdf",width=6,height=2.7)
+```
+
+## 1C: insects
+```{r}
+insects_busco_barplot <- data %>% filter(group =="dipterans" | group=="heliconines") %>% mutate(busco_score=replace_na(busco_score,-1)) %>% ggplot() + theme(text = element_text(size = 10))  +
+    geom_bar(aes(species,y=busco_score,fill=method),width=0.7,stat="identity",position="dodge",color="black") +
+     scale_fill_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray50","#000000")) +
+    theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1,size=8,face="italic")) + 
+    theme(axis.text.y=element_text(size=8)) + 
+    ylab("BUSCO score") + xlab("") + scale_y_continuous(expand=c(0,0),limits=c(0,1.05)) + 
+    theme(legend.text.align = 0,legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.35, "cm")) + 
+    guides(fill = guide_legend(byrow = TRUE)) +
+    labs(fill = "Method") 
+    
+
+
+print(insects_busco_barplot)
+ggsave(file="Figure_1C.pdf",width=6,height=2.85)
+```
