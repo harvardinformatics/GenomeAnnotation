@@ -66,7 +66,7 @@ species_labels=c("D. melanogaster","A. thaliana","Z. mays","G. gallus","H. sapie
 alignratechange_noutr_plot <- data %>% filter(species %in% c("D. melanogaster","G. gallus","H. sapiens","A. thaliana","Z. mays")) %>%
         ggplot(aes(x=method,y=100*(medianalign_noutr_eval-median_annot_align_noutr))) + 
         geom_point(aes(color=species),position = position_jitter(w = 0.25,h = 0),alpha=0.7,size=2.5) +
-        scale_x_discrete("",labels=methodlabels) + 
+        scale_x_discrete("",labels=methodlabels) + 0
         scale_color_manual(labels=species_labels,values=c("darkorange","firebrick4", "lightskyblue", "darkorchid3", "magenta")) +
         theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,face="plain")) +
         ylab("Test - training alignment rate (%)") +

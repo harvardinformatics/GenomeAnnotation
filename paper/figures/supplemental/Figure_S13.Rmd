@@ -1,0 +1,81 @@
+---
+  title: "Genome Annotation Project"
+subtitle: "Figure S13: RNA-seq align rates with UTRs"
+date: "December 21, 2023"
+author: "Adam Freedman"
+output: 
+  html_document: default
+---
+  
+  ## Set up
+  ```{r,,message=FALSE, warning=FALSE}
+setwd("/Users/adamfreedman/Dropbox/informatics/genome_annotation_evaluation/2023_plotsandcode/TPM")
+library(tidyverse)
+```
+
+## Data cleaning
+```{r,,message=FALSE, warning=FALSE}
+annotations <-read_csv("../AnnotationMetricsMaster_2024.01.17.csv") 
+annotations <- annotations %>% select(!c(busco_score_raw,busco_score_ratio_raw,ts_match,ts_c,ts_k,ts_xs,
+                                         ts_m,ts_n,ts_j,ts_e,ts_o,ts_i,ts_u,ts_p,ts_y,ts_sensitivity_adj,
+                                         ts_precision_adj,locus_sensitivity_adj,locus_precision_adj,
+                                         ts_precision,locus_sensitivity,ts_sensitivity,locus_precision))
+
+annotations <- annotations %>% filter(!method %in% c("BrkProt-unfilt","BrkProt-fullsupport","BrkRNA-unfilt",
+                                                     "BrkRNA-fullsupport","CGPdenovo","TSEBRA","MakerNoRnaNoEvm",
+                                                     "MakerRnaEvm","MakerNoRnaEvm")) 
+
+genomeQC <-read_csv("../GenomeQcMetrics_2023.09.15.csv") 
+data <- annotations<-left_join(annotations,genomeQC,by = join_by(species==Species))
+
+data$method <- factor(data$method,levels=c("BrkProt","BrkRNA","CGPprotein","CGPrnaseq",
+                                           "ScalHisat","ScalStar","StrHisat","StrStar","MakerRnaNoEvm","TOGA"))
+
+data <- data %>% mutate(species = str_replace(species, "dmelanogaster", "D. melanogaster")) %>%
+  mutate(species = str_replace(species, "dpseudoobscura", "D. pseudoobscura")) %>%  
+  mutate(species = str_replace(species, "dyakuba", "D. yakuba")) %>%
+  mutate(species = str_replace(species, "alyrata", "A. lyrata")) %>%
+  mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
+  mutate(species = str_replace(species, "boleracea", "B. oleracea")) %>%
+  mutate(species = str_replace(species, "crubella", "C. rubella")) %>%
+  mutate(species = str_replace(species, "osativa", "O. sativa")) %>%
+  mutate(species = str_replace(species, "sitalica", "S. italica")) %>%
+  mutate(species = str_replace(species, "bdistachyon", "B. distachyon")) %>%
+  mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
+  mutate(species = str_replace(species, "bmori", "B. mori")) %>%
+  mutate(species = str_replace(species, "herato", "H. erato")) %>%
+  mutate(species = str_replace(species, "dplexippus", "D. plexippus")) %>%
+  mutate(species = str_replace(species, "human", "H. sapiens")) %>%
+  mutate(species = str_replace(species, "macaque", "M. mulatta")) %>%
+  mutate(species = str_replace(species, "dog", "C. familiaris")) %>%
+  mutate(species = str_replace(species, "mouse", "M. musculus")) %>%
+  mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
+  mutate(species = str_replace(species, "quail", "C. japonica")) %>%
+  mutate(species = str_replace(species, "mallard", "A. platyrhynchos"))
+
+data <- data %>% mutate_at(vars(species),factor,levels=c("D. melanogaster","D. pseudoobscura",
+                                                         "D. yakuba", "A. thaliana", "A. lyrata","B. oleracea","C. rubella","Z. mays","O. sativa","S. italica",
+                                                         "B. distachyon", "G. gallus","A. platyrhynchos","C. japonica","H. sapiens","M. mulatta","C. familiaris","M. musculus","B. mori","H. erato","D. plexippus"))
+```
+
+#### Figure
+```{r}
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+
+alignrate_withutr_plot <- data %>% filter(group!="heliconines") %>% ggplot() +
+           geom_point(aes(x=species,y=RefTsAlignPcod),shape=4,color="black",size=3.5) +
+           geom_point(aes(x=species,y= median_annot_alignrate_raw,color=method),position = position_jitter(w = 0.18,h = 0),alpha=0.7,size=2.5) +
+    scale_color_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray76","#000000")) + 
+theme(legend.text.align = 0) + 
+theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,face="italic")) + 
+ylab(expression(paste(RNA[seq]," alignment rate"))) +
+xlab("") + 
+guides(color = guide_legend(title = "Method")) +
+geom_vline(xintercept=3.5,linetype="solid") +
+geom_vline(xintercept=7.5,linetype="solid")+
+geom_vline(xintercept=11.5,linetype="solid") +
+geom_vline(xintercept=14.5,linetype="solid") 
+
+print(alignrate_withutr_plot)
+ggsave(alignrate_withutr_plot,file="Figure_S13.pdf",width=6,height=4)
+```
