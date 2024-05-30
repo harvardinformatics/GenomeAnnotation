@@ -149,3 +149,33 @@ target_isoforms=$6 # tsv file with CDS gene and transcript id as columns
 
 /PATH/TO/TOGA/toga.py $chainfile $targetCDSbed $target2bit $query2bit --kt --pn $outname -i $targert_isoforms  --nc /PATH/TO/TOGA/NEXTFLOW_CONFIG_FILES_DIRECTORY --cb 10,100 --cjn 750 
 ```
+
+## 10 Filter annotation.bed file
+The output of TOGA is the *annotation.bed* file. This file contains predictions for which ortholog classification was not possible, indicative that they are likely to be of poor quality. Thus, we filter out these annotations with [FilterTogaAnnotationBedFile.py](https://github.com/harvardinformatics/AnnotationTOGA/blob/main/utilities/FilterTogaAnnotationBedFile.py) as follows:
+
+```bash
+python FilterTogaAnnotationBedFile.py -bedin annotation.bed -orthotable orthology_classification.tsv
+```
+
+## 11. Convert TOGA annotation bed file to gff3
+We use two UCSC tools and gffread to convert from bed to genepred format, genepred to gtf, and gtf to gff3, respectively.
+
+### Convert bed to genepred
+```bash
+conda create -n ucsc-tools -bioconda ucsc-bedToGenePred ucsc-genepredtogtf
+source activate ucsc-bedToGenePred
+bedToGenePred filtered_annotation.bed filtered_annotation.genepred
+genePredToGtf file filtered_annotation.genepred filtered_annotation.gtf
+conda deactivate
+
+conda create -n gffread -c bioconda gffread
+source activate gffread
+gffread filtered_annotation.gtf filtered_annotation.gff3
+```
+
+## 12. Add gene features to TOGA gff3
+There are, by definition, no gene features in the annotation.bed file, but we can use the orthology_classification.tsv table to add them to th filtered_annotation.gff3 file we have created, enabling downstream tools that require parent features, e.g. expression analyses. We do this with [AddGeneFeatureToTogaGff3.py](https://github.com/harvardinformatics/AnnotationTOGA/blob/main/utilities/AddGeneFeatureToTogaGff3.py). Genes in TOGA are labelled as "regions".
+
+```bash
+python AddGeneFeatureToTogaGff3.py -gff3 filtered_annotation.gff3 -ortho-table orthology_classification.tsv
+```    
