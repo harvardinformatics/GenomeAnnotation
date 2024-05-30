@@ -21,11 +21,6 @@ Our specific objectives with respect to methods comparisons are to:
 * Assess impact of RNA-seq integration on annotation quality
     * Maker3,Braker, Comparative Augustus
 * Assess impact on annotation quality of integrating multiple annotation sources
-    * [Mikado](https://github.com/EI-CoreBioinformatics/mikado)
-    * [EvidenceModeler](https://evidencemodeler.github.io/)
-* Enhance reproducibility and ease of deployment on HPC clusters of top performing pipelines by providing
-    * Snakemake pipelines
-    * Singularity containers
 
 
 ## Target species and data
