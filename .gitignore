@@ -2,3 +2,4 @@ __pycache__
 *.code-workspace
 *.snakemake*
 genome_alignment/cactus-gpu-snakemake/*test*
+.DS_Store
