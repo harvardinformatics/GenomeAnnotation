@@ -1,6 +1,8 @@
-# GenomeAnnotation
-## Objectives and strategy
-The objective of this project is to evaluate the performance of alternative pipelines for performing genome annotation, with an end goal of providing best practice workflows for those seeking to annotate novel genomes, or update annotations to those that already have a draft annotation. We evaluate both methods that directly use comparative information summarized in whole-genome alignments, as well as single-genome annotation tools that employ some combination of homology information obtained from protein sequences, splice hints obtained from RNA-seq data, and ab initio prediction.
+# Genome annotation performance assessment
+The information below describes the motivations and analyses found in our preprint on **bioRxiv**,[Building better genome annotations across the tree of life](https://www.biorxiv.org/content/10.1101/2024.04.12.589245v1.full).
+
+## Objectives
+Our objectives is to evaluate the performance of alternative pipelines for performing genome annotation, with an end goal of providing best practice workflows for those seeking to annotate novel genomes, or update annotations to those that already have a draft annotation. We evaluate both methods that directly use comparative information summarized in whole-genome alignments, as well as single-genome annotation tools that employ some combination of homology information obtained from protein sequences, splice hints obtained from RNA-seq data, and ab initio prediction.
 
 With respect to testing of specific bioinformatics tools, our strategy is to first evaluate a broad set of avaialble tools using a dataset typical of a non-model organism study, for which genomes may be preliminary draft versions, and for which there are no high quality genome annotations. It is worth noting that standard tools for genome annotation are typically benchmarked with model organisms, such that published performance represents a best-case scenario. Secondly, in the absence of gold standard annotations, there is no "truth set" with which to compare predicted gene models in order to produce standard performance metrics (sensitivity, specificity, etc.). Our initial evaluation data set consists of four butterfly genomes, including a putative reference species (see below).
 
@@ -18,8 +20,8 @@ Our specific objectives with respect to methods comparisons are to:
     * Transcript assembly from RNA-seq
         * [StringTie](https://ccb.jhu.edu/software/stringtie/)
         * [Scallop](https://github.com/Kingsford-Group/scallop)
-* Assess impact of RNA-seq integration on annotation quality
-    * Maker3,Braker, Comparative Augustus
+* Assess impact of including RNA-seq integration on annotation quality
+    * Maker3, Braker,Comparative Augustus
 * Assess impact on annotation quality of integrating multiple annotation sources
 
 
