@@ -52,9 +52,9 @@ conda deactivate
 ``` 
 
 ### 4c. Create CDS-only annotation bed file
-To do this, we have created a python script that takes the CDS isoform table and the reference annotation bed file as the first and second command line arguments. [FilterAnnotationBedForCDS.py](https://github.com/harvardinformatics/GenomeAnnotation-TOGA/blob/main/utilities/FilterAnnotationBedForCDS.py) can be run as follows:
+To do this, we have created a python script that takes the CDS isoform table and the reference annotation bed file as the first and second command line arguments. [FilterReferenceAnnotationBedForCDS.py](https://github.com/harvardinformatics/AnnotationTOGA/blob/main/utilities/FilterReferenceAnnotationBedForCDS.py) can be run as follows:
 ```
-python FilterAnnotationBedForCDS.py human_CDS_isoforms.tsv human.bed
+python FilterReferenceAnnotationBedForCDS.py human_CDS_isoforms.tsv human.bed
 ```
 
 ## 5. Create 2bit files for both genomes
