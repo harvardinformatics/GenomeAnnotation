@@ -8,13 +8,13 @@ The current version of Maker gives one the option of running [EVidenceModeler](h
 More generally, and especially in light of scientific literature and firsthand reports indicating poor performance by Maker, we sought to run as robust a pipeline as possible. For example, we did not simply run Maker once with a single selected Augustus species parameter set. Instead, we largely adopted a two-pass approach, modified from a detailed protocol provided by [Daren Card](https://gist.github.com/darencard/bb1001ac1532dd4225b030cf0cd61ce2). Outputs from the first pass are used as the basis for training two *ab initio* prediction tools: Augustus, SNAP. The second pass uses parameters learned from the first pass for Augustus and SNAP. As an extension of Daren Card's protocol, we also provide Hidden Markov Model parameters for a third predictor, [Genemark-ES](http://exon.gatech.edu/GeneMark/gmes_instructions.html). 
 
 ## Genemark-ES
-When one wishes to include Genemark predictions in the Maker pipeline, there are a few different versions of the Genemark algorithm to consider. We use GenemarkES because Maker was designed to support this version [see this thread](https://groups.google.com/g/maker-devel/c/CFmls8P3FAY/m/py3xLniPCAAJ), and we are unaware of extensive testing using other approaches such as Genemark-ET (using RNA-seq data) or Genemark-EP, which is used by Braker2 and incorporates evidence from protein data. Genemark-ES takes as its only input the genome sequence. An example job script for running Genemark on the Harvard Cannon cluster is [genemarkES.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/Maker/slurm_scripts/genemarkES.sh), and can be run as follows:
+When one wishes to include Genemark predictions in the Maker pipeline, there are a few different versions of the Genemark algorithm to consider. We use GenemarkES because Maker was designed to support this version [see this thread](https://groups.google.com/g/maker-devel/c/CFmls8P3FAY/m/py3xLniPCAAJ), and we are unaware of extensive testing using other approaches such as Genemark-ET (using RNA-seq data) or Genemark-EP, which is used by Braker2 and incorporates evidence from protein data. Genemark-ES takes as its only input the genome sequence. An example job script for running Genemark on the Harvard Cannon cluster is [genemarkES.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/FreedmanSackton_2024/Maker/slurm_scripts/genemarkES.sh), and can be run as follows:
 
 ```bash
 sbatch genemarkES.sh genome.fa
 ```
 ## Maker: round1
-For a particular dataset, and depending upon whether annotation is performed only with external protein evidence or also with RNA-seq evidence, in the maker_opts.ctl file we specify the protein fasta and the transcript assembly gff3 files, respectively. For the latter, we use a Stringtie assembly merged across samples and based upon spliced RNA-seq read alignments generated with STAR. Generic control files are provided [here](https://github.com/harvardinformatics/GenomeAnnotation/tree/master/Maker/control_files), with run-specific maker_opts.ctl files located in the opts directory. The first round is executed with [maker.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/Maker/slurm_scripts/maker.sh) from the same directory where the control files for the analysis run are stored:
+For a particular dataset, and depending upon whether annotation is performed only with external protein evidence or also with RNA-seq evidence, in the maker_opts.ctl file we specify the protein fasta and the transcript assembly gff3 files, respectively. For the latter, we use a Stringtie assembly merged across samples and based upon spliced RNA-seq read alignments generated with STAR. Generic control files are provided [here](https://github.com/harvardinformatics/GenomeAnnotation/tree/master/FreedmanSackton_2024/Maker/control_files), with run-specific maker_opts.ctl files located in the opts directory. The first round is executed with [maker.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/FreedmanSackton_2024/Maker/slurm_scripts/maker.sh) from the same directory where the control files for the analysis run are stored:
 
 ```bash
 sbatch maker.sh
@@ -48,7 +48,7 @@ where datastore_index is the full path to the datastore_index.log file.
 Following guidance from the Maker developers, we perform no filtering with this command (that would typically be implemented with -x and -l arguments) by using the -n switch, as filtering can lead to zero-sized output files, i.e. no useable results. This is particularly the case when using protein data. To make analyses comparable, we use -n even when we supply RNA-seq transcript assemblies as evidence. See [this thread](http://yandell-lab.org/pipermail/maker-devel_yandell-lab.org/2013-December/004663.html) for more details. 
 
 
-We run it using [maker-snap-training.sh](https://github.com/harvardinformatics/GenomeAnnotation/tree/master/Maker/slurm_scripts/maker-snap-training.sh):
+We run it using [maker-snap-training.sh](https://github.com/harvardinformatics/GenomeAnnotation/tree/master/FreedmanSackton_2024/Maker/slurm_scripts/maker-snap-training.sh):
 
 ```bash
 sbatch maker-snap-training.sh $datastore_index
@@ -88,7 +88,7 @@ busco -c 16 -m genome --long --augustus --augustus_species heliconius_melpomene1
 
 where $outstring is the input fasta file prefix, $tscriptfasta is the name of the transriptome fasta generated with the above bedtools command, and the directory specified after the -l is the BUSCO database of interest, in this case the one for lepidoptera.
 
-This command is wrapped in [BUSCO-augustus-training-butterflies.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/Maker/slurm_scripts/maker-snap-training.sh) and can be executed as follows:
+This command is wrapped in [BUSCO-augustus-training-butterflies.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/FreedmanSackton_2024/Maker/slurm_scripts/maker-snap-training.sh) and can be executed as follows:
 
 ```bash
 sbatch BUSCO-augustus-training-butterflies.sh $mytranscriptomefasta
