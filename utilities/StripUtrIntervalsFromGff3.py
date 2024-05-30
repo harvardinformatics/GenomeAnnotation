@@ -7,33 +7,17 @@ fields = ['seqid', 'source', 'type', 'start',
 
 
 def ParseAttributes(linedict):
+    """
+    parser for the attributes field (column 9)
+    of a gff3 file
+    """
     attribute_list = linedict['attributes'].split(';')
     attribute_dict = {}
     for attribute in attribute_list:
         key,value = attribute.split('=')
         attribute_dict[key] = value
     return attribute_dict
-"""
-def BuildGeneIntervalDict(gene_interval_dict,mrna_linedict,mrna_attribute_dict):
-    if 'geneID' in mrna_attribute_dict:
-        geneid = mrna_attribute_dict['geneID']
-    elif 'Parent' in mrna_attribute_dict:
-        geneid = mrna_attribute_dict['Parent']
-    else:
-        raise ValueError("gene id key not in attribute_dict")
     
-    start = int(mrna_linedict['start'])
-    end = int(mrna_linedict['end'])
-    if geneid in gene_interval_dict:
-        gene_interval_dict[geneid]['start'] = min(gene_interval_dict[geneid]['start'],start)
-        gene_interval_dict[geneid]['end'] = max(gene_interval_dict[geneid]['end'],end) 
-    else:
-        gene_interval_dict[geneid] = {'start': start, 'end': end}
-    
-    return gene_interval_dict   
-"""
-
-
 def BuildTranscriptCDSIntervalDict(cdsbed):
     tscript_cds_intervals = {}
     fopen = open(cdsbed,'r')
@@ -120,12 +104,15 @@ if __name__=="__main__":
                     linelist = []
                     for key in linedict:
                         linelist.append(str(linedict[key]))
-                    #fout.write('%s\n' % ('\t'.join(linelist)))
+                    
+                    ### setting of gene id ###
                     if 'geneID' in attribute_dict:
                         geneid = attribute_dict['geneID']
                         
                     else:
                         geneid = attribute_dict['Parent']
+                    #########################
+
                     if geneid not in genes_2ndpass:
                         genedict = linedict.copy()
                         genedict['type'] = 'gene'
