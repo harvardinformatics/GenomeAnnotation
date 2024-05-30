@@ -151,7 +151,7 @@ target_isoforms=$6 # tsv file with CDS gene and transcript id as columns
 /PATH/TO/TOGA/toga.py $chainfile $targetCDSbed $target2bit $query2bit --kt --pn $outname -i $targert_isoforms  --nc /PATH/TO/TOGA/NEXTFLOW_CONFIG_FILES_DIRECTORY --cb 10,100 --cjn 750 
 ```
 
-## 10 Filter annotation.bed file
+## 10. Filter annotation.bed file
 The output of TOGA is the *annotation.bed* file. This file contains predictions for which ortholog classification was not possible, indicative that they are likely to be of poor quality. Thus, we filter out these annotations with [FilterTogaAnnotationBedFile.py](https://github.com/harvardinformatics/AnnotationTOGA/blob/main/utilities/FilterTogaAnnotationBedFile.py) as follows:
 
 ```bash
