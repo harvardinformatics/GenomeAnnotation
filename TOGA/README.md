@@ -139,6 +139,7 @@ Be sure to consult the TOGA github repository for further details regarding how 
 
 Finally, to run TOGA, a script should be run that looks like this
 
+```
 #!/bin/bash
 chainfile=$1
 targetCDSbed=$2 # remember, the target is the annotated reference genome from which annotations will be transferred to your query genome
