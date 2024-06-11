@@ -75,6 +75,8 @@ singularity exec --cleanenv ${AUGUSTUS_IMAGE} augustus --species=${augustus_spec
 where *augustus_species* specifies the predefined species model (and associated HMM parameters) for running CGP, *tree* is a newick-formatted tree of the genome alignment, *genomes_tbl* is a tab-delimited table of species name and path to species genome fasta on each row, and *sqldb* is the sql database built following the Augustus developers guidelines, that includes the genomes, and their associated hints data. 
 
 
+We then merged multi-species annotations generated for each MAF file, generating one *gff* file per species, using the Augustus *joingenes* program, following Augustus developer guidelines found [here](http://bioinf.uni-greifswald.de/augustus/binaries/tutorial-cgp/de_novo.html#merge).
+
 ## RNA-seq only
 ### Hint creation
 To generate RNA-seq derived splice-site hints for Augustus is a multi-step process which present computational challenges. We have implemented changes to tools within the Augustus distribution in order for them to handle contemporary, increasingly large RNA-seq datasets in a time-efficient manner. 
