@@ -95,3 +95,36 @@ sbatch BUSCO-augustus-training-butterflies.sh $mytranscriptomefasta
 ```
 
 and should be modified to point to a different BUSCO database if working on a different taxonomic group for which there is a more appropriate database.
+
+## MAKER: round2
+
+A few additional steps were taken before starting the second round of MAKER. First, had to rename the filenames in some of the AUGUSTUS configuration files produced by BUSCO, such that those files have the new AUGUSTUS species name as their prefix [see Daren Card gist example](https://gist.github.com/darencard/bb1001ac1532dd4225b030cf0cd61ce2#augustus). Next, we nee to extract repeat,protein2genome, and if used, RNA-seq evidence (EST) lines from the BRAKER output from round 1. For example, since we used a Stringtie-generated annotation gff3 as RNA-seq evidence, one needs to do the following (with the appropriate round1 output file names ... of course!):
+
+```bash
+awk '$2=="est_gff:stringtie"{print $0}' maker_round1_noseq.gff > maker_round1_stringtie.gff
+awk '$2=="protein2genome"{print $0}' maker_round1_noseq.gff > maker_round1_protein2genome.gff 
+awk '{ if ($2 ~ "repeat") print $0 }' maker_round1_noseq.gff > maker_round1_repeats.gff
+```
+
+Next, we modified the control files such that:
+1. For the protein evidence section, we do not supply a protein fasta for alignment, but maker_round1_protein2genome.gff
+2. For the EST evidence section, we replace the original Stringtie gff file with maker_round1_stringtie.gff
+3. For the repeat section, we do not provide an organism name for running RepeatMasker, but provide maker_round1_repeats.gff
+
+We also provide the path to the SNAP HMM file, as well as the AUGUSTUS species name. This name will be the same as the directory name we chose for the model parameters directory we copied from the output of BUSCO (above). We then execute MAKER with a singularity container, making the slight modification that we mount the AUGUSTUS species directory such that is within the directory where AUGUSTUS has all of the default species directories, i.e. so when MAKER calls AUGUSTUS, when it goes looking for your species model parameter file, it can find it.
+
+
+The content of the script for executing the second round of MAKER looks like this:
+```bash
+
+MAKER_IMAGE=/PATH/TO/MY/Maker.sif
+
+# Submit this job script from the directory with the MAKER control files
+
+# RepeatMasker setup (if not using RepeatMasker, optionally comment-out these three lines)
+export SINGULARITYENV_LIBDIR=${PWD}/LIBDIR
+mkdir -p LIBDIR
+singularity exec ${MAKER_IMAGE} sh -c 'ln -sf /usr/local/share/RepeatMasker/Libraries/* LIBDIR'
+
+singularity exec --no-home --home /opt/gm_key --cleanenv --bind /PATH/TO/MY/NEWSPECIESDIRECTORY:/usr/local/config/species/NEWSPECIESDIRECTORY ${MAKER_IMAGE} mpiexec -n $((SLURM_CPUS_ON_NODE*3/4)) maker -fix_nucleotides -nodatastore
+```
