@@ -79,18 +79,18 @@ We then merged multi-species annotations generated for each MAF file, generating
 
 ## RNA-seq only
 ### Hint creation
-To generate RNA-seq derived splice-site hints for Augustus is a multi-step process which present computational challenges. We have implemented changes to tools within the Augustus distribution in order for them to handle contemporary, increasingly large RNA-seq datasets in a time-efficient manner. 
+We generated RNA-seq derived splice-site hints for Augustus using the following steps, which follow the recommendations found in [Hoff and Stanke, 2019](https://pubmed.ncbi.nlm.nih.gov/30466165/). 
 
-After using samtools to merge the bamfiles of interest, one has to sort them bam-file by sequence name rather that coordinate order. In the directory where the merged bam is, first create a tmp directory:
-```bash
-mkdir tmp
-```
-Next, use samtools to namesort the bam file, using our script [namesortbam.sh]():
+First, we used *samtools* to merge sample-level bam files. 
+
+Next, we use *samtools* to sort the merged bam file by read name using a SLURM script [namesortbam.sh]ttps://github.com/harvardinformatics/GenomeAnnotation/blob/master/FreedmanSackton_2024/ComparativeAugustus/slurm_scripts/namesortbam.sh), run simply as follows:
+
 ```bash
 sbatch namesortbam.sh $mymergedbam
 ```
 
-After name-sorting, the bam file needs to be filtered. We have modified the original [filterBam](https://github.com/nextgenusfs/augustus/tree/master/auxprogs/filterBam) code to [filterBam-zlib-ng-2:LINK NOT YET ADDED] in order to speed up filtering. We execute this updated version from within a singularity image,oneapi-hpckit_2021.2-devel-centos8.sif, available at: . To execute this step we use [filterbam_FAS_informatics_version.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/ComparativeAugustus/slurm_scripts/filterbam_FAS_informatics_version.sh) run as follows:
+After name-sorting, we filtered the bam file with [filterBam](https://github.com/nextgenusfs/augustus/tree/master/auxprogs/filterBam), executed in a SLURM script[filterbam.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/FreedmanSackton_2024/ComparativeAugustus/slurm_scripts/filterbam.sh), run as follows:
+
 ```bash
 sbatch filterbam_FAS_informatics_version.sh $mymergeddbam
 ```
@@ -100,7 +100,7 @@ After filtering the bam file, we then generate "intron part" hints by running th
 sbatch bam2hints $myfilteredbam
 ``` 
 
-To generate "exon part" hints, we then resort the filtered bam file back into coordinate order with [coordsortbam.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/ComparativeAugustus/slurm_scripts/coordsortbam.sh):
+We then generate "exon part" hints. To do so, we first esort the filtered bam file back into coordinate order with [coordsortbam.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/ComparativeAugustus/slurm_scripts/coordsortbam.sh):
 ```bash
 mkdir tmp
 sbatch coordsortbam.sh $myfilteredbam
@@ -114,3 +114,5 @@ Finally, we convert the wig file into a gff formatted hints file with wig2hints.
 ```bash
 sbatch wig2hints.sh $mywigfile
 ```
+### Running CGP
+Similar to how we ran CGP with protein hints, we supply an RNA-seq tailored parameter file, and command line arguments pointing to sql database, genomes table, tree file, and an Augustus species. An example parameter file, that we used with our mammals data is [extrinsic-rnaseq_mammals.cfg](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/FreedmanSackton_2024/ComparativeAugustus/misc/extrinsic-rnaseq_mammals.cfg), and the CGP job is run with the SLURM script [RunCgpWithRNAseqHints.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/FreedmanSackton_2024/ComparativeAugustus/slurm_scripts/RunCgpWithRNAseqHints.sh), after which *joingenes* is used to merge predictions.
