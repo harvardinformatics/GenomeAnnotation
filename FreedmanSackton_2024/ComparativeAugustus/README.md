@@ -49,12 +49,30 @@ sbatch Align2hints.sh
 ```
 This script looks for the align_gth directory produced during the alignment step so run it from the same directory where the alignment is located.
 
+### Running CGP
+We followed recommendations by the AUGUSTUS developers (see link above) whereby we split the alignment into chunks and converting it to maf ... leading to a number of smaller, more tractable MAF files, such that their boundaries did not intersect known gene coordinates for the reference species. Following this procedure, for ease of iterating over individual MAFs, we create a directory for symlinks to the MAF files, changing the link names such that they have integers in those names that range from 1 to the total number of MAFs. We then modified [extrinsic.M.RM.E.W.P.cfg](https://github.com/harvardinformatics/GenomeAnnotation-ComparativeAugustus/blob/main/configuration_files/extrinsic.M.RM.E.W.P.cfg), the configuration file recommended by the AUGUSTUS developers for analysis with protein-derived hints. Specifically, we edited the entires in the GROUP block to reflect the names of your species as they are represented in the whole-genome alignment. We ran CGP with protein evidence using an singularity container, that we execute via a slurm script [RunCgpWithProtHintsDefModel.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/FreedmanSackton_2024/ComparativeAugustus/slurm_scripts/RunCgpWithProtHintsDefModel.sh), the contents of which are as follows: 
 
- 
- 
+```bash
+#!/bin/sh
+#SBATCH -p serial_requeue,shared
+#SBATCH -n 1
+#SBATCH --mem=8000
+#SBATCH --time=08:00:00
+#SBATCH --array=1-2123
+#SBATCH -e logs/cgpprot_%A_%a.e
+#SBATCH -o logs/cgpprot_%A_%a.o
+#SBATCH -J cgp
 
+augustus_species=$1
+tree=$2
+genomes_tbl=$3
+sqldb=$4
 
+AUGUSTUS_IMAGE="/n/singularity_images/informatics/augustus/augustus_3.4.0-afreedman-build.sif"
+singularity exec --cleanenv ${AUGUSTUS_IMAGE} augustus --species=${augustus_species} --softmasking=1 --treefile=${tree} --alnfile=../maflinks/${SLURM_ARRAY_TASK_ID}.maf --dbaccess=${sqldb} --speciesfilenames=${genomes_tbl} --alternatives-from-evidence=0 --dbhints=1 --extrinsicCfgFile=extrinsic.M.RM.E.W.P.cfg --/CompPred/outdir=preds/pred${SLURM_ARRAY_TASK_ID} 
+```
 
+where *augustus_species* specifies the predefined species model (and associated HMM parameters) for running CGP, *tree* is a newick-formatted tree of the genome alignment, *genomes_tbl* is a tab-delimited table of species name and path to species genome fasta on each row, and *sqldb* is the sql database built following the Augustus developers guidelines, that includes the genomes, and their associated hints data. 
 
 
 ## RNA-seq only
