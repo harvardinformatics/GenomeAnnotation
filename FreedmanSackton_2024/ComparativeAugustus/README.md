@@ -3,6 +3,12 @@ For years, Augustus has been a key component of genome annotation pipelines, and
 
 As CGP uses a whole-genome alignment as its backbone, it will not annotate genomic intervals in the reference genome specified in the MAF file for which there is no alignment. In other words, if a species of interest has functional gene sequence that doesn't align to the reference, it will be missed. 
 
+## Converting Cactus hal to MAF
+To convert our Cactus whole-genome alignments to multiple alignment format (MAF) files for use with Augustus, we followed the [recommendations](http://bioinf.uni-greifswald.de/augustus/binaries/tutorial-cgp/cactus.html#hal2maf). We split the MAF file into smaller MAF files, such that their corresponding intervals did not split known gene boundaries in the reference species for each whole genome alignment. Reference species were set as *Homo sapiens*, *Drosophila melanogaster*, *Gallus gallus*, *Arabidopsis thaliana*, and *Heliconius melpomene*, for mammals, dipterans, birds, rosids, and monocots, respectively.
+
+We ran the Augustus *hal2maf_split.pl* perl script with [mafsplit_fromhal_nosplits.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/FreedmanSackton_2024/ComparativeAugustus/slurm_scripts/mafsplit_fromhal_nosplits.sh).
+
+
 ## Protein-only 
 ### Hint creation
 To generate splice hints from external protein sequence data, we use scripts that are part of the Augustus distribution to wrap protein alignment to the genome using [GenomeThreader](https://genomethreader.org/) and creation of hints from those alignments. 
