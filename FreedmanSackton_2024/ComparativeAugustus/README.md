@@ -6,7 +6,7 @@ As CGP uses a whole-genome alignment as its backbone, it will not annotate genom
 ## Converting Cactus hal to MAF
 To convert our Cactus whole-genome alignments to multiple alignment format (MAF) files for use with Augustus, we followed the [recommendations](http://bioinf.uni-greifswald.de/augustus/binaries/tutorial-cgp/cactus.html#hal2maf). We split the MAF file into smaller MAF files, such that their corresponding intervals did not split known gene boundaries in the reference species for each whole genome alignment. Reference species were set as *Homo sapiens*, *Drosophila melanogaster*, *Gallus gallus*, *Arabidopsis thaliana*, and *Heliconius melpomene*, for mammals, dipterans, birds, rosids, and monocots, respectively.
 
-We ran the Augustus *hal2maf_split.pl* perl script with [mafsplit_fromhal_nosplits.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/FreedmanSackton_2024/ComparativeAugustus/slurm_scripts/mafsplit_fromhal_nosplits.sh).
+We ran the Augustus *hal2maf_split.pl* perl script with [mafsplit_fromhal_nosplits.sh](https://github.com/harvardinformatics/GenomeAnnotation/blob/master/FreedmanSackton_2024/ComparativeAugustus/slurm_scripts/mafsplit_fromhal_nosplits.sh), where the "no split list" file is simply a tab-delimited file of chromosome, start and stop for gene boundaries from the annotation of the reference species used to anchor the MAF files.
 
 
 ## Protein-only 
