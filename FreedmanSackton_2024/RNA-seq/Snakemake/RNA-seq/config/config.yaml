@@ -1,0 +1,47 @@
+## ALL OF BELOW NEED TO BE MODIFIED TO WORK
+## FOR YOUR DATA!!
+
+# LABEL FOR MERGED ASSEMBLIES #
+speciesname: "dmel"
+
+########################
+## RNA-SEQ FASTQ FILES #
+########################
+# fastq input file data ##
+fastqDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/fastq/drosophila_melanogaster/trimmed_reads/"
+
+############
+## HISAT2 ##
+############
+Hisat2IndexDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/genomes/dmel/hisat/"
+Hisat2IndexPrefix: "dmel_GCF_000001215.4_Release_6_hisat2"
+Hisat2Outdir: "results/hisat2/"
+Hisat2SamsortOutdir: "results/hisat2/bams/" 
+
+##########
+## STAR ##
+#########
+StarIndexDir: "/n/holyscratch01/informatics/genome_annotation_evaluation/diptera/genomes/dmel/star/"
+StarOutDir: "results/star/"
+Star1stPassOutdir: "results/star/star1stpass/" 
+Star2ndPassOutdir: "results/star/star2ndpass/"
+StarSamsortOutdir: "results/star/bams/" 
+
+#############
+# STRINGTIE #
+# ###########
+
+StringtieHisat2AssemblyDir: "results/stringtie/hisat2/individual_assemblies/" 
+StringtieHisat2MergeDir: "results/stringtie/hisat2/merged_assembly/" 
+StringtieStarAssemblyDir: "results/stringtie/star/individual_assemblies/"
+StringtieStarMergeDir: "results/stringtie/star/merged_assembly/"
+
+##############
+##  SCALLOP ##
+#############
+ScallopHisat2Dir: "results/scallop/hisat2/"
+ScallopHisat2AssemblyDir: "results/scallop/hisat2/individual_assemblies/" 
+TacoHisat2Dir: "results/scallop/hisat2/taco/"
+ScallopStarDir: "results/scallop/star/"
+ScallopStarAssemblyDir: "results/scallop/star/individual_assemblies/"
+TacoStarDir: "results/scallop/star/taco/" 

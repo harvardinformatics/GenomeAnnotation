@@ -22,18 +22,6 @@ stringtie_merge:
     mem_mb: 20000 
     time: 360
 
-TransdecoderLongorfs:
-   nodes: 1
-   threads: 1
-   mem_mb: 50000
-   time: 1380
-
-LongorfsBlastp:
-    nodes: 1
-    threads: 8
-    mem_mb: 80000
-    time: 480  
-
 star_1stpass:
     nodes: 1 
     threads: 8
@@ -57,15 +45,3 @@ taco:
     threads: 16 
     mem_mb: 32000
     time: 180
-
-minimap2_index:
-    nodes: 1
-    threads: 1
-    mem_mb: 4000
-    time: 60
-
-minimap2_align:
-    nodes: 1
-    threads: 1
-    mem_mb: 20000
-    time: 360
