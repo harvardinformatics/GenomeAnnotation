@@ -52,9 +52,9 @@ singularity exec --no-home \
                  --cleanenv \
                  --env AUGUSTUS_CONFIG_PATH=${PWD}/augustus_config \
                  $brakersif braker.pl \
-                 --rnaseq_sets_ids=${sraids)
-                 --species=${myspecies}
-                 --genome=$genome \
+                 --rnaseq_sets_ids=${sraids) \
+                 --species=${myspecies} \
+                 --genome=${genome} \
                  --threads=48
 ```
 
@@ -77,22 +77,49 @@ singularity exec --no-home \
                  --cleanenv \
                  --env AUGUSTUS_CONFIG_PATH=${PWD}/augustus_config \
                  $brakersif braker.pl \
-                 --rnaseq_sets_ids=${sampleids}
-                 --rnaseq_sets_dirs=${fastqdir}
-                 --species=${myspecies}
-                 --genome=$genome \
+                 --rnaseq_sets_ids=${sampleids} \
+                 --rnaseq_sets_dirs=${fastqdir} \
+                 --species=${myspecies} \
+                 --genome=${genome} \
                  --threads=48
 ```
 
 #### Scenario 3: fastq files already aligned
-This approach offers the most flexibility, in that one can use another aligner such as [STAR](https://github.com/alexdobin/STAR) instead of *HISAT2*, which BRAKER uses by default. One can also customize particular comman line arguments and parameter settings, so long as they don't create issues for downtream processing by BRAKER. In this scenario, one simply supplies a list of bam files:
+This approach offers the most flexibility, in that one can use another aligner such as [STAR](https://github.com/alexdobin/STAR) instead of *HISAT2*, which BRAKER uses by default. One can also customize particular comman line arguments and parameter settings, so long as they don't create issues for downtream processing by BRAKER. In this scenario, one simply supplies a list of coordinate-sorted bam files:
 
 ```bash
 brakersif=$1 # e.g. path to your downloaded braker3.sif
 myspecies=$2 # do NOT make this the same as an existing pre-computed AUGUSTUS species parameter set
 genome=$3 # path to soft-masked genome fasta
-bamsdir=$4 # path to file with one sample id per line
+bamsdir=$4 # path to directory where coordinate-sorted bam files are located
 fastqdir=$5 # make sure there is a trailing forward slash in path
+
+bamfiles=$(ls $bamsdir |awk '$1=$1' RS= OFS=,)
+
+singularity exec --cleanenv $brakersif cp -Rs /opt/Augustus/config/ augustus_config
+
+singularity exec --no-home \
+                 --home /opt/gm_key \
+                 --cleanenv \
+                 --env AUGUSTUS_CONFIG_PATH=${PWD}/augustus_config \
+                 $brakersif braker.pl \
+                 --bam=${bamfiles} \
+                 --species=${myspecies} \
+                 --genome=${genome} \
+                 --threads=48
+```
+It is important to note that this implementation of BRAKER, as well as that in which protein and RNA-seq evidence are integrated (below) only predicts protein-coding features, i.e. UTRs are not predicted. While in RNA-seq only mode there is an option to train AUGUSTUS to predict UTRs, for some time the BRAKER developers have treated this as an "experimental" feature and in our own experience testing BRAKER1, we have found cases where including UTR prediction can lead to lesser quality CDS predictions. The evolutionary constraints on UTR sequences are far weaker than those on CDS, making it very challenging to extract meaningful parameters for generating *ab inito* predictions of UTRs. For reasearchers needing information on UTRs, we recommend using an RNA-seq assembler such as Stringtie, paired with a Transdecoder-based workflow for identifying CDS and UTR intervals. We have developed a Snakemake workflow for doing this, which is on GitHub [here](https://github.com/harvardinformatics/AnnotationRNAseqAssembly).
+
+                
+### RNA-seq and protein evidence
+This approach uses a newly developed pipeline for integrating protein and RNA-seq extrinsic evidence described in *Gabriel et al. 2024*. The command line structure mimics those above, but includes arguments for each type of evidence. For example, when bam files are supplied:
+
+```bash
+brakersif=$1 # e.g. path to your downloaded braker3.sif
+myspecies=$2 # do NOT make this the same as an existing pre-computed AUGUSTUS species parameter set
+genome=$3 # path to soft-masked genome fasta
+proteindbase=$4 # path to orthodb fasta file
+bamsdir=$5 # path to file with one sample id per line
 
 bamfiles=$(ls bams/ |awk '$1=$1' RS= OFS=,)
 
@@ -103,13 +130,10 @@ singularity exec --no-home \
                  --cleanenv \
                  --env AUGUSTUS_CONFIG_PATH=${PWD}/augustus_config \
                  $brakersif braker.pl \
+                 --prot_seq=${proteindbase} \
                  --bam=${bamfiles}
-                 --species=${myspecies}
-                 --genome=$genome \
+                 --species=${myspecies} \
+                 --genome=${genome} \
                  --threads=48
-```
-It is important to note that this implementation of BRAKER, as well as that in which protein and RNA-seq evidence are integrated (below) only predicts protein-coding features, i.e. UTRs are not predicted. While in RNA-seq only mode there is an option to train AUGUSTUS to predict UTRs, for some time the BRAKER developers have treated this as an "experimental" feature and in our own experience testing BRAKER1, we have found cases where including UTR prediction can lead to lesser quality CDS predictions. The evolutionary constraints on UTR sequences are far weaker than those on CDS, making it very challenging to extract meaningful parameters for generating *ab inito* predictions of UTRs. For reasearchers needing information on UTRs, we recommend using an RNA-seq assembler such as Stringtie, paired with a Transdecoder-based workflow for identifying CDS and UTR intervals. We have developed a Snakemake workflow for doing this, which is on GitHub [here](https://github.com/harvardinformatics/AnnotationRNAseqAssembly).
-
-                
-
+``` 
 
