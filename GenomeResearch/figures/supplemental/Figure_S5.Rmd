@@ -1,7 +1,7 @@
 ---
   title: "Genome Annotation Project"
-subtitle: "Figure S5: OOB error estimates by class"
-date: "April 10, 2024"
+subtitle: "Figure S5: reference protein coverage by taxonomic group
+date: "December 13, 2024"
 author: "Adam Freedman"
 output: 
   html_document: default
@@ -15,44 +15,148 @@ library(tidyverse)
 ``` 
 
 ## Data
-```{r}
-confusion_matrix_data <-read_table("RandomForestErrorRatesMaster.tsv")
-confusion_matrix_data <- confusion_matrix_data %>% mutate(genic_class_error=genicFN/(genicFN+genicTP)) %>%
-     mutate(intergenic_class_error=intergenicFN/(intergenicFN+intergenicTP)) %>%
-     mutate(OOBerror=(genicFN+intergenicFN)/(genicFN+genicTP+intergenicFN+intergenicTP))
+```{r,,message=FALSE, warning=FALSE}
+refprotcov <-read_csv("../../data/RefBlastToPreds.csv")
 
-confusion_matrix_data <- confusion_matrix_data %>% mutate(species = str_replace(species, "dmel", "D. melanogaster")) %>%
-    mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
-    mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
-    mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
-    mutate(species = str_replace(species, "human", "H. sapiens"))
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),"BRAKER3",expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA","Liftoff")
 
-confusion_matrix_data$method <- factor(confusion_matrix_data$method,levels=c("brakerprot","brakerrna","cgpprot","cgprna",
-                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga"))
+refprotcov <- refprotcov %>% mutate(species = str_replace(species, "dmel", "D. melanogaster")) %>%
+     mutate(species = str_replace(species, "dpseudo", "D. pseudoobscura")) %>%  
+     mutate(species = str_replace(species, "dyak", "D. yakuba")) %>%
+     mutate(species = str_replace(species, "alyrata", "A. lyrata")) %>%
+     mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
+     mutate(species = str_replace(species, "boleracea", "B. oleracea")) %>%
+     mutate(species = str_replace(species, "crubella", "C. rubella")) %>%
+     mutate(species = str_replace(species, "osativa", "O. sativa")) %>%
+     mutate(species = str_replace(species, "sitalica", "S. italica")) %>%
+     mutate(species = str_replace(species, "bdistachyon", "B. distachyon")) %>%
+     mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
+     mutate(species = str_replace(species, "bmori", "B. mori")) %>%
+     mutate(species = str_replace(species, "herato", "H. erato")) %>%
+     mutate(species = str_replace(species, "dplexippus", "D. plexippus")) %>%
+     mutate(species = str_replace(species, "human", "H. sapiens")) %>%
+     mutate(species = str_replace(species, "macaque", "M. mulatta")) %>%
+     mutate(species = str_replace(species, "dog", "C. familiaris")) %>%
+     mutate(species = str_replace(species, "mouse", "M. musculus")) %>%
+     mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
+     mutate(species = str_replace(species, "quail", "C. japonica")) %>%
+     mutate(species = str_replace(species, "mallard", "A. platyrhynchos"))
 
-confusion_matrix_data <- confusion_matrix_data %>% mutate(species=factor(species,levels=c("D. melanogaster","G. gallus","H. sapiens","A. thaliana","Z. mays")))
+refprotcov <- refprotcov %>% mutate_at(vars(species),factor,levels=c("D. melanogaster",
+              "D. yakuba", "D. pseudoobscura","A. thaliana", "A. lyrata","C. rubella","B. oleracea","Z. mays","S. italica","O. sativa",
+               "B. distachyon", "G. gallus","C. japonica","A. platyrhynchos","H. sapiens","M. mulatta","M. musculus","C. familiaris","H. erato","D. plexippus","B. mori"))
 
-confusion_long <- pivot_longer(confusion_matrix_data, c(genic_class_error,intergenic_class_error), names_to="classtype", values_to="errorrate")
-confusion_long <- confusion_long %>% mutate(classtype=factor(classtype,levels=c("genic_class_error","intergenic_class_error")))
+refprotcov <- refprotcov %>% mutate_at(vars(method),factor,levels=c("BrkProt","BrkRNA","Braker3","CGPprotein","CGPrnaseq",
+    "ScalHisat","ScalStar","StrHisat","StrStar","Maker","TOGA","liftoff"))  %>% mutate(proref_lowcov=proref_blastnomincov-proref_blastcovered0.8)
+
+covlong <-refprotcov %>% select(species,methodtype,group,method,proref_blastcovered0.8,proref_lowcov) %>% pivot_longer(cols=c(proref_blastcovered0.8,proref_lowcov),names_to="covclass",values_to="fracpredprot") %>%
+mutate_at(vars(covclass),factor,levels=c("proref_lowcov","proref_blastcovered0.8"))
 ```
 
-## Figure S5
-```{r}
-methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
 
-error_labels=c("genic","intergenic")
-classerror_barplot <- confusion_long %>% 
-  ggplot() + geom_bar(aes(x=method,y=errorrate,fill=classtype),width=0.7,stat="identity",position="dodge",color="black") +
-    theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,size=8)) + 
-    scale_fill_manual(labels=error_labels,values=c("white","black")) +
-    ylab("Class error rate") + xlab("") + scale_y_continuous(expand=c(0,0),limits=c(0,1.05)) + 
-    theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) + 
-    guides(fill = guide_legend(byrow = TRUE)) +
-    labs(fill = "Genomic region") + scale_x_discrete(breaks=levels(confusion_long$method),labels=methodlabels) + 
-    facet_wrap(~species) +
-    theme(strip.text = element_text(face="italic"))
-  
-    print(classerror_barplot)
-    ggsave(classerror_barplot,file="Figure_S5.pdf",width=7,height=6)
+## Figure S5: panel A, vertebrates
+```{r}
+verts_covstackedbar<- covlong %>% filter(group %in% c("birds","mammals")) %>% 
+            ggplot(aes(x=method,y=fracpredprot*100,fill=interaction(methodtype,covclass))) +
+            geom_bar(width=0.9,stat="identity",position="stack") +
+           scale_fill_manual(breaks=c("braker.proref_blastcovered0.8","braker.proref_lowcov","cgp.proref_blastcovered0.8","cgp.proref_lowcov","assembler.proref_blastcovered0.8","assembler.proref_lowcov",
+                    "maker.proref_blastcovered0.8", "maker.proref_lowcov",
+                     "liftover.proref_blastcovered0.8","liftover.proref_lowcov"),
+            values=c("braker.proref_blastcovered0.8"="darkorange3","braker.proref_lowcov"="#FFCDBC",
+                     "assembler.proref_blastcovered0.8"="darkorchid3","assembler.proref_lowcov"="#E4C2FF",
+                      "cgp.proref_blastcovered0.8"="brown4","cgp.proref_lowcov"="#FF9494",
+                      "maker.proref_blastcovered0.8"="black","maker.proref_lowcov"="gray",
+                      "liftover.proref_blastcovered0.8"="darkgreen","liftover.proref_lowcov"="#94D994"),labels=c("braker.proref_blastcovered0.8"=expression(paste("BRAKER: ","">=80,"%")),
+                      "braker.proref_lowcov"="BRAKER: < 80%","assembler.proref_blastcovered0.8"=expression(paste("assembler: ","">=80,"%")),
+                      "assembler.proref_lowcov"="assembler: < 80%","cgp.proref_blastcovered0.8"=expression(paste("CGP: ","">=80,"%")),
+                      "cgp.proref_lowcov"="CGP: < 80%", "maker.proref_blastcovered0.8"=expression(paste("MAKER: ","">=80,"%")),
+                      "maker.proref_lowcov"="MAKER: < 80%","liftover.proref_blastcovered0.8"=expression(paste("liftover: ","">=80,"%")),
+                      "liftover.proref_lowcov"="liftover: < 80%")) +
+            theme_classic() +
+            theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.55,size=8,face="plain")) + 
+            theme(strip.text = element_text(face="italic")) +
+            theme(legend.text.align = 0,legend.text=element_text(size=12),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.45, "cm")) + 
+            guides(fill = guide_legend(byrow = TRUE)) +
+            ylab("% predicted proteins") +
+            labs(fill = "Reference protein coverage\nby method type") +
+            scale_x_discrete(labels=methodlabels) +
+            xlab("") +
+        
+
+            facet_wrap(~species,ncol=3,nrow=3)
+
+verts_covstackedbar
+ggsave(verts_covstackedbar,file="Figure_S5A.pdf",width=8,height=8)
 ```
+
+## Figure S5: panel B, plants
+```{r}
+plants_covstackedbar<- covlong %>% filter(group %in% c("rosids","monocots")) %>% 
+           ggplot(aes(x=method,y=fracpredprot*100,fill=interaction(methodtype,covclass))) +
+            geom_bar(width=0.9,stat="identity",position="stack") +
+            scale_fill_manual(breaks=c("braker.proref_blastcovered0.8","braker.proref_lowcov","cgp.proref_blastcovered0.8","cgp.proref_lowcov","assembler.proref_blastcovered0.8","assembler.proref_lowcov",
+                    "maker.proref_blastcovered0.8", "maker.proref_lowcov",
+                     "liftover.proref_blastcovered0.8","liftover.proref_lowcov"),
+            values=c("braker.proref_blastcovered0.8"="darkorange3","braker.proref_lowcov"="#FFCDBC",
+                     "assembler.proref_blastcovered0.8"="darkorchid3","assembler.proref_lowcov"="#E4C2FF",
+                      "cgp.proref_blastcovered0.8"="brown4","cgp.proref_lowcov"="#FF9494",
+                      "maker.proref_blastcovered0.8"="black","maker.proref_lowcov"="gray",
+                      "liftover.proref_blastcovered0.8"="darkgreen","liftover.proref_lowcov"="#94D994"),labels=c("braker.proref_blastcovered0.8"=expression(paste("BRAKER: ","">=80,"%")),
+                      "braker.proref_lowcov"="BRAKER: < 80%","assembler.proref_blastcovered0.8"=expression(paste("assembler: ","">=80,"%")),
+                      "assembler.proref_lowcov"="assembler: < 80%","cgp.proref_blastcovered0.8"=expression(paste("CGP: ","">=80,"%")),
+                      "cgp.proref_lowcov"="CGP: < 80%", "maker.proref_blastcovered0.8"=expression(paste("MAKER: ","">=80,"%")),
+                      "maker.proref_lowcov"="MAKER: < 80%","liftover.proref_blastcovered0.8"=expression(paste("liftover: ","">=80,"%")),
+                      "liftover.proref_lowcov"="liftover: < 80%")) +
+            theme_classic() +
+            theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.55,size=8,face="plain")) + 
+            theme(strip.text = element_text(face="italic")) +
+            theme(legend.text.align = 0,legend.text=element_text(size=12),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.45, "cm")) + 
+            guides(fill = guide_legend(byrow = TRUE)) +
+            ylab("% predicted proteins") +
+            labs(fill = "Reference protein coverage\nby method type") +
+            scale_x_discrete(labels=methodlabels) +
+            xlab("") +
+
+            facet_wrap(~species,ncol=3,nrow=3)
+
+plants_covstackedbar
+ggsave(plants_covstackedbar,file="Figure_S5B.pdf",width=8,height=8)
+```
+
+## Figure S5: panel C, dipterans
+```{r}
+dipterans_covstackedbar<- covlong %>% filter(group %in% c("dipterans")) %>% 
+           ggplot(aes(x=method,y=fracpredprot*100,fill=interaction(methodtype,covclass))) +
+            geom_bar(width=0.9,stat="identity",position="stack") +
+           scale_fill_manual(breaks=c("braker.proref_blastcovered0.8","braker.proref_lowcov","cgp.proref_blastcovered0.8","cgp.proref_lowcov","assembler.proref_blastcovered0.8","assembler.proref_lowcov",
+                    "maker.proref_blastcovered0.8", "maker.proref_lowcov",
+                     "liftover.proref_blastcovered0.8","liftover.proref_lowcov"),
+            values=c("braker.proref_blastcovered0.8"="darkorange3","braker.proref_lowcov"="#FFCDBC",
+                     "assembler.proref_blastcovered0.8"="darkorchid3","assembler.proref_lowcov"="#E4C2FF",
+                      "cgp.proref_blastcovered0.8"="brown4","cgp.proref_lowcov"="#FF9494",
+                      "maker.proref_blastcovered0.8"="black","maker.proref_lowcov"="gray",
+                      "liftover.proref_blastcovered0.8"="darkgreen","liftover.proref_lowcov"="#94D994"),labels=c("braker.proref_blastcovered0.8"=expression(paste("BRAKER: ","">=80,"%")),
+                      "braker.proref_lowcov"="BRAKER: < 80%","assembler.proref_blastcovered0.8"=expression(paste("assembler: ","">=80,"%")),
+                      "assembler.proref_lowcov"="assembler: < 80%","cgp.proref_blastcovered0.8"=expression(paste("CGP: ","">=80,"%")),
+                      "cgp.proref_lowcov"="CGP: < 80%", "maker.proref_blastcovered0.8"=expression(paste("MAKER: ","">=80,"%")),
+                      "maker.proref_lowcov"="MAKER: < 80%","liftover.proref_blastcovered0.8"=expression(paste("liftover: ","">=80,"%")),
+                      "liftover.proref_lowcov"="liftover: < 80%")) +
+            theme_classic() +
+            theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.55,size=8,face="plain")) + 
+            theme(strip.text = element_text(face="italic")) +
+            theme(legend.text.align = 0,legend.text=element_text(size=12),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.45, "cm")) + 
+            guides(fill = guide_legend(byrow = TRUE)) +
+            ylab("% predicted proteins") +
+            labs(fill = "Reference protein coverage\nby method type") +
+            scale_x_discrete(labels=methodlabels) +
+            xlab("") +
+        
+        
+
+            facet_wrap(~species,ncol=3,nrow=1)
+
+dipterans_covstackedbar
+ggsave(dipterans_covstackedbar,file="Figure_S5C.pdf",width=8,height=4)
+```
+
 
