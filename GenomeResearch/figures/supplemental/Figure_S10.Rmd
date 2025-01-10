@@ -1,7 +1,7 @@
 ---
   title: "Genome Annotation Project"
-subtitle: "Figure S10: blast hit match coverage, additional species"
-date: "April 10, 2024"
+subtitle: "Figure S10: RNAseq alignment rate: correlations between training and test data" 
+date: "December 13, 2024"
 author: "Adam Freedman"
 output: 
   html_document: default
@@ -16,19 +16,17 @@ library(tidyverse)
 
 ## Data
 ```{r,,message=FALSE, warning=FALSE}
-annotations <-read_csv("GenomeAnnotationMetrics_final.csv")
-annotations <- annotations %>% filter(group!="heliconines")
+annotations <-read_csv("../../data/Table_S3.csv")
 annotations <- annotations %>% filter(!method %in% c("BrkProt-unfilt","BrkProt-fullsupport","BrkRNA-unfilt",
                                                      "BrkRNA-fullsupport","CGPdenovo","TSEBRA","MakerNoRnaNoEvm",
                                                      "MakerRnaEvm","MakerNoRnaEvm")) 
 
-genomeQC <-read_csv("GenomeQcMetrics_final.csv") 
-data <- annotations<-left_join(annotations,genomeQC,by = join_by(species==Species))
+methodlabels<-c("BRAKER2 (P)","BRAKER1 (P)","BRAKER3 (P)",expression(paste(CGP[protein]," (P)")),expression(paste(CGP[RNA]," (P)")),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER (P)","TOGA (P)","Liftoff")
 
-data$method <- factor(data$method,levels=c("BrkProt","BrkRNA","CGPprotein","CGPrnaseq",
-                                           "ScalHisat","ScalStar","StrHisat","StrStar","MakerRnaNoEvm","TOGA"))
+annotations$method <- factor(annotations$method,levels=c("BrkProt","BrkRNA","Braker3","CGPprotein","CGPrnaseq",
+                                           "ScalHisat","ScalStar","StrHisat","StrStar","MakerRnaNoEvm","TOGA","liftoff"))
 
-data <- data %>% mutate(species = str_replace(species, "dmelanogaster", "D. melanogaster")) %>%
+annotations <- annotations %>% mutate(species = str_replace(species, "dmelanogaster", "D. melanogaster")) %>%
      mutate(species = str_replace(species, "dpseudoobscura", "D. pseudoobscura")) %>%  
      mutate(species = str_replace(species, "dyakuba", "D. yakuba")) %>%
      mutate(species = str_replace(species, "alyrata", "A. lyrata")) %>%
@@ -39,6 +37,9 @@ data <- data %>% mutate(species = str_replace(species, "dmelanogaster", "D. mela
      mutate(species = str_replace(species, "sitalica", "S. italica")) %>%
      mutate(species = str_replace(species, "bdistachyon", "B. distachyon")) %>%
      mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
+     mutate(species = str_replace(species, "bmori", "B. mori")) %>%
+     mutate(species = str_replace(species, "herato", "H. erato")) %>%
+     mutate(species = str_replace(species, "dplexippus", "D. plexippus")) %>%
      mutate(species = str_replace(species, "human", "H. sapiens")) %>%
      mutate(species = str_replace(species, "macaque", "M. mulatta")) %>%
      mutate(species = str_replace(species, "dog", "C. familiaris")) %>%
@@ -47,246 +48,28 @@ data <- data %>% mutate(species = str_replace(species, "dmelanogaster", "D. mela
      mutate(species = str_replace(species, "quail", "C. japonica")) %>%
      mutate(species = str_replace(species, "mallard", "A. platyrhynchos"))
 
-data <- data %>% mutate_at(vars(species),factor,levels=c("D. melanogaster","D. pseudoobscura","D. yakuba",
-                                                         "A. thaliana", "A. lyrata","B. oleracea","C. rubella",
-                                                         "Z. mays","O. sativa","S. italica","B. distachyon",
-                                                         "G. gallus","A. platyrhynchos","C. japonica","H. sapiens",
-                                                         "M. mulatta","C. familiaris","M. musculus"))
 
-methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),
-                expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),
-                expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+annotations <- annotations %>% mutate_at(vars(species),factor,levels=c("D. melanogaster",
+              "D. yakuba", "D. pseudoobscura","A. thaliana", "A. lyrata","C. rubella","B. oleracea","Z. mays","S. italica","O. sativa",
+               "B. distachyon", "G. gallus","C. japonica","A. platyrhynchos","H. sapiens","M. mulatta","M. musculus","C. familiaris","H. erato","D. plexippus","B. mori"))
 ```
 
-## Figure S10_A: *G. gallus*
-### Data
+
+## Figure S10
 ```{r}
-methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+refdata<- annotations %>% filter(species %in% c("D. melanogaster","H. sapiens","A. thaliana","Z. mays","G. gallus")) 
 
-chickendata <- read_table("chicken/chicken_blast_allmethods_output.tsv")
-chickendata <- chickendata %>% mutate(method=factor(method,levels=c("brkprot","brkrna","cgpprot",
-             "cgprna","scalhisat","scalstar","stiehisat","stiestar","maker","toga")))
-
-chicken_bystats <-read_table("chicken/chicken_byproteinstats_allmethods.tsv")
-chicken_bystats_blastmerge <-left_join(chicken_bystats,chickendata,by = join_by(SeqId==qseqid,method)) %>%
-        mutate(matchtotarget=pident*length/ref_target_length) %>% 
-        drop_na() %>% 
-        mutate(method=factor(method,levels=c("brkprot","brkrna","cgpprot",
-             "cgprna","scalhisat","scalstar","stiehisat","stiestar","maker","toga")))  %>%
-        mutate(Complete=factor(Complete,levels=c("N","Y"))) %>% 
-        mutate(compositefactor=paste(method,Complete,sep=""))
-
-brkprotY=chicken_bystats_blastmerge %>% filter(method=="brkprot" & Complete=="Y") %>% select(matchtotarget)
-brkprotN=chicken_bystats_blastmerge %>% filter(method=="brkprot" & Complete=="N") %>% select(matchtotarget)
-
-brkrnaY=chicken_bystats_blastmerge %>% filter(method=="brkrna" & Complete=="Y") %>% select(matchtotarget)
-brkrnaN=chicken_bystats_blastmerge %>% filter(method=="brkrna" & Complete=="N") %>% select(matchtotarget)
-
-cgpprotY=chicken_bystats_blastmerge %>% filter(method=="cgpprot" & Complete=="Y") %>% select(matchtotarget)
-cgpprotN=chicken_bystats_blastmerge %>% filter(method=="cgpprot" & Complete=="N") %>% select(matchtotarget)
-
-cgprnaY=chicken_bystats_blastmerge %>% filter(method=="cgprna" & Complete=="Y") %>% select(matchtotarget)
-cgprnaN=chicken_bystats_blastmerge %>% filter(method=="cgprna" & Complete=="N") %>% select(matchtotarget)
-
-scalhisatY=chicken_bystats_blastmerge %>% filter(method=="scalhisat" & Complete=="Y") %>% select(matchtotarget)
-scalhisatN=chicken_bystats_blastmerge %>% filter(method=="scalhisat" & Complete=="N") %>% select(matchtotarget)
-
-scalstarY=chicken_bystats_blastmerge %>% filter(method=="scalstar" & Complete=="Y") %>% select(matchtotarget)
-scalstarN=chicken_bystats_blastmerge %>% filter(method=="scalstar" & Complete=="N") %>% select(matchtotarget)
-
-stiehisatY=chicken_bystats_blastmerge %>% filter(method=="stiehisat" & Complete=="Y") %>% select(matchtotarget)
-stiehisatN=chicken_bystats_blastmerge %>% filter(method=="stiehisat" & Complete=="N") %>% select(matchtotarget)
-
-stiestarY=chicken_bystats_blastmerge %>% filter(method=="stiestar" & Complete=="Y") %>% select(matchtotarget)
-stiestarN=chicken_bystats_blastmerge %>% filter(method=="stiestar" & Complete=="N") %>% select(matchtotarget)
-
-makerY=chicken_bystats_blastmerge %>% filter(method=="maker" & Complete=="Y") %>% select(matchtotarget)
-makerN=chicken_bystats_blastmerge %>% filter(method=="maker" & Complete=="N") %>% select(matchtotarget)
-
-togaY=chicken_bystats_blastmerge %>% filter(method=="toga" & Complete=="Y") %>% select(matchtotarget)
-togaN=chicken_bystats_blastmerge %>% filter(method=="toga" & Complete=="N") %>% select(matchtotarget)
-
-wilcox_pvalues <-c(wilcox.test(brkprotN$matchtotarget,brkprotY$matchtotarget)$p.value,wilcox.test(brkrnaN$matchtotarget,brkrnaY$matchtotarget)$p.value,wilcox.test(cgpprotN$matchtotarget,cgpprotY$matchtotarget)$p.value,wilcox.test(cgprnaN$matchtotarget,cgprnaY$matchtotarget)$p.value,wilcox.test(scalhisatN$matchtotarget,scalhisatY$matchtotarget)$p.value,wilcox.test(scalstarN$matchtotarget,scalstarY$matchtotarget)$p.value,wilcox.test(stiehisatN$matchtotarget,stiehisatY$matchtotarget)$p.value,wilcox.test(stiestarN$matchtotarget,stiestarY$matchtotarget)$p.value,wilcox.test(makerN$matchtotarget,makerY$matchtotarget)$p.value,wilcox.test(togaN$matchtotarget,togaY$matchtotarget)$p.value)
-
-bh_pvals <- p.adjust(wilcox_pvalues,method="BH")
-```
-### Figure
-```{r}
-methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
-chicken_matchoverlength_boxplot <- chicken_bystats_blastmerge %>% ggplot(aes(x=method,y=matchtotarget,fill=Complete)) +
-                  geom_boxplot(outlier.shape=NA) +
-                  xlab("") +
-                  ylab("NCBI protein match coverage (%)") +
-                  scale_x_discrete(labels=methodlabels) +
-                  theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.5,size=9)) +
-                  annotate("text",x=1,y=105, label="*",size=4) +
-                  annotate("text",x=3,y=105, label="*",size=4) + 
-                  annotate("text",x=4,y=105, label="*",size=4) + 
-                  annotate("text",x=5,y=105, label="*",size=4) +
-                  annotate("text",x=6,y=105, label="*",size=4) +
-                  annotate("text",x=7,y=105, label="*",size=4) +
-                  annotate("text",x=8,y=105, label="*",size=4) +
-                  annotate("text",x=9,y=105, label="*",size=4) +
-                  annotate("text",x=10,y=105, label="*",size=4) +
-                  coord_cartesian(ylim=c(0,105),clip="off")
-      
-
-print(chicken_matchoverlength_boxplot)
-ggsave(chicken_matchoverlength_boxplot,file="Figure_S10A.pdf",width=3.5,height=3.5)
-```
-
-## Figure S10_B: *D. melanogaster*
-### Data
-```{r}
-methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
-
-dmeldata <- read_table("dmel/dmel_blast_allmethods_output.tsv")
-dmeldata <- dmeldata %>% mutate(method=factor(method,levels=c("brkprot","brkrna","cgpprot",
-             "cgprna","scalhisat","scalstar","stiehisat","stiestar","maker","toga")))
-
-dmel_bystats <-read_table("dmel/dmel_byproteinstats_allmethods.tsv")
-dmel_bystats_blastmerge <-left_join(dmel_bystats,dmeldata,by = join_by(SeqId==qseqid,method)) %>%
-        mutate(matchtotarget=pident*length/ref_target_length) %>% 
-        drop_na() %>% 
-        mutate(method=factor(method,levels=c("brkprot","brkrna","cgpprot",
-             "cgprna","scalhisat","scalstar","stiehisat","stiestar","maker","toga")))  %>%
-        mutate(Complete=factor(Complete,levels=c("N","Y"))) %>% 
-        mutate(compositefactor=paste(method,Complete,sep=""))
-
-brkprotY=dmel_bystats_blastmerge %>% filter(method=="brkprot" & Complete=="Y") %>% select(matchtotarget)
-brkprotN=dmel_bystats_blastmerge %>% filter(method=="brkprot" & Complete=="N") %>% select(matchtotarget)
-
-brkrnaY=dmel_bystats_blastmerge %>% filter(method=="brkrna" & Complete=="Y") %>% select(matchtotarget)
-brkrnaN=dmel_bystats_blastmerge %>% filter(method=="brkrna" & Complete=="N") %>% select(matchtotarget)
-
-cgpprotY=dmel_bystats_blastmerge %>% filter(method=="cgpprot" & Complete=="Y") %>% select(matchtotarget)
-cgpprotN=dmel_bystats_blastmerge %>% filter(method=="cgpprot" & Complete=="N") %>% select(matchtotarget)
-
-cgprnaY=dmel_bystats_blastmerge %>% filter(method=="cgprna" & Complete=="Y") %>% select(matchtotarget)
-cgprnaN=dmel_bystats_blastmerge %>% filter(method=="cgprna" & Complete=="N") %>% select(matchtotarget)
-
-scalhisatY=dmel_bystats_blastmerge %>% filter(method=="scalhisat" & Complete=="Y") %>% select(matchtotarget)
-scalhisatN=dmel_bystats_blastmerge %>% filter(method=="scalhisat" & Complete=="N") %>% select(matchtotarget)
-
-scalstarY=dmel_bystats_blastmerge %>% filter(method=="scalstar" & Complete=="Y") %>% select(matchtotarget)
-scalstarN=dmel_bystats_blastmerge %>% filter(method=="scalstar" & Complete=="N") %>% select(matchtotarget)
-
-stiehisatY=dmel_bystats_blastmerge %>% filter(method=="stiehisat" & Complete=="Y") %>% select(matchtotarget)
-stiehisatN=dmel_bystats_blastmerge %>% filter(method=="stiehisat" & Complete=="N") %>% select(matchtotarget)
-
-stiestarY=dmel_bystats_blastmerge %>% filter(method=="stiestar" & Complete=="Y") %>% select(matchtotarget)
-stiestarN=dmel_bystats_blastmerge %>% filter(method=="stiestar" & Complete=="N") %>% select(matchtotarget)
-
-makerY=dmel_bystats_blastmerge %>% filter(method=="maker" & Complete=="Y") %>% select(matchtotarget)
-makerN=dmel_bystats_blastmerge %>% filter(method=="maker" & Complete=="N") %>% select(matchtotarget)
-
-togaY=dmel_bystats_blastmerge %>% filter(method=="toga" & Complete=="Y") %>% select(matchtotarget)
-togaN=dmel_bystats_blastmerge %>% filter(method=="toga" & Complete=="N") %>% select(matchtotarget)
-
-wilcox_pvalues <-c(wilcox.test(brkprotN$matchtotarget,brkprotY$matchtotarget)$p.value,wilcox.test(brkrnaN$matchtotarget,brkrnaY$matchtotarget)$p.value,wilcox.test(cgpprotN$matchtotarget,cgpprotY$matchtotarget)$p.value,wilcox.test(cgprnaN$matchtotarget,cgprnaY$matchtotarget)$p.value,wilcox.test(scalhisatN$matchtotarget,scalhisatY$matchtotarget)$p.value,wilcox.test(scalstarN$matchtotarget,scalstarY$matchtotarget)$p.value,wilcox.test(stiehisatN$matchtotarget,stiehisatY$matchtotarget)$p.value,wilcox.test(stiestarN$matchtotarget,stiestarY$matchtotarget)$p.value,wilcox.test(makerN$matchtotarget,makerY$matchtotarget)$p.value,wilcox.test(togaN$matchtotarget,togaY$matchtotarget)$p.value)
-
-bh_pvals <- p.adjust(wilcox_pvalues,method="BH")
-```
-
-### Figure
-```{r}
-methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
-dmel_matchoverlength_boxplot <- dmel_bystats_blastmerge %>% ggplot(aes(x=method,y=matchtotarget,fill=Complete)) +
-                  geom_boxplot(outlier.shape=NA) +
-                  xlab("") +
-                  ylab("NCBI protein match coverage (%)") +
-                  scale_x_discrete(labels=methodlabels) +
-                  theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.5,size=9)) +
-                  annotate("text",x=1,y=105, label="*",size=4) +
-                  annotate("text",x=2,y=105, label="*",size=4) +
-                  annotate("text",x=3,y=105, label="*",size=4) + 
-                  annotate("text",x=4,y=105, label="*",size=4) + 
-                  annotate("text",x=5,y=105, label="*",size=4) +
-                  annotate("text",x=6,y=105, label="*",size=4) +
-                  annotate("text",x=7,y=105, label="*",size=4) +
-                  annotate("text",x=8,y=105, label="*",size=4) +
-                  annotate("text",x=9,y=105, label="*",size=4) +
-                  annotate("text",x=10,y=105, label="*",size=4) +
-                  coord_cartesian(ylim=c(0,105),clip="off")
-
-print(dmel_matchoverlength_boxplot)
-ggsave(dmel_matchoverlength_boxplot,file="Figure_S10B.pdf",width=3.5,height=3.5)
-```
-
-## Figure S10_C: *A. thaliana*
-### Data
-```{r}
-methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
-
-athalianadata <- read_table("athaliana/athaliana_blast_allmethods_output.tsv")
-athalianadata <- athalianadata %>% mutate(method=factor(method,levels=c("brkprot","brkrna","cgpprot",
-             "cgprna","scalhisat","scalstar","stiehisat","stiestar","maker","toga")))
-
-athaliana_bystats <-read_table("athaliana/athaliana_byproteinstats_allmethods.tsv")
-athaliana_bystats_blastmerge <-left_join(athaliana_bystats,athalianadata,by = join_by(SeqId==qseqid,method)) %>%
-        mutate(matchtotarget=pident*length/ref_target_length) %>% 
-        drop_na() %>% 
-        mutate(method=factor(method,levels=c("brkprot","brkrna","cgpprot",
-             "cgprna","scalhisat","scalstar","stiehisat","stiestar","maker","toga")))  %>%
-        mutate(Complete=factor(Complete,levels=c("N","Y"))) %>% 
-        mutate(compositefactor=paste(method,Complete,sep=""))
-
-brkprotY=athaliana_bystats_blastmerge %>% filter(method=="brkprot" & Complete=="Y") %>% select(matchtotarget)
-brkprotN=athaliana_bystats_blastmerge %>% filter(method=="brkprot" & Complete=="N") %>% select(matchtotarget)
-
-brkrnaY=athaliana_bystats_blastmerge %>% filter(method=="brkrna" & Complete=="Y") %>% select(matchtotarget)
-brkrnaN=athaliana_bystats_blastmerge %>% filter(method=="brkrna" & Complete=="N") %>% select(matchtotarget)
-
-cgpprotY=athaliana_bystats_blastmerge %>% filter(method=="cgpprot" & Complete=="Y") %>% select(matchtotarget)
-cgpprotN=athaliana_bystats_blastmerge %>% filter(method=="cgpprot" & Complete=="N") %>% select(matchtotarget)
-
-cgprnaY=athaliana_bystats_blastmerge %>% filter(method=="cgprna" & Complete=="Y") %>% select(matchtotarget)
-cgprnaN=athaliana_bystats_blastmerge %>% filter(method=="cgprna" & Complete=="N") %>% select(matchtotarget)
-
-scalhisatY=athaliana_bystats_blastmerge %>% filter(method=="scalhisat" & Complete=="Y") %>% select(matchtotarget)
-scalhisatN=athaliana_bystats_blastmerge %>% filter(method=="scalhisat" & Complete=="N") %>% select(matchtotarget)
-
-scalstarY=athaliana_bystats_blastmerge %>% filter(method=="scalstar" & Complete=="Y") %>% select(matchtotarget)
-scalstarN=athaliana_bystats_blastmerge %>% filter(method=="scalstar" & Complete=="N") %>% select(matchtotarget)
-
-stiehisatY=athaliana_bystats_blastmerge %>% filter(method=="stiehisat" & Complete=="Y") %>% select(matchtotarget)
-stiehisatN=athaliana_bystats_blastmerge %>% filter(method=="stiehisat" & Complete=="N") %>% select(matchtotarget)
-
-stiestarY=athaliana_bystats_blastmerge %>% filter(method=="stiestar" & Complete=="Y") %>% select(matchtotarget)
-stiestarN=athaliana_bystats_blastmerge %>% filter(method=="stiestar" & Complete=="N") %>% select(matchtotarget)
-
-makerY=athaliana_bystats_blastmerge %>% filter(method=="maker" & Complete=="Y") %>% select(matchtotarget)
-makerN=athaliana_bystats_blastmerge %>% filter(method=="maker" & Complete=="N") %>% select(matchtotarget)
-
-togaY=athaliana_bystats_blastmerge %>% filter(method=="toga" & Complete=="Y") %>% select(matchtotarget)
-togaN=athaliana_bystats_blastmerge %>% filter(method=="toga" & Complete=="N") %>% select(matchtotarget)
-
-wilcox_pvalues <-c(wilcox.test(brkprotN$matchtotarget,brkprotY$matchtotarget)$p.value,wilcox.test(brkrnaN$matchtotarget,brkrnaY$matchtotarget)$p.value,wilcox.test(cgpprotN$matchtotarget,cgpprotY$matchtotarget)$p.value,wilcox.test(cgprnaN$matchtotarget,cgprnaY$matchtotarget)$p.value,wilcox.test(scalhisatN$matchtotarget,scalhisatY$matchtotarget)$p.value,wilcox.test(scalstarN$matchtotarget,scalstarY$matchtotarget)$p.value,wilcox.test(stiehisatN$matchtotarget,stiehisatY$matchtotarget)$p.value,wilcox.test(stiestarN$matchtotarget,stiestarY$matchtotarget)$p.value,wilcox.test(makerN$matchtotarget,makerY$matchtotarget)$p.value,wilcox.test(togaN$matchtotarget,togaY$matchtotarget)$p.value)
-
-bh_pvals <- p.adjust(wilcox_pvalues,method="BH")
-```
-
-### Figure
-```{r}
-methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
-athaliana_matchoverlength_boxplot <- athaliana_bystats_blastmerge %>% ggplot(aes(x=method,y=matchtotarget,fill=Complete)) +
-                  geom_boxplot(outlier.shape=NA) +
-                  xlab("") +
-                  ylab("NCBI protein match coverage (%)") +
-                  scale_x_discrete(labels=methodlabels) +
-                  theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.5,size=9)) +
-                  annotate("text",x=2,y=105, label="*",size=4) + 
-                  annotate("text",x=3,y=105, label="*",size=4) + 
-                  annotate("text",x=4,y=105, label="*",size=4) + 
-                  annotate("text",x=5,y=105, label="*",size=4) +
-                  annotate("text",x=6,y=105, label="*",size=4) +
-                  annotate("text",x=7,y=105, label="*",size=4) +
-                  annotate("text",x=8,y=105, label="*",size=4) +
-                  annotate("text",x=9,y=105, label="*",size=4) +
-                  annotate("text",x=10,y=105, label="*",size=4) +
-                  coord_cartesian(ylim=c(0,105),clip="off")
-      
-
-print(athaliana_matchoverlength_boxplot)
-ggsave(athaliana_matchoverlength_boxplot,file="Figure_S10C.pdf",width=3.5,height=3.5)
+ref_mainvseval_alignplot<-refdata %>% ggplot(aes(x=median_splicedexons_eval,y=median_align_splicedexons)) +
+            geom_abline(slope=1, intercept = 0) +
+            geom_point(aes(fill=method),color="black",pch=21,alpha=0.6,size=2.5) +
+            scale_fill_manual(labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3",
+                                                          "lightskyblue", "royalblue3","darkorchid3", "magenta"
+                                                           ,"gray72","green3","seagreen")) +
+           xlab(expression(paste(RNA[seq]," alignment rate: test data"))) +
+           ylab(expression(paste(RNA[seq]," alignment rate: annotation data"))) +
+           guides(fill = guide_legend(title = "Method")) +
+           facet_wrap(~species) +
+           theme(strip.text = element_text(face="italic")) 
+ref_mainvseval_alignplot
+ggsave(ref_mainvseval_alignplot,file="Figure_S10.pdf",width=8,height=6)
 ```
