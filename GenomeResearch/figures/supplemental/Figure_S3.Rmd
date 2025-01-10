@@ -1,7 +1,7 @@
 ---
   title: "Genome Annotation Project"
-subtitle: "Figure S3: joint CDS number and length biplots"
-date: "April 10, 2024"
+subtitle: "Figure S3: CDS length violin plots
+date: "December 13, 2024"
 author: "Adam Freedman"
 output: 
   html_document: default
@@ -12,100 +12,274 @@ output:
 currentdir=getwd()
 setwd(currentdir)
 library(tidyverse)
-``` 
 
-## Data
+methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),"BRAKER3",expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER", "TOGA", "Liftoff","NCBI")
+```
+
+## Figure S3: panel A, human
 ```{r,,message=FALSE, warning=FALSE}
-annotations <-read_csv("GenomeAnnotationMetrics_final.csv")
-annotations <- annotations %>% filter(!method %in% c("BrkProt-unfilt","BrkProt-fullsupport","BrkRNA-unfilt",
-                                                     "BrkRNA-fullsupport","CGPdenovo","TSEBRA","MakerNoRnaNoEvm",
-                                                     "MakerRnaEvm","MakerNoRnaEvm")) 
+concat_data <-read_table("../../data/cds_length_tables/human_allmethods_cdslengths.tsv")
 
-genomeQC <-read_csv("GenomeQcMetrics_final.csv") 
-data <- annotations<-left_join(annotations,genomeQC,by = join_by(species==Species))
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","braker3","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga","liftoff","ncbi"))
 
-data$method <- factor(data$method,levels=c("BrkProt","BrkRNA","CGPprotein","CGPrnaseq",
-                                           "ScalHisat","ScalStar","StrHisat","StrStar","MakerRnaNoEvm","TOGA"))
+length_medians <- concat_data %>% group_by(method) %>% summarize(median_log10len=median(log10(length)))
+human_lengths_plot<-concat_data %>% ggplot(aes(x=method,y=log10(length),fill=method)) + geom_violin() +
+     scale_fill_manual(name="Method",labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen","white")) +
+       ylab(expression(paste(log[10],"CDS length"))) +
+       geom_point(data=length_medians,aes(x=method,y=median_log10len),size=1,color="black") +
+       xlab("") + 
+       theme(axis.title.x=element_blank(),
+       axis.text.x=element_blank(),
+       axis.ticks.x=element_blank()) +
+       guides(fill = guide_legend(title = "")) +
+       theme(legend.key.size = unit(0.4, 'cm'), #change legend key size
+        legend.key.height = unit(0.4, 'cm'), #change legend key height
+        legend.key.width = unit(0.4, 'cm'), #change legend key width
+        legend.text = element_text(size=8)) #change legend text font size
 
-data <- data %>% mutate(species = str_replace(species, "dmelanogaster", "D. melanogaster")) %>%
-     mutate(species = str_replace(species, "dpseudoobscura", "D. pseudoobscura")) %>%  
-     mutate(species = str_replace(species, "dyakuba", "D. yakuba")) %>%
-     mutate(species = str_replace(species, "alyrata", "A. lyrata")) %>%
-     mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
-     mutate(species = str_replace(species, "boleracea", "B. oleracea")) %>%
-     mutate(species = str_replace(species, "crubella", "C. rubella")) %>%
-     mutate(species = str_replace(species, "osativa", "O. sativa")) %>%
-     mutate(species = str_replace(species, "sitalica", "S. italica")) %>%
-     mutate(species = str_replace(species, "bdistachyon", "B. distachyon")) %>%
-     mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
-     mutate(species = str_replace(species, "bmori", "B. mori")) %>%
-     mutate(species = str_replace(species, "herato", "H. erato")) %>%
-     mutate(species = str_replace(species, "dplexippus", "D. plexippus")) %>%
-     mutate(species = str_replace(species, "human", "H. sapiens")) %>%
-     mutate(species = str_replace(species, "macaque", "M. mulatta")) %>%
-     mutate(species = str_replace(species, "dog", "C. familiaris")) %>%
-     mutate(species = str_replace(species, "mouse", "M. musculus")) %>%
-     mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
-     mutate(species = str_replace(species, "quail", "C. japonica")) %>%
-     mutate(species = str_replace(species, "mallard", "A. platyrhynchos"))
-
-data <- data %>% mutate_at(vars(species),factor,levels=c("D. melanogaster","D. pseudoobscura",
-                                                         "D. yakuba", "A. thaliana", "A. lyrata","B. oleracea",
-                                                         "C. rubella","Z. mays","O. sativa","S. italica",
-                                                         "B. distachyon", "G. gallus","A. platyrhynchos",
-                                                         "C. japonica","H. sapiens","M. mulatta","C. familiaris",
-                                                         "M. musculus","B. mori","H. erato","D. plexippus"))
+print(human_lengths_plot) 
+ggsave(human_lengths_plot,file="Figure_S3A.pdf",width=6.5,height=2.5)
 ```
 
-## Panel A: dipterans
-```{r}
-dipterans_count_length_ratio_plot<- data %>% filter(group=="dipterans") %>% ggplot() + 
-    geom_point(mapping=aes(y=number_CDS/protcod_mRNA_NCBI,x=MedianCDSLength/MedianCDSLength_ncbi,color=method,shape=species),alpha=0.7,size=2) + 
-    facet_wrap(vars(group)) + ylab("# predicted CDS/# NCBI CDS") +
-    geom_hline(yintercept=1,linetype="dotted",size=0.75) + 
-    geom_vline(xintercept=1,linetype="dotted",size=0.75) +
-    xlab("Median CDS length/Median NCBI CDS length")  + 
-    scale_color_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray50","#000000")) +
-    theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) + 
-    guides(color = guide_legend(title = "Method",order=1,label.theme = element_text(angle = 0, size=10,face = "plain"))) +
-    guides(shape = guide_legend(title = "Species",order=2,label.theme = element_text(angle = 0, size=10,face = "italic")))
+## Figure S3: panel B, dog
+```{r,,message=FALSE, warning=FALSE}
+concat_data <-read_table("../../data/cds_length_tables/dog_allmethods_cdslengths.tsv")
 
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","braker3","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga","liftoff","ncbi"))
 
-print(dipterans_count_length_ratio_plot)
-ggsave(dipterans_count_length_ratio_plot,file="Figure_S3A.pdf",width=5,height=4)
+length_medians <- concat_data %>% group_by(method) %>% summarize(median_log10len=median(log10(length)))
+dog_lengths_plot<-concat_data %>% ggplot(aes(x=method,y=log10(length),fill=method)) + geom_violin() +
+     scale_fill_manual(name="Method",labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen","white")) +
+       ylab(expression(paste(log[10],"CDS length"))) +
+       geom_point(data=length_medians,aes(x=method,y=median_log10len),size=1,color="black") +
+       xlab("") + 
+       theme(axis.title.x=element_blank(),
+       axis.text.x=element_blank(),
+       axis.ticks.x=element_blank()) +
+       guides(fill = guide_legend(title = "")) +
+       theme(legend.key.size = unit(0.4, 'cm'), #change legend key size
+        legend.key.height = unit(0.4, 'cm'), #change legend key height
+        legend.key.width = unit(0.4, 'cm'), #change legend key width
+        legend.text = element_text(size=8)) #change legend text font size
+
+print(dog_lengths_plot) 
+ggsave(dog_lengths_plot,file="Figure_S3B.pdf",width=6.5,height=2.5)
 ```
 
-## Panel B: rosids
-```{r}
-rosids_count_length_ratio_plot<- data %>% filter(group=="rosids") %>% ggplot() + 
-    geom_point(mapping=aes(y=number_CDS/protcod_mRNA_NCBI,x=MedianCDSLength/MedianCDSLength_ncbi,color=method,shape=species),alpha=0.7,size=2) + 
-    facet_wrap(vars(group)) + ylab("# predicted CDS/# NCBI CDS") +
-    geom_hline(yintercept=1,linetype="dotted",size=0.75) + 
-    geom_vline(xintercept=1,linetype="dotted",size=0.75) +
-    xlab("Median CDS length/Median NCBI CDS length")  + 
-    scale_color_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray50","#000000")) +
-    theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) + 
-    guides(color = guide_legend(title = "Method",order=1,label.theme = element_text(angle = 0, size=10,face = "plain"))) +
-    guides(shape = guide_legend(title = "Species",order=2,label.theme = element_text(angle = 0, size=10,face = "italic")))
 
+## Figure S3: panel C, chicken
+```{r,,message=FALSE, warning=FALSE}
+concat_data <-read_table("../../data/cds_length_tables/chicken_allmethods_cdslengths.tsv")
 
-print(rosids_count_length_ratio_plot)
-ggsave(rosids_count_length_ratio_plot,file="Figure_S3B.pdf",width=5,height=4)
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","braker3","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga","liftoff","ncbi"))
+
+length_medians <- concat_data %>% group_by(method) %>% summarize(median_log10len=median(log10(length)))
+chicken_lengths_plot<-concat_data %>% ggplot(aes(x=method,y=log10(length),fill=method)) + geom_violin() +
+     scale_fill_manual(name="Method",labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen","white")) +
+       ylab(expression(paste(log[10],"CDS length"))) +
+       geom_point(data=length_medians,aes(x=method,y=median_log10len),size=1,color="black") +
+       xlab("") + 
+       theme(axis.title.x=element_blank(),
+       axis.text.x=element_blank(),
+       axis.ticks.x=element_blank()) +
+       guides(fill = guide_legend(title = "")) +
+       theme(legend.key.size = unit(0.4, 'cm'), #change legend key size
+        legend.key.height = unit(0.4, 'cm'), #change legend key height
+        legend.key.width = unit(0.4, 'cm'), #change legend key width
+        legend.text = element_text(size=8)) #change legend text font size
+
+print(chicken_lengths_plot) 
+ggsave(chicken_lengths_plot,file="Figure_S3C.pdf",width=6.5,height=2.5)
 ```
 
-## Panel C: birds
-```{r}
-birds_count_length_ratio_plot<- data %>% filter(group=="birds") %>% ggplot() + 
-    geom_point(mapping=aes(y=number_CDS/protcod_mRNA_NCBI,x=MedianCDSLength/MedianCDSLength_ncbi,color=method,shape=species),alpha=0.7,size=2) + 
-    facet_wrap(vars(group)) + ylab("# predicted CDS/# NCBI CDS") +
-    geom_hline(yintercept=1,linetype="dotted",size=0.75) + 
-    geom_vline(xintercept=1,linetype="dotted",size=0.75) +
-    xlab("Median CDS length/Median NCBI CDS length")  + 
-    scale_color_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray50","#000000")) +
-    theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) + 
-    guides(color = guide_legend(title = "Method",order=1,label.theme = element_text(angle = 0, size=10,face = "plain"))) +
-    guides(shape = guide_legend(title = "Species",order=2,label.theme = element_text(angle = 0, size=10,face = "italic")))
+## Figure S3: panel D, mallard
+```{r,,message=FALSE, warning=FALSE}
+concat_data <-read_table("../../data/cds_length_tables/mallard_allmethods_cdslengths.tsv")
 
-print(birds_count_length_ratio_plot)
-ggsave(birds_count_length_ratio_plot,file="Figure_S3C.pdf",width=5,height=4) 
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","braker3","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga","liftoff","ncbi"))
+
+length_medians <- concat_data %>% group_by(method) %>% summarize(median_log10len=median(log10(length)))
+mallard_lengths_plot<-concat_data %>% ggplot(aes(x=method,y=log10(length),fill=method)) + geom_violin() +
+     scale_fill_manual(name="Method",labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen","white")) +
+       ylab(expression(paste(log[10],"CDS length"))) +
+       geom_point(data=length_medians,aes(x=method,y=median_log10len),size=1,color="black") +
+       xlab("") + 
+       theme(axis.title.x=element_blank(),
+       axis.text.x=element_blank(),
+       axis.ticks.x=element_blank()) +
+       guides(fill = guide_legend(title = "")) +
+       theme(legend.key.size = unit(0.4, 'cm'), #change legend key size
+        legend.key.height = unit(0.4, 'cm'), #change legend key height
+        legend.key.width = unit(0.4, 'cm'), #change legend key width
+        legend.text = element_text(size=8)) #change legend text font size
+
+print(mallard_lengths_plot) 
+ggsave(mallard_lengths_plot,file="Figure_S3D.pdf",width=6.5,height=2.5)
 ```
+
+
+## Figure S3: panel E, Z. mays
+```{r,,message=FALSE, warning=FALSE}
+concat_data <-read_table("../../data/cds_length_tables/zmays_allmethods_cdslengths.tsv")
+
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","braker3","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga","liftoff","ncbi"))
+
+length_medians <- concat_data %>% group_by(method) %>% summarize(median_log10len=median(log10(length)))
+zmays_lengths_plot<-concat_data %>% ggplot(aes(x=method,y=log10(length),fill=method)) + geom_violin() +
+     scale_fill_manual(name="Method",labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen","white")) +
+       ylab(expression(paste(log[10],"CDS length"))) +
+       geom_point(data=length_medians,aes(x=method,y=median_log10len),size=1,color="black") +
+       xlab("") + 
+       theme(axis.title.x=element_blank(),
+       axis.text.x=element_blank(),
+       axis.ticks.x=element_blank()) +
+       guides(fill = guide_legend(title = "")) +
+       theme(legend.key.size = unit(0.4, 'cm'), #change legend key size
+        legend.key.height = unit(0.4, 'cm'), #change legend key height
+        legend.key.width = unit(0.4, 'cm'), #change legend key width
+        legend.text = element_text(size=8)) #change legend text font size
+
+print(zmays_lengths_plot) 
+ggsave(zmays_lengths_plot,file="Figure_S3E.pdf",width=6.5,height=2.5)
+```
+
+
+## Figure S3: panel F, O. sativa
+```{r,,message=FALSE, warning=FALSE}
+concat_data <-read_table("../../data/cds_length_tables/osativa_allmethods_cdslengths.tsv")
+
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","braker3","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga","liftoff","ncbi"))
+
+length_medians <- concat_data %>% group_by(method) %>% summarize(median_log10len=median(log10(length)))
+osativa_lengths_plot<-concat_data %>% ggplot(aes(x=method,y=log10(length),fill=method)) + geom_violin() +
+     scale_fill_manual(name="Method",labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen","white")) +
+       ylab(expression(paste(log[10],"CDS length"))) +
+       geom_point(data=length_medians,aes(x=method,y=median_log10len),size=1,color="black") +
+       xlab("") + 
+       theme(axis.title.x=element_blank(),
+       axis.text.x=element_blank(),
+       axis.ticks.x=element_blank()) +
+       guides(fill = guide_legend(title = "")) +
+       theme(legend.key.size = unit(0.4, 'cm'), #change legend key size
+        legend.key.height = unit(0.4, 'cm'), #change legend key height
+        legend.key.width = unit(0.4, 'cm'), #change legend key width
+        legend.text = element_text(size=8)) #change legend text font size
+
+print(osativa_lengths_plot) 
+ggsave(osativa_lengths_plot,file="Figure_S3F.pdf",width=6.5,height=2.5)
+```
+
+
+## Figure S3: panel G, A. thaliana
+```{r,,message=FALSE, warning=FALSE}
+concat_data <-read_table("../../data/cds_length_tables/athaliana_allmethods_cdslengths.tsv")
+
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","braker3","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga","liftoff","ncbi"))
+
+length_medians <- concat_data %>% group_by(method) %>% summarize(median_log10len=median(log10(length)))
+athaliana_lengths_plot<-concat_data %>% ggplot(aes(x=method,y=log10(length),fill=method)) + geom_violin() +
+     scale_fill_manual(name="Method",labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen","white")) +
+       ylab(expression(paste(log[10],"CDS length"))) +
+       geom_point(data=length_medians,aes(x=method,y=median_log10len),size=1,color="black") +
+       xlab("") + 
+       theme(axis.title.x=element_blank(),
+       axis.text.x=element_blank(),
+       axis.ticks.x=element_blank()) +
+       guides(fill = guide_legend(title = "")) +
+       theme(legend.key.size = unit(0.4, 'cm'), #change legend key size
+        legend.key.height = unit(0.4, 'cm'), #change legend key height
+        legend.key.width = unit(0.4, 'cm'), #change legend key width
+        legend.text = element_text(size=8)) #change legend text font size
+
+print(athaliana_lengths_plot) 
+ggsave(athaliana_lengths_plot,file="Figure_S3G.pdf",width=6.5,height=2.5)
+```
+
+## Figure S3: panel H, C. rubella
+```{r,,message=FALSE, warning=FALSE}
+concat_data <-read_table("../../data/cds_length_tables/crubella_allmethods_cdslengths.tsv")
+
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","braker3","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga","liftoff","ncbi"))
+
+length_medians <- concat_data %>% group_by(method) %>% summarize(median_log10len=median(log10(length)))
+crubella_lengths_plot<-concat_data %>% ggplot(aes(x=method,y=log10(length),fill=method)) + geom_violin() +
+     scale_fill_manual(name="Method",labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen","white")) +
+       ylab(expression(paste(log[10],"CDS length"))) +
+       geom_point(data=length_medians,aes(x=method,y=median_log10len),size=1,color="black") +
+       xlab("") + 
+       theme(axis.title.x=element_blank(),
+       axis.text.x=element_blank(),
+       axis.ticks.x=element_blank()) +
+       guides(fill = guide_legend(title = "")) +
+       theme(legend.key.size = unit(0.4, 'cm'), #change legend key size
+        legend.key.height = unit(0.4, 'cm'), #change legend key height
+        legend.key.width = unit(0.4, 'cm'), #change legend key width
+        legend.text = element_text(size=8)) #change legend text font size
+
+print(crubella_lengths_plot) 
+ggsave(crubella_lengths_plot,file="Figure_S3H.pdf",width=6.5,height=2.5)
+```
+
+## Figure S3: panel I, D. melanogaster
+```{r,,message=FALSE, warning=FALSE}
+concat_data <-read_table("../../data/cds_length_tables/dmel_allmethods_cdslengths.tsv")
+
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","braker3","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga","liftoff","ncbi"))
+
+length_medians <- concat_data %>% group_by(method) %>% summarize(median_log10len=median(log10(length)))
+dmel_lengths_plot<-concat_data %>% ggplot(aes(x=method,y=log10(length),fill=method)) + geom_violin() +
+     scale_fill_manual(name="Method",labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen","white")) +
+       ylab(expression(paste(log[10],"CDS length"))) +
+       geom_point(data=length_medians,aes(x=method,y=median_log10len),size=1,color="black") +
+       xlab("") + 
+       theme(axis.title.x=element_blank(),
+       axis.text.x=element_blank(),
+       axis.ticks.x=element_blank()) +
+       guides(fill = guide_legend(title = "")) +
+       theme(legend.key.size = unit(0.4, 'cm'), #change legend key size
+        legend.key.height = unit(0.4, 'cm'), #change legend key height
+        legend.key.width = unit(0.4, 'cm'), #change legend key width
+        legend.text = element_text(size=8)) #change legend text font size
+
+print(dmel_lengths_plot) 
+ggsave(dmel_lengths_plot,file="Figure_S3I.pdf",width=6.5,height=2.5)
+```
+
+
+## Figure S3: panel J, D. pseudoobscura
+```{r,,message=FALSE, warning=FALSE}
+concat_data <-read_table("../../data/cds_length_tables/dpseudo_allmethods_cdslengths.tsv")
+
+concat_data$method <- factor(concat_data$method,levels=c("brkprot","brkrna","braker3","cgpprot","cgprna",
+                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga","liftoff","ncbi"))
+
+length_medians <- concat_data %>% group_by(method) %>% summarize(median_log10len=median(log10(length)))
+dpseudo_lengths_plot<-concat_data %>% ggplot(aes(x=method,y=log10(length),fill=method)) + geom_violin() +
+     scale_fill_manual(name="Method",labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen","white")) +
+       ylab(expression(paste(log[10],"CDS length"))) +
+       geom_point(data=length_medians,aes(x=method,y=median_log10len),size=1,color="black") +
+       xlab("") + 
+       theme(axis.title.x=element_blank(),
+       axis.text.x=element_blank(),
+       axis.ticks.x=element_blank()) +
+       guides(fill = guide_legend(title = "")) +
+       theme(legend.key.size = unit(0.4, 'cm'), #change legend key size
+        legend.key.height = unit(0.4, 'cm'), #change legend key height
+        legend.key.width = unit(0.4, 'cm'), #change legend key width
+        legend.text = element_text(size=8)) #change legend text font size
+
+print(dpseudo_lengths_plot) 
+ggsave(dpseudo_lengths_plot,file="Figure_S3J.pdf",width=6.5,height=2.5)
+```
+
+
+
