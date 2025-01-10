@@ -1,7 +1,7 @@
 ---
   title: "Genome Annotation Project"
-subtitle: "Figure S6: random forest confusion matrix stacked bar"
-date: "April 10, 2024"
+subtitle: "Figure S2: CDS count ratio vs. length ratio for taxonomic groups: 
+date: "December 13, 2024"
 author: "Adam Freedman"
 output: 
   html_document: default
@@ -15,42 +15,75 @@ library(tidyverse)
 ``` 
 
 ## Data
-```{r}
-confusion_matrix_data <-read_table("RandomForestErrorRatesMaster.tsv")
-confusion_matrix_data <- confusion_matrix_data %>% mutate(genic_class_error=genicFN/(genicFN+genicTP)) %>%
-     mutate(intergenic_class_error=intergenicFN/(intergenicFN+intergenicTP)) %>%
-     mutate(OOBerror=(genicFN+intergenicFN)/(genicFN+genicTP+intergenicFN+intergenicTP))
+```{r,,message=FALSE, warning=FALSE}
+annotations <-read_csv("../../data/Table_S3.csv")
+annotations <- annotations %>% filter(!method %in% c("BrkProt-unfilt","BrkProt-fullsupport","BrkRNA-unfilt",
+                                                     "BrkRNA-fullsupport","CGPdenovo","TSEBRA","MakerNoRnaNoEvm",
+                                                     "MakerRnaEvm","MakerNoRnaEvm")) 
 
-confusion_matrix_data <- confusion_matrix_data %>% mutate(species = str_replace(species, "dmel", "D. melanogaster")) %>%
-    mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
-    mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
-    mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
-    mutate(species = str_replace(species, "human", "H. sapiens"))
+methodlabels<-c("BRAKER2 (P)","BRAKER1 (P)","BRAKER3 (P)",expression(paste(CGP[protein]," (P)")),expression(paste(CGP[RNA]," (P)")),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER (P)","TOGA (P)","Liftoff")
 
-confusion_matrix_data$method <- factor(confusion_matrix_data$method,levels=c("brakerprot","brakerrna","cgpprot","cgprna",
-                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga"))
+annotations$method <- factor(annotations$method,levels=c("BrkProt","BrkRNA","Braker3","CGPprotein","CGPrnaseq",
+                                           "ScalHisat","ScalStar","StrHisat","StrStar","MakerRnaNoEvm","TOGA","liftoff"))
 
-confusion_matrix_data <- confusion_matrix_data %>% mutate(species=factor(species,levels=c("D. melanogaster","G. gallus","H. sapiens","A. thaliana","Z. mays")))
+annotations <- annotations %>% mutate(species = str_replace(species, "dmelanogaster", "D. melanogaster")) %>%
+     mutate(species = str_replace(species, "dpseudoobscura", "D. pseudoobscura")) %>%  
+     mutate(species = str_replace(species, "dyakuba", "D. yakuba")) %>%
+     mutate(species = str_replace(species, "alyrata", "A. lyrata")) %>%
+     mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
+     mutate(species = str_replace(species, "boleracea", "B. oleracea")) %>%
+     mutate(species = str_replace(species, "crubella", "C. rubella")) %>%
+     mutate(species = str_replace(species, "osativa", "O. sativa")) %>%
+     mutate(species = str_replace(species, "sitalica", "S. italica")) %>%
+     mutate(species = str_replace(species, "bdistachyon", "B. distachyon")) %>%
+     mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
+     mutate(species = str_replace(species, "bmori", "B. mori")) %>%
+     mutate(species = str_replace(species, "herato", "H. erato")) %>%
+     mutate(species = str_replace(species, "dplexippus", "D. plexippus")) %>%
+     mutate(species = str_replace(species, "human", "H. sapiens")) %>%
+     mutate(species = str_replace(species, "macaque", "M. mulatta")) %>%
+     mutate(species = str_replace(species, "dog", "C. familiaris")) %>%
+     mutate(species = str_replace(species, "mouse", "M. musculus")) %>%
+     mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
+     mutate(species = str_replace(species, "quail", "C. japonica")) %>%
+     mutate(species = str_replace(species, "mallard", "A. platyrhynchos"))
 
-confusion_long_counts <- pivot_longer(confusion_matrix_data, c(genicTP,genicFN,intergenicTP,intergenicFN), names_to="confusion_matrix_class", values_to="classcount") %>% select(species,method,confusion_matrix_class,classcount)
-confusion_long_counts <- confusion_long_counts %>% mutate(confusion_matrix_class=factor(confusion_matrix_class,levels=c("intergenicFN","intergenicTP","genicFN","genicTP")))
+
+annotations <- annotations %>% mutate_at(vars(species),factor,levels=c("D. melanogaster",
+              "D. yakuba", "D. pseudoobscura","A. thaliana", "A. lyrata","C. rubella","B. oleracea","Z. mays","S. italica","O. sativa",
+               "B. distachyon", "G. gallus","C. japonica","A. platyrhynchos","H. sapiens","M. mulatta","M. musculus","C. familiaris","H. erato","D. plexippus","B. mori"))
 ```
 
-## Figure S6
 ```{r}
-methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
-class_labels=c("intergenic: predicted genic", "intergenic: TP","genic: predicted intergenic","genic: TP")
-classstack_barplot <- confusion_long_counts %>% 
-  ggplot() + geom_bar(aes(x=method,y=classcount,fill=confusion_matrix_class),width=0.7,stat="identity",position="stack",color="black") +
-    theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,size=8)) +
-    scale_fill_manual(labels=class_labels,values=c("white","dodgerblue","yellow2","darkgreen")) +
-    theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
-    ylab("Count") + xlab("") +
-    scale_x_discrete(breaks=levels(confusion_long_counts$method),labels=methodlabels) +
-    guides(fill = guide_legend(byrow = TRUE)) +
-    labs(fill = "Prediction type") +
-    facet_wrap(~species) +
-    theme(strip.text = element_text(face="italic")) 
-print(classstack_barplot)
-ggsave(classstack_barplot,file="Figure_S6.pdf",width=7,height=6)
+nohelidata <- annotations %>% filter(group != "heliconines")
+blastphit_plot <- nohelidata %>% ggplot(aes(x=species,y=100*blastp2NCBIfraction)) + geom_point(aes(fill=method),color="black",pch=21,position = position_jitter(w = 0.33,h = 0),alpha=0.7,size=2.8) +
+    scale_fill_manual(labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen")) +
+theme(legend.text.align = 0) + 
+theme(legend.text=element_text(size=10)) +
+theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,face="italic")) + 
+ylab("% predicted proteins blastp to NCBI") +
+xlab("") + 
+geom_vline(xintercept=1.5,linetype="dotted",size=0.2) +
+geom_vline(xintercept=2.5,linetype="dotted",size=0.2)+
+geom_vline(xintercept=3.5,linetype="solid",size=1) +
+geom_vline(xintercept=4.5,linetype="dotted",size=0.2) +
+geom_vline(xintercept=5.5,linetype="dotted",size=0.2) +
+geom_vline(xintercept=6.5,linetype="dotted",size=0.2) +
+geom_vline(xintercept=7.5,linetype="solid",size=1)+
+geom_vline(xintercept=8.5,linetype="dotted",size=0.2) +
+geom_vline(xintercept=9.5,linetype="dotted",size=0.2) +
+geom_vline(xintercept=10.5,linetype="dotted",size=0.2) +
+geom_vline(xintercept=11.5,linetype="solid",size=1)+
+geom_vline(xintercept=12.5,linetype="dotted",size=0.2) +
+geom_vline(xintercept=13.5,linetype="dotted",size=0.2) +
+geom_vline(xintercept=14.5,linetype="solid",size=1) +
+geom_vline(xintercept=15.5,linetype="dotted",size=0.2) +
+geom_vline(xintercept=16.5,linetype="dotted",size=0.2) +
+geom_vline(xintercept=17.5,linetype="dotted",size=0.2) +
+theme(legend.position="bottom") +
+guides(fill = guide_legend(title = ""))
+theme(legend.margin=margin(-22, 0, 0, 0))
+
+print(blastphit_plot)
+ggsave(blastphit_plot,file="Figure_S6.pdf",width=7,height=5.5)
 ```
