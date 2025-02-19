@@ -164,7 +164,7 @@ We use two UCSC tools and gffread to convert from bed to genepred format, genepr
 ### Convert bed to genepred
 ```bash
 conda create -n ucsc-tools -bioconda ucsc-bedToGenePred ucsc-genepredtogtf
-source activate ucsc-bedToGenePred
+source activate ucsc-tools
 bedToGenePred filtered_annotation.bed filtered_annotation.genepred
 genePredToGtf file filtered_annotation.genepred filtered_annotation.gtf
 conda deactivate
