@@ -1,7 +1,7 @@
 ---
   title: "Genome Annotation Project"
-subtitle: "Figure S4: OOB error estimates for random forest ts classifiers"
-date: "April 10, 2024"
+subtitle: "Figure S2: CDS count ratio vs. length ratio for taxonomic groups: 
+date: "December 13, 2024"
 author: "Adam Freedman"
 output: 
   html_document: default
@@ -14,37 +14,29 @@ setwd(currentdir)
 library(tidyverse)
 ``` 
 
-## Data
 ```{r}
-confusion_matrix_data <-read_table("RandomForestErrorRatesMaster.tsv")
-confusion_matrix_data <- confusion_matrix_data %>% mutate(genic_class_error=genicFN/(genicFN+genicTP)) %>%
-     mutate(intergenic_class_error=intergenicFN/(intergenicFN+intergenicTP)) %>%
-     mutate(OOBerror=(genicFN+intergenicFN)/(genicFN+genicTP+intergenicFN+intergenicTP))
-
-confusion_matrix_data <- confusion_matrix_data %>% mutate(species = str_replace(species, "dmel", "D. melanogaster")) %>%
-    mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
-    mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
-    mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
-    mutate(species = str_replace(species, "human", "H. sapiens"))
-
-confusion_matrix_data$method <- factor(confusion_matrix_data$method,levels=c("brakerprot","brakerrna","cgpprot","cgprna",
-                                           "scalhisat","scalstar","stiehisat","stiestar","maker","toga"))
-
-confusion_matrix_data <- confusion_matrix_data %>% mutate(species=factor(species,levels=c("D. melanogaster","G. gallus","H. sapiens","A. thaliana","Z. mays")))
+classdata <-read_table("../../data/refspecies_methodclass_unique_intergenic_stats.tsv")
+cor.test(classdata$classunique,classdata$classintergenic)
 ```
-
 ## Figure S4
 ```{r}
-methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
-oobplot <- confusion_matrix_data %>% ggplot(aes(x=species,y=OOBerror)) + geom_point(aes(color=method),position = position_jitter(w = 0.25,h = 0),alpha=0.75,size=2) +
-    scale_color_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray50","#000000")) + 
-    theme(legend.text.align = 0) + 
-    theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.32,size=10)) + 
-    ylab("Out-of-bag error rate") +
-    xlab("") + 
-    theme(legend.key = element_rect(fill = NA)) +
-    theme(axis.text.x = element_text(face = c("italic"))) + 
-    guides(color = guide_legend(title = "Method",order=1))
-print(oobplot)
-ggsave(oobplot,file="Figure_S4.pdf",width=5,height=6)
+classdataplot<-classdata %>% 
+  mutate(species = str_replace(species, "dmel", "D. melanogaster")) %>%
+  mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
+  mutate(species = str_replace(species, "human", "H. sapiens")) %>%
+  mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
+  mutate(species = str_replace(species, "mouse", "M. musculus")) %>%
+  
+  ggplot(aes(x=100*classunique,y=100*classintergenic,color=methodclass,shape=species)) +
+  geom_point(size=3) +
+  scale_color_manual(values=c("lift"="seagreen",braker="orange",cgp="firebrick",stie="darkorchid3",scal="royalblue",maker="gray72"),labels=c("lift"="liftover","stie"="Stringtie","braker"="BRAKER","cgp"="CGP","maker"="MAKER","scal"="Scallop")) +
+ylab("Percent genes intergenic (relative to NCBI)") +
+xlab("Percent genes unique to method class") +
+guides(color = guide_legend(title = "Method class",override.aes = list(shape=15),order=1,label.theme = element_text(angle = 0, size=10,face = "plain"))) +
+guides(shape = guide_legend(title = "Species",order=2,label.theme = element_text(angle = 0, size=10,face = "italic"))) +
+guides(fill = guide_legend(title = "")) +
+annotate("text",x=60,y=5,label=expression(paste("Pearson's ",rho,"=0.975, p=","2.2x","10"^"-16")),size=3)
+  
+classdataplot
+ggsave(classdataplot,file="Figure_S4.pdf",width=5,height=5)
 ```

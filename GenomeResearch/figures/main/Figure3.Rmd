@@ -1,7 +1,7 @@
 ---
   title: "Genome Annotation Project"
-subtitle: "Figure 3: CDS intergenic gene rates"
-date: "April 10, 2024"
+subtitle: "Figure 3: protein-coding intergenic gene rate (relative to NCBI): 
+date: "December 13, 2024"
 author: "Adam Freedman"
 output: 
   html_document: default
@@ -16,19 +16,17 @@ library(tidyverse)
 
 ## Data
 ```{r,,message=FALSE, warning=FALSE}
-annotations <-read_csv("GenomeAnnotationMetrics_final.csv")
-annotations <- annotations %>% filter(group!="heliconines")
+annotations <-read_csv("../../data/Table_S3.csv")
 annotations <- annotations %>% filter(!method %in% c("BrkProt-unfilt","BrkProt-fullsupport","BrkRNA-unfilt",
                                                      "BrkRNA-fullsupport","CGPdenovo","TSEBRA","MakerNoRnaNoEvm",
                                                      "MakerRnaEvm","MakerNoRnaEvm")) 
 
-genomeQC <-read_csv("GenomeQcMetrics_final.csv") 
-data <- annotations<-left_join(annotations,genomeQC,by = join_by(species==Species))
+methodlabels<-c("BRAKER2 (P)","BRAKER1 (P)","BRAKER3 (P)",expression(paste(CGP[protein]," (P)")),expression(paste(CGP[RNA]," (P)")),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER (P)","TOGA (P)","Liftoff")
 
-data$method <- factor(data$method,levels=c("BrkProt","BrkRNA","CGPprotein","CGPrnaseq",
-                                           "ScalHisat","ScalStar","StrHisat","StrStar","MakerRnaNoEvm","TOGA"))
+annotations$method <- factor(annotations$method,levels=c("BrkProt","BrkRNA","Braker3","CGPprotein","CGPrnaseq",
+                                           "ScalHisat","ScalStar","StrHisat","StrStar","MakerRnaNoEvm","TOGA","liftoff"))
 
-data <- data %>% mutate(species = str_replace(species, "dmelanogaster", "D. melanogaster")) %>%
+annotations <- annotations %>% mutate(species = str_replace(species, "dmelanogaster", "D. melanogaster")) %>%
      mutate(species = str_replace(species, "dpseudoobscura", "D. pseudoobscura")) %>%  
      mutate(species = str_replace(species, "dyakuba", "D. yakuba")) %>%
      mutate(species = str_replace(species, "alyrata", "A. lyrata")) %>%
@@ -39,6 +37,9 @@ data <- data %>% mutate(species = str_replace(species, "dmelanogaster", "D. mela
      mutate(species = str_replace(species, "sitalica", "S. italica")) %>%
      mutate(species = str_replace(species, "bdistachyon", "B. distachyon")) %>%
      mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
+     mutate(species = str_replace(species, "bmori", "B. mori")) %>%
+     mutate(species = str_replace(species, "herato", "H. erato")) %>%
+     mutate(species = str_replace(species, "dplexippus", "D. plexippus")) %>%
      mutate(species = str_replace(species, "human", "H. sapiens")) %>%
      mutate(species = str_replace(species, "macaque", "M. mulatta")) %>%
      mutate(species = str_replace(species, "dog", "C. familiaris")) %>%
@@ -47,32 +48,45 @@ data <- data %>% mutate(species = str_replace(species, "dmelanogaster", "D. mela
      mutate(species = str_replace(species, "quail", "C. japonica")) %>%
      mutate(species = str_replace(species, "mallard", "A. platyrhynchos"))
 
-data <- data %>% mutate_at(vars(species),factor,levels=c("D. melanogaster","D. pseudoobscura","D. yakuba",
-                                                         "A. thaliana", "A. lyrata","B. oleracea","C. rubella",
-                                                         "Z. mays","O. sativa","S. italica","B. distachyon",
-                                                         "G. gallus","A. platyrhynchos","C. japonica","H. sapiens",
-                                                         "M. mulatta","C. familiaris","M. musculus"))
 
-methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),expression(CGP[protein]),
-                expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),
-                expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA")
+annotations <- annotations %>% mutate_at(vars(species),factor,levels=c("D. melanogaster",
+              "D. yakuba", "D. pseudoobscura","A. thaliana", "A. lyrata","C. rubella","B. oleracea","Z. mays","S. italica","O. sativa",
+               "B. distachyon", "G. gallus","C. japonica","A. platyrhynchos","H. sapiens","M. mulatta","M. musculus","C. familiaris","H. erato","D. plexippus","B. mori"))
 ```
 
 
 ## Figure 3
 ```{r}
-intergenic_plot <- data %>% ggplot(aes(x=species,y=intergenic_genes/protcod_genes)) + geom_point(aes(fill=method),color="black",pch=21,position = position_jitter(w = 0.25,h = 0),alpha=0.7,size=1.75) +
-    scale_fill_manual(labels=methodlabels,values=c("yellow2","#e69f00", "firebrick1","firebrick4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray50","#000000")) + 
+intergenic_plot <- annotations %>% filter(group!="heliconines") %>% ggplot(aes(x=species,y=intergenic_genes/pcodgenes_wCDS)) + geom_point(aes(fill=method),color="black",pch=21,position = position_jitter(w = 0.33,h = 0),alpha=0.7,size=2.8) +
+    scale_fill_manual(labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen")) + 
+theme_classic() +
 theme(legend.text.align = 0) + 
-theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.32,face="italic")) + 
+theme(legend.text=element_text(size=10)) +
+theme(axis.text.x=element_text(angle=90, size=10,hjust=1,vjust=0.32,face="italic")) + 
 ylab("Proportion genes intergenic") +
 xlab("") + 
-geom_vline(xintercept=3.5,linetype="solid") +
-geom_vline(xintercept=7.5,linetype="solid")+
-geom_vline(xintercept=11.5,linetype="solid") +
-geom_vline(xintercept=14.5,linetype="solid") +
-guides(fill = guide_legend(title = "Method"))
+geom_vline(xintercept=1.5,linetype="dotted",size=0.5) +
+geom_vline(xintercept=2.5,linetype="dotted",size=0.5)+
+geom_vline(xintercept=3.5,linetype="solid",size=1) +
+geom_vline(xintercept=4.5,linetype="dotted",size=0.5) +
+geom_vline(xintercept=5.5,linetype="dotted",size=0.5) +
+geom_vline(xintercept=6.5,linetype="dotted",size=0.5) +
+geom_vline(xintercept=7.5,linetype="solid",size=1)+
+geom_vline(xintercept=8.5,linetype="dotted",size=0.5) +
+geom_vline(xintercept=9.5,linetype="dotted",size=0.5) +
+geom_vline(xintercept=10.5,linetype="dotted",size=0.5) +
+geom_vline(xintercept=11.5,linetype="solid",size=1)+
+geom_vline(xintercept=12.5,linetype="dotted",size=0.5) +
+geom_vline(xintercept=13.5,linetype="dotted",size=0.5) +
+geom_vline(xintercept=14.5,linetype="solid",size=1) +
+geom_vline(xintercept=15.5,linetype="dotted",size=0.5) +
+geom_vline(xintercept=16.5,linetype="dotted",size=0.5) +
+geom_vline(xintercept=17.5,linetype="dotted",size=0.5) +
+guides(fill = guide_legend(title = "")) +
+theme(legend.position="bottom") +
+theme(legend.margin=margin(-22, 0, 0, 0))
 
 print(intergenic_plot)
-ggsave(intergenic_plot,file="Figure3.pdf",width=7,height=5)
+ggsave(intergenic_plot,file="Figure3.pdf",width=8,height=5.5)
 ```
+

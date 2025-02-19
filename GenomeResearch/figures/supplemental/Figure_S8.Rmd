@@ -1,7 +1,7 @@
 ---
   title: "Genome Annotation Project"
-subtitle: "Figure S7: gini index dot plot more species"
-date: "April 10, 2024"
+subtitle: "Figure S8: RNA-seq assembler causes for BUSCO missingness: 
+date: "November 19, 2024"
 author: "Adam Freedman"
 output: 
   html_document: default
@@ -16,64 +16,152 @@ library(tidyverse)
 
 ## Data
 ```{r,,message=FALSE, warning=FALSE}
-annotations <-read_csv("GenomeAnnotationMetrics_final.csv")
-annotations <- annotations %>% filter(!method %in% c("BrkProt-unfilt","BrkProt-fullsupport","BrkRNA-unfilt",
-                                                     "BrkRNA-fullsupport","CGPdenovo","TSEBRA","MakerNoRnaNoEvm",
-                                                     "MakerRnaEvm","MakerNoRnaEvm")) %>%
-                                                      filter(group!="heliconines")
+data <-read_csv("../../data/assembler_compleasm_missingness_stats.csv")
 
-genomeQC <-read_csv("GenomeQcMetrics_final.csv") 
-data <- annotations<-left_join(annotations,genomeQC,by = join_by(species==Species))
+methodlabels<-c(expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]))
 
-data$method <- factor(data$method,levels=c("BrkProt","BrkRNA","CGPprotein","CGPrnaseq",
-                                           "ScalHisat","ScalStar","StrHisat","StrStar","MakerRnaNoEvm","TOGA"))
 
-data <- data %>% mutate(species = str_replace(species, "dmelanogaster", "D. melanogaster")) %>%
-     mutate(species = str_replace(species, "dpseudoobscura", "D. pseudoobscura")) %>%  
-     mutate(species = str_replace(species, "dyakuba", "D. yakuba")) %>%
-     mutate(species = str_replace(species, "alyrata", "A. lyrata")) %>%
+data$method <- factor(data$method,levels=c("scalhisat","scalstar","stiehisat","stiestar"))
+
+data <- data %>% mutate(species = str_replace(species, "dmel", "D. melanogaster")) %>%
      mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
-     mutate(species = str_replace(species, "boleracea", "B. oleracea")) %>%
-     mutate(species = str_replace(species, "crubella", "C. rubella")) %>%
-     mutate(species = str_replace(species, "osativa", "O. sativa")) %>%
-     mutate(species = str_replace(species, "sitalica", "S. italica")) %>%
-     mutate(species = str_replace(species, "bdistachyon", "B. distachyon")) %>%
      mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
      mutate(species = str_replace(species, "human", "H. sapiens")) %>%
-     mutate(species = str_replace(species, "macaque", "M. mulatta")) %>%
-     mutate(species = str_replace(species, "dog", "C. familiaris")) %>%
-     mutate(species = str_replace(species, "mouse", "M. musculus")) %>%
-     mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
-     mutate(species = str_replace(species, "quail", "C. japonica")) %>%
-     mutate(species = str_replace(species, "mallard", "A. platyrhynchos"))
+     mutate(species = str_replace(species, "chicken", "G. gallus"))
 
-data <- data %>% mutate_at(vars(species),factor,levels=c("D. melanogaster","D. pseudoobscura",
-                                                         "D. yakuba", "A. thaliana", "A. lyrata","B. oleracea",
-                                                         "C. rubella","Z. mays","O. sativa","S. italica",
-                                                         "B. distachyon", "G. gallus","A. platyrhynchos",
-                                                         "C. japonica","H. sapiens","M. mulatta","C. familiaris",
-                                                         "M. musculus"))
-
-fusion_long <- pivot_longer(data, c(cds_gene_fusions,multi_cds_gene_fusions,multi_mix_gene_fusions), names_to="fusiontype", values_to="fusionfreq")
-fusion_long <- fusion_long %>% mutate(fusiontype=factor(fusiontype,levels=c("cds_gene_fusions","multi_cds_gene_fusions","multi_mix_gene_fusions")))
-fusion_long <- fusion_long %>% filter(species=="Z. mays" | species=="H. sapiens" | species=="D. melanogaster" |species=="A. thaliana"| species=="G. gallus")
-fusion_long<- fusion_long %>% mutate(species=factor(species,levels=c("D. melanogaster","G. gallus","H. sapiens","A. thaliana","Z. mays")))
+data <- data %>% mutate_at(vars(species),factor,levels=c("D. melanogaster","A. thaliana", 
+                                                         "Z. mays","G. gallus","H. sapiens"))
 ```
 
-## Figure S8
-```{r}  
-fusion_labels=c("Fusion transcripts", "1 tscript-per-gene, multi-gene","Mixed")
-fusion_barplot <- fusion_long %>% ggplot() + 
-    geom_bar(aes(x=method,y=fusionfreq/protcod_genes,fill=fusiontype),width=0.7,stat="identity",position="stack",color="black") +
-    theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.3,size=9)) +
-    scale_fill_manual(labels=fusion_labels,values=c("white","dodgerblue","darkgreen")) +
-    theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) +
-    ylab("Fusion frequency") + xlab("") +
-    scale_x_discrete(breaks=levels(fusion_long$method),labels=methodlabels) +
-    guides(fill = guide_legend(byrow = TRUE)) +
-    labs(fill = "Fusion type") +
-    facet_wrap(~species) +
-    theme(strip.text = element_text(face="italic"))
-print(fusion_barplot)
-ggsave(fusion_barplot,file="Figure_S8.pdf",width=7,height=5)
+```{r}
+data_longer <- data %>% select(!proteome_total_missing) %>% pivot_longer(cols=c("proteome_missing_FNs","proteome_missing_ORFwrong",
+                                            "fn_and_wrong","missing_both_methods","missing_other"),
+                                     names_to="missingness_type",values_to="count") %>%
+                                     mutate_at(vars(missingness_type),factor,levels=c("missing_other","fn_and_wrong",
+                                                                                      "proteome_missing_FNs","proteome_missing_ORFwrong",
+                                                                                      "missing_both_methods"))
+                                     
+```
+## Figure S8: panel A, D. melanogaster
+```{r}
+missing_barplot_fly <- data_longer %>% filter(species=="D. melanogaster") %>% ggplot(aes(x=method,y=count,fill=missingness_type)) +
+                   geom_bar(position="stack",stat="identity",width=0.9) +
+                   scale_fill_manual(breaks=c("missing_both_methods","proteome_missing_FNs","proteome_missing_ORFwrong",
+                                              "fn_and_wrong","missing_other"),
+                                               values=c("missing_both_methods"="lightblue",
+                                                        "proteome_missing_FNs"= "royalblue3",
+                                                         "proteome_missing_ORFwrong"="seagreen",
+                                                         "fn_and_wrong"= "magenta3",
+                                                          "missing_other"="black"),
+                                               labels=c("Proteome and transcriptome","False negative (FN)","Incorrect predicted ORF",
+                                                        "FN and incorrect ORF","Other")) +
+                   scale_x_discrete(labels=methodlabels) +
+                   xlab("") +
+                   labs(fill = "Missingness type") +
+                   ylab("# missing BUSCOs") +
+                   theme(legend.text.align = 0,legend.text=element_text(size=8),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.45, "cm")) + 
+                   guides(fill = guide_legend(byrow = TRUE)) +
+                   theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1,size=8,face="italic")) 
+missing_barplot_fly
+ggsave(missing_barplot_fly,file="Figure_S8A.pdf",width=4.5,height=4)
+```
+
+
+## Figure S8: panel B, A. thaliana
+ 
+```{r}
+missing_barplot_thaliana <- data_longer %>% filter(species=="A. thaliana") %>% ggplot(aes(x=method,y=count,fill=missingness_type)) +
+                   geom_bar(position="stack",stat="identity",width=0.9) +
+                   scale_fill_manual(breaks=c("missing_both_methods","proteome_missing_FNs","proteome_missing_ORFwrong",
+                                              "fn_and_wrong","missing_other"),
+                                               values=c("missing_both_methods"="lightblue",
+                                                        "proteome_missing_FNs"= "royalblue3",
+                                                         "proteome_missing_ORFwrong"="seagreen",
+                                                         "fn_and_wrong"= "magenta3",
+                                                          "missing_other"="black"),
+                                               labels=c("Proteome and transcriptome","False negative (FN)","Incorrect predicted ORF",
+                                                        "FN and incorrect ORF","Other")) +
+                   scale_x_discrete(labels=methodlabels) +
+                   xlab("") +
+                   labs(fill = "Missingness type") +
+                   ylab("# missing BUSCOs") +
+                   theme(legend.text.align = 0,legend.text=element_text(size=8),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.45, "cm")) + 
+                   guides(fill = guide_legend(byrow = TRUE)) +
+                   theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1,size=8,face="italic")) 
+missing_barplot_thaliana
+ ggsave(missing_barplot_thaliana,file="Figure_S8B.pdf",width=4.5,height=4)   
+```
+
+## Figure S8: panel C, G. gallus
+
+```{r}
+missing_barplot_chicken <- data_longer %>% filter(species=="G. gallus") %>% ggplot(aes(x=method,y=count,fill=missingness_type)) +
+                   geom_bar(position="stack",stat="identity",width=0.9) +
+                   scale_fill_manual(breaks=c("missing_both_methods","proteome_missing_FNs","proteome_missing_ORFwrong",
+                                              "fn_and_wrong","missing_other"),
+                                               values=c("missing_both_methods"="lightblue",
+                                                        "proteome_missing_FNs"= "royalblue3",
+                                                         "proteome_missing_ORFwrong"="seagreen",
+                                                         "fn_and_wrong"= "magenta3",
+                                                          "missing_other"="black"),
+                                               labels=c("Proteome and transcriptome","False negative (FN)","Incorrect predicted ORF",
+                                                        "FN and incorrect ORF","Other")) +
+                   scale_x_discrete(labels=methodlabels) +
+                   xlab("") +
+                   labs(fill = "Missingness type") +
+                   ylab("# missing BUSCOs") +
+                   theme(legend.text.align = 0,legend.text=element_text(size=8),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.45, "cm")) + 
+                   guides(fill = guide_legend(byrow = TRUE)) +
+                   theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1,size=8,face="italic")) 
+missing_barplot_chicken
+ ggsave(missing_barplot_chicken,file="Figure_S8C.pdf",width=4.5,height=4) 
+```
+
+## Figure S8: panel D, Z. mays
+```{r}
+missing_barplot_corn <- data_longer %>% filter(species=="Z. mays") %>% ggplot(aes(x=method,y=count,fill=missingness_type)) +
+                   geom_bar(position="stack",stat="identity",width=0.9) +
+                   scale_fill_manual(breaks=c("missing_both_methods","proteome_missing_FNs","proteome_missing_ORFwrong",
+                                              "fn_and_wrong","missing_other"),
+                                               values=c("missing_both_methods"="lightblue",
+                                                        "proteome_missing_FNs"= "royalblue3",
+                                                         "proteome_missing_ORFwrong"="seagreen",
+                                                         "fn_and_wrong"= "magenta3",
+                                                          "missing_other"="black"),
+                                               labels=c("Proteome and transcriptome","False negative (FN)","Incorrect predicted ORF",
+                                                        "FN and incorrect ORF","Other")) +
+                   scale_x_discrete(labels=methodlabels) +
+                   xlab("") +
+                   labs(fill = "Missingness type") +
+                   ylab("# missing BUSCOs") +
+                  theme(legend.text.align = 0,legend.text=element_text(size=8),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.45, "cm")) + 
+                   guides(fill = guide_legend(byrow = TRUE)) +
+                   theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1,size=8,face="italic")) 
+ 
+missing_barplot_corn
+ggsave(missing_barplot_corn,file="Figure_S8D.pdf",width=4.5,height=4)                  
+```
+
+## Figure S8: panel E, human
+```{r}
+missing_barplot_human <- data_longer %>% filter(species=="H. sapiens") %>% ggplot(aes(x=method,y=count,fill=missingness_type)) +
+                   geom_bar(position="stack",stat="identity",width=0.9) +
+                   scale_fill_manual(breaks=c("missing_both_methods","proteome_missing_FNs","proteome_missing_ORFwrong",
+                                              "fn_and_wrong","missing_other"),
+                                               values=c("missing_both_methods"="lightblue",
+                                                        "proteome_missing_FNs"= "royalblue3",
+                                                         "proteome_missing_ORFwrong"="seagreen",
+                                                         "fn_and_wrong"= "magenta3",
+                                                          "missing_other"="black"),
+                                               labels=c("Proteome and transcriptome","False negative (FN)","Incorrect predicted ORF",
+                                                        "FN and incorrect ORF","Other")) +
+                   scale_x_discrete(labels=methodlabels) +
+                   xlab("") +
+                   labs(fill = "Missingness type") +
+                   ylab("# missing BUSCOs") +
+                   theme(legend.text.align = 0,legend.text=element_text(size=8),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.45, "cm")) + 
+                   guides(fill = guide_legend(byrow = TRUE)) +
+                   theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1,size=8,face="italic")) 
+missing_barplot_human
+ggsave(missing_barplot_human,file="Figure_S8E.pdf",width=4.5,height=4)
 ```

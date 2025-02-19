@@ -1,7 +1,7 @@
 ---
   title: "Genome Annotation Project"
-subtitle: "Figure S1: BUSCO Venn diagrams"
-date: "April 10, 2024"
+subtitle: "Figure 1: proteome compleasm barplots: 
+date: "December 13, 2024"
 author: "Adam Freedman"
 output: 
   html_document: default
@@ -12,505 +12,64 @@ output:
 currentdir=getwd()
 setwd(currentdir)
 library(tidyverse)
-library("ggVennDiagram")
 ``` 
 
-## Panel A
-```{r}
-human_venn<-read_table("human_buscoid_by_type.tsv")
-protein<- human_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- human_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- human_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- human_venn %>% filter(toga=="present") %>% select(buscoid)
+## Data
+```{r,,message=FALSE, warning=FALSE}
+annotations <-read_csv("../../data/Table_S3.csv")
+annotations <- annotations %>% filter(!method %in% c("BrkProt-unfilt","BrkProt-fullsupport","BrkRNA-unfilt",
+                                                     "BrkRNA-fullsupport","CGPdenovo","TSEBRA","MakerNoRnaNoEvm",
+                                                     "MakerRnaEvm","MakerNoRnaEvm")) 
+
+heliconine_labels<-c("BRAKER2 (P)","BRAKER1 (P)","BRAKER3 (P)",expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER (P)")
+
+annotations$method <- factor(annotations$method,levels=c("BrkProt","BrkRNA","Braker3","CGPprotein","CGPrnaseq",
+                                           "ScalHisat","ScalStar","StrHisat","StrStar","MakerRnaNoEvm","TOGA","liftoff"))
+
+annotations <- annotations %>% mutate(species = str_replace(species, "dmelanogaster", "D. melanogaster")) %>%
+     mutate(species = str_replace(species, "dpseudoobscura", "D. pseudoobscura")) %>%  
+     mutate(species = str_replace(species, "dyakuba", "D. yakuba")) %>%
+     mutate(species = str_replace(species, "alyrata", "A. lyrata")) %>%
+     mutate(species = str_replace(species, "athaliana", "A. thaliana")) %>%
+     mutate(species = str_replace(species, "boleracea", "B. oleracea")) %>%
+     mutate(species = str_replace(species, "crubella", "C. rubella")) %>%
+     mutate(species = str_replace(species, "osativa", "O. sativa")) %>%
+     mutate(species = str_replace(species, "sitalica", "S. italica")) %>%
+     mutate(species = str_replace(species, "bdistachyon", "B. distachyon")) %>%
+     mutate(species = str_replace(species, "zmays", "Z. mays")) %>%
+     mutate(species = str_replace(species, "bmori", "B. mori")) %>%
+     mutate(species = str_replace(species, "herato", "H. erato")) %>%
+     mutate(species = str_replace(species, "dplexippus", "D. plexippus")) %>%
+     mutate(species = str_replace(species, "human", "H. sapiens")) %>%
+     mutate(species = str_replace(species, "macaque", "M. mulatta")) %>%
+     mutate(species = str_replace(species, "dog", "C. familiaris")) %>%
+     mutate(species = str_replace(species, "mouse", "M. musculus")) %>%
+     mutate(species = str_replace(species, "chicken", "G. gallus")) %>%
+     mutate(species = str_replace(species, "quail", "C. japonica")) %>%
+     mutate(species = str_replace(species, "mallard", "A. platyrhynchos"))
 
 
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1A.pdf",width=3.5,height=3.5)
+annotations <- annotations %>% mutate_at(vars(species),factor,levels=c("D. melanogaster",
+              "D. yakuba", "D. pseudoobscura","A. thaliana", "A. lyrata","C. rubella","B. oleracea","Z. mays","S. italica","O. sativa",
+               "B. distachyon", "G. gallus","C. japonica","A. platyrhynchos","H. sapiens","M. mulatta","M. musculus","C. familiaris","H. erato","D. plexippus","B. mori"))
 ```
 
-## Panel B
-```{r}
-macaque_venn<-read_table("macaque_buscoid_by_type.tsv")
-protein<- macaque_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- macaque_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- macaque_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- macaque_venn %>% filter(toga=="present") %>% select(buscoid)
 
+## Figure S1
 
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1B.pdf",width=3.5,height=3.5)
-```
-
-## Panel C
-```{r}
-dog_venn<-read_table("dog_buscoid_by_type.tsv")
-protein<- dog_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- dog_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- dog_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- dog_venn %>% filter(toga=="present") %>% select(buscoid)
-
-
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1C.pdf",width=3.5,height=3.5)
-```
-
-## Panel D
-```{r}
-mouse_venn<-read_table("mouse_buscoid_by_type.tsv")
-protein<- mouse_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- mouse_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- mouse_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- mouse_venn %>% filter(toga=="present") %>% select(buscoid)
-
-
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1D",width=3.5,height=3.5)
-```
-
-## Panel E
-```{r}
-dmel_venn<-read_table("dmel_buscoid_by_type.tsv")
-protein<- dmel_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- dmel_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- dmel_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- dmel_venn %>% filter(toga=="present") %>% select(buscoid)
-
-
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1E.pdf",width=3.5,height=3.5)
-```
-
-## Panel F
-```{r}
-dpseudo_venn<-read_table("dpseudo_buscoid_by_type.tsv")
-protein<- dpseudo_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- dpseudo_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- dpseudo_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- dpseudo_venn %>% filter(toga=="present") %>% select(buscoid)
-
-
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1F.pdf",width=3.5,height=3.5)
-```
-
-## Panel G
-```{r}
-dyak_venn<-read_table("dyak_buscoid_by_type.tsv")
-protein<- dyak_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- dyak_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- dyak_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- dyak_venn %>% filter(toga=="present") %>% select(buscoid)
-
-
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1G.pdf",width=3.5,height=3.5)
-```
-
-## Panel H
-```{r}
-chicken_venn<-read_table("chicken_buscoid_by_type.tsv")
-protein<- chicken_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- chicken_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- chicken_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- chicken_venn %>% filter(toga=="present") %>% select(buscoid)
-
-
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1H.pdf",width=3.5,height=3.5)
-```
-
-## Panel I
+### proteome
 ```{r}
 
-mallard_venn<-read_table("mallard_buscoid_by_type.tsv")
-protein<- mallard_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- mallard_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- mallard_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- mallard_venn %>% filter(toga=="present") %>% select(buscoid)
-
-
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1I.pdf",width=3.5,height=3.5)
+heliconine_proteome_compleasm_barplot <- annotations %>% filter(group =="heliconines")  %>%
+   filter(method %in% c("BrkProt","BrkRNA","Braker3", "ScalHisat","ScalStar","StrHisat","StrStar","MakerRnaNoEvm")) %>%  mutate(compleasm_transcriptome=replace_na(compleasm_protein,-1)) %>% ggplot() + theme(text = element_text(size = 10))  +
+    geom_bar(aes(species,y=compleasm_protein,fill=method),width=0.9,stat="identity",position="dodge") +
+    scale_fill_manual(labels=heliconine_labels,values=c("yellow3","orange","brown4", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72")) +
+    theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1,size=8,face="italic")) + 
+    ylab("Compleasm score") + xlab("") + scale_y_continuous(expand=c(0,0),limits=c(0,1.05)) + 
+    theme(legend.text.align = 0,legend.text=element_text(size=12),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.35, "cm")) + 
+    guides(fill = guide_legend(byrow = TRUE)) +
+    labs(fill = "") 
+    
+print(heliconine_proteome_compleasm_barplot)
+ggsave(heliconine_proteome_compleasm_barplot,file="Figure_S1.pdf",width=5,height=3.05)
 ```
-
-## Panel J
-```{r}
-quail_venn<-read_table("quail_buscoid_by_type.tsv")
-protein<- quail_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- quail_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- quail_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- quail_venn %>% filter(toga=="present") %>% select(buscoid)
-
-
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1J.pdf",width=3.5,height=3.5)
-```
-
-## Panel K
-```{r}
-
-alyrata_venn<-read_table("alyrata_buscoid_by_type.tsv")
-protein<- alyrata_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- alyrata_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- alyrata_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- alyrata_venn %>% filter(toga=="present") %>% select(buscoid)
-
-
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1K.pdf",width=3.5,height=3.5)
-```
-
-## Panel L
-```{r}
-athaliana_venn<-read_table("athaliana_buscoid_by_type.tsv")
-protein<- athaliana_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- athaliana_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- athaliana_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- athaliana_venn %>% filter(toga=="present") %>% select(buscoid)
-
-
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figur_S1L.pdf",width=3.5,height=3.5)
-```
-
-## Panel M
-```{r}
-crubella_venn<-read_table("crubella_buscoid_by_type.tsv")
-protein<- crubella_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- crubella_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- crubella_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- crubella_venn %>% filter(toga=="present") %>% select(buscoid)
-
-
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1M.pdf",width=3.5,height=3.5)
-```
-
-## Panel N
-```{r}
-zmays_venn<-read_table("zmays_buscoid_by_type.tsv")
-protein<- zmays_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- zmays_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- zmays_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- zmays_venn %>% filter(toga=="present") %>% select(buscoid)
-
-
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1N.pdf",width=3.5,height=3.5)
-```
-
-## Panel O
-```{r}
-bdistachyon_venn<-read_table("bdistachyon_buscoid_by_type.tsv")
-protein<- bdistachyon_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- bdistachyon_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- bdistachyon_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- bdistachyon_venn %>% filter(toga=="present") %>% select(buscoid)
-
-
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1_panelO.pdf",width=3.5,height=3.5)
-```
-
-## Panel P
-```{r}
-osativa_venn<-read_table("osativa_buscoid_by_type.tsv")
-protein<- osativa_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- osativa_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- osativa_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- osativa_venn %>% filter(toga=="present") %>% select(buscoid)
-
-
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1P.pdf",width=3.5,height=3.5)
-```
-
-## Panel Q
-```{r}
-sitalica_venn<-read_table("sitalica_buscoid_by_type.tsv")
-protein<- sitalica_venn %>% filter(protein=="present") %>% select(buscoid)
-rnaseq_abinit<- sitalica_venn %>% filter(rnaseq_abinit=="present") %>% select(buscoid)
-rnaseq_assembler <- sitalica_venn %>% filter(rnaseq_assembler=="present") %>% select(buscoid)
-toga <- sitalica_venn %>% filter(toga=="present") %>% select(buscoid)
-
-
-venndata<-list(
-  Protein=protein$buscoid,
-  "RNAseq: HMM"=rnaseq_abinit$buscoid,
-  "RNAseq: assembler"=rnaseq_assembler$buscoid,
-  TOGA=toga$buscoid)
-
-venn <- Venn(venndata)
-data <- process_data(venn)
-
-
-ggplot() +
-  geom_sf(aes(fill=count), data = venn_region(data)) +
-  scale_fill_gradient(low="dodgerblue",high = "firebrick") + xlim(-0.01,1.01) + 
-  geom_sf(size = 2, lty = "dashed", color = "black", data = venn_setedge(data)) +
-  geom_sf_text(aes(label = name), data = venn_setlabel(data),nudge_y=0.03) +
-  geom_sf_label(aes(label=sprintf("%0.2f", round(100*count/sum(count),digits=2))), size=2.5,fontface = "plain", data = venn_region(data)) + 
-  theme_void() + theme(legend.position = 'none')
-ggsave(file="Figure_S1Q.pdf",width=3.5,height=3.5)
-```
-      
-
-
-
-
-
