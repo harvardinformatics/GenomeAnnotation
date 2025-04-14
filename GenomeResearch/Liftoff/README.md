@@ -1,4 +1,5 @@
-#Liftoff
+# Liftoff
+
 [Liftoff](https://github.com/agshumate/Liftoff) transfers annotations from a high-quality reference annotation to a new genome, via internally computed whole-genome alignment. It performs such transfer on both coding and non-coding genome annotation features. Because we implemented Liftoff across varying degrees of evolutionary divergence, we also supplied additional parameters that are believed to improve performance. Specifically, we ran lifoff as follows:
 ```
 liftoff -p $NUMBER_THREADS -polish -g $REFERENCE_GFF -o ${TARGET_GENOME}.gff3 -flank 0.2 -d 3 $TARGET_GENOME_FASTA $REFERENCE_GENOME_FASTA
