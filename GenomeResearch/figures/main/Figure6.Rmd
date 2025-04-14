@@ -65,9 +65,11 @@ refs_plot <- annotations %>% filter(species %in% c("D. melanogaster","H. sapiens
     xlab("Transcriptome compleasm score") +
     theme_classic() +
     geom_abline(intercept=0,slope=1,lty="dotted",color="black") +
-    theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) + 
-    guides(fill = guide_legend(title = "Method",override.aes = list(shape=21),order=1,label.theme = element_text(angle = 0, size=10,face = "plain"))) +
-    guides(shape = guide_legend(title = "Species",order=2,label.theme = element_text(angle = 0, size=8,face = "italic"))) 
+    theme(legend.text.align = 0,axis.title=element_text(size=12),legend.title = element_text(size = 12),legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) + 
+    guides(fill = guide_legend(title = "Method",override.aes = list(shape=21),legend.title=element_text(size=12),order=1,label.theme = element_text(angle = 0, size=11,face = "plain"))) +
+    guides(shape = guide_legend(title = "Species",order=2,legend.title=element_text(size=12),label.theme = element_text(angle = 0, size=11,face = "italic"))) +
+    theme(axis.text.y=element_text(size=11)) +
+  theme(axis.text.x=element_text(size=11)) 
     
 
 print(refs_plot)

@@ -64,8 +64,10 @@ geom_point(aes(fill=method),color="black",pch=21,position = position_jitter(w = 
     scale_fill_manual(labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen")) + 
 theme_classic() +
 theme(legend.text.align = 0) + 
-theme(legend.text=element_text(size=10)) +
-theme(axis.text.x=element_text(angle=90, size=10,hjust=1,vjust=0.32,face="italic")) + 
+theme(legend.text=element_text(size=12)) +
+theme(axis.text.x=element_text(angle=90, size=12,hjust=1,vjust=0.32,face="italic")) + 
+theme(axis.text.y=element_text(size=11)) + 
+theme(axis.title.y=element_text(size=12)) +
 ylab(expression(paste(RNA[seq]," alignment rate to transcriptome"))) +
 xlab("") + 
 geom_vline(xintercept=1.5,linetype="dotted",size=0.2) +
@@ -88,10 +90,12 @@ geom_vline(xintercept=18.5,linetype="solid",size=1) +
 geom_vline(xintercept=17.5,linetype="dotted",size=0.2) +
 geom_vline(xintercept=19.5,linetype="dotted",size=0.2) +
 geom_vline(xintercept=20.5,linetype="dotted",size=0.2) +
-guides(fill = guide_legend(title = "")) 
+guides(fill = guide_legend(title = "")) +
+theme(legend.position="bottom") +
+theme(legend.margin=margin(-22, 0, 0, 0))
 
 
 print(transcriptome_alignmentrate_plot)
-ggsave(transcriptome_alignmentrate_plot,file="Figure7.pdf",width=8.5,height=5)
+ggsave(transcriptome_alignmentrate_plot,file="Figure7.pdf",width=8,height=5.5)
 ```
 

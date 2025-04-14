@@ -61,11 +61,11 @@ annotations <- annotations %>% mutate_at(vars(species),factor,levels=c("D. melan
 vertebrates_compleasm_protein_barplot <- annotations %>% filter(group =="mammals" | group=="birds") %>% ggplot() + theme(text = element_text(size = 12))  +
     geom_bar(aes(species,y=compleasm_protein,fill=method),width=0.9,stat="identity",position="dodge") +
      scale_fill_manual(labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen")) +
-    theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1,size=8,face="italic")) + 
-    theme(axis.text.y=element_text(size=8)) + 
-    theme(axis.title.y=element_text(size=10)) +
+    theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1,size=10,face="italic")) + 
+    theme(axis.text.y=element_text(size=10)) + 
+    theme(axis.title.y=element_text(size=12)) +
     ylab("Compleasm score") + xlab("") + scale_y_continuous(expand=c(0,0),limits=c(0,1.05)) + 
-    theme(legend.text.align = 0,legend.text=element_text(size=12),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.45, "cm")) + 
+    theme(legend.text.align = 0,legend.text=element_text(size=10),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.45, "cm")) + 
     guides(fill = guide_legend(byrow = TRUE)) +
     labs(fill = "") 
     
@@ -82,18 +82,20 @@ ggsave(file="Figure_1A_2024.12.13.pdf",width=7,height=3)
 plants_proteome_compleasm_barplot <- annotations %>% filter(group =="rosids" | group=="monocots") %>% 
   mutate(compleasm_protein=replace_na(compleasm_protein,-1)) %>% 
   ggplot() + theme(text = element_text(size = 12))  +
-    geom_bar(aes(species,y=compleasm_protein,fill=method),width=0.9,stat="identity",position="dodge") +
+     geom_bar(aes(species,y=compleasm_protein,fill=method),width=0.9,stat="identity",position="dodge") +
      scale_fill_manual(labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen")) +
-    theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1,size=10,face="italic")) + 
+    theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1,size=12,face="italic")) + 
+    theme(axis.text.y=element_text(size=10)) + 
+    theme(axis.title.y=element_text(size=14)) +
     ylab("Compleasm score") + xlab("") + scale_y_continuous(expand=c(0,0),limits=c(0,1.05)) + 
-    theme(legend.text.align = 0,legend.text=element_text(size=12),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.45, "cm")) + 
+    theme(legend.text.align = 0,legend.text=element_text(size=10),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.45, "cm")) + 
     guides(fill = guide_legend(byrow = TRUE)) +
     labs(fill = "") 
     
 
 
 print(plants_proteome_compleasm_barplot)
-ggsave(file="Figure_1B_2024.12.13.pdf",width=9,height=3.42)
+ggsave(file="Figure_1B_2024.12.13.pdf",width=9,height=3)
 ```
 
 
@@ -101,17 +103,19 @@ ggsave(file="Figure_1B_2024.12.13.pdf",width=9,height=3.42)
 
 ```{r}
 insects_proteome_compleasm_barplot <- annotations %>% filter(group =="dipterans") %>% 
-  mutate(compleasm_protein=replace_na(compleasm_protein,-1)) %>% ggplot() + theme(text = element_text(size = 10))  +
-    geom_bar(aes(species,y=compleasm_protein,fill=method),width=0.9,stat="identity",position="dodge") +
-    scale_fill_manual(labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen")) +
-    theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1,size=8,face="italic")) + 
+  mutate(compleasm_protein=replace_na(compleasm_protein,-1)) %>% ggplot() + theme(text = element_text(size = 12))  +
+     geom_bar(aes(species,y=compleasm_protein,fill=method),width=0.9,stat="identity",position="dodge") +
+     scale_fill_manual(labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen")) +
+    theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1,size=10,face="italic")) + 
+    theme(axis.text.y=element_text(size=10)) + 
+    theme(axis.title.y=element_text(size=12)) +
     ylab("Compleasm score") + xlab("") + scale_y_continuous(expand=c(0,0),limits=c(0,1.05)) + 
-    theme(legend.text.align = 0,legend.text=element_text(size=12),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.35, "cm")) + 
+    theme(legend.text.align = 0,legend.text=element_text(size=10),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.45, "cm")) + 
     guides(fill = guide_legend(byrow = TRUE)) +
     labs(fill = "") 
     
 
 
 print(insects_proteome_compleasm_barplot)
-ggsave(file="Figure_1C_2024.12.13.pdf",width=5,height=3.05)
+ggsave(file="Figure_1C_2024.12.13.pdf",width=5,height=3)
 ```

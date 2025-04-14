@@ -18,7 +18,7 @@ library(tidyverse)
 ```{r,,message=FALSE, warning=FALSE}
 refprotcov <-read_csv("../../data/RefBlastToPreds.csv")
 
-methodlabels<-c(expression(BRAKER[protein]),expression(BRAKER[RNA]),"BRAKER3",expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA","Liftoff")
+methodlabels<-c("BRAKER2","BRAKER1","BRAKER3",expression(CGP[protein]),expression(CGP[RNA]),expression(Scallop[HISAT2]),expression(Scallop[STAR]),expression(Stringtie[HISAT2]),expression(Stringtie[STAR]),"MAKER","TOGA","Liftoff")
 
 refprotcov <- refprotcov %>% mutate(species = str_replace(species, "dmel", "D. melanogaster")) %>%
      mutate(species = str_replace(species, "dpseudo", "D. pseudoobscura")) %>%  
@@ -72,17 +72,21 @@ refs_covstackedbar<- covlong %>% filter(species %in% c("D. melanogaster","H. sap
                       "maker.proref_lowcov"="MAKER: < 80%","liftover.proref_blastcovered0.8"=expression(paste("liftover: ","">=80,"%")),
                       "liftover.proref_lowcov"="liftover: < 80%")) +
             theme_classic() +
-            theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.55,size=8,face="plain")) + 
+            theme(axis.text.x=element_text(angle=90, hjust=1,vjust=0.55,size=10,face="plain")) + 
             theme(strip.text = element_text(face="italic")) +
-            theme(legend.text.align = 0,legend.text=element_text(size=12),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.45, "cm")) + 
-            guides(fill = guide_legend(byrow = TRUE)) +
+            theme(legend.text.align = 0,legend.text=element_text(size=10),legend.spacing.y = unit(0.1, "cm"),legend.key.size= unit(0.45, "cm")) + 
+            theme(legend.position = "bottom",legend.title = element_text(hjust = 0.5)) +
+            
+            guides(fill = guide_legend(byrow = TRUE,nrow=4)) +
             ylab("% predicted proteins") +
-            labs(fill = "Reference protein coverage\nby method type") +
+            labs(fill = "Reference protein\ncoverage by\nmethod type") +
             scale_x_discrete(labels=methodlabels) +
             xlab("") +
+            theme(legend.position="bottom",legend.box.margin = margin(t = -25)) +
+
         
 
             facet_wrap(~species,ncol=3,nrow=2)
 refs_covstackedbar
-ggsave(refs_covstackedbar,file="Figure4.pdf",width=8,height=8)   
+ggsave(refs_covstackedbar,file="Figure4.pdf",width=7,height=5)   
 ```

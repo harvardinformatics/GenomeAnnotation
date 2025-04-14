@@ -63,11 +63,14 @@ refratio_biplot<- annotations %>% filter(species %in% c("H. sapiens","G. gallus"
     xlab("Median CDS length/median NCBI CDS length")  + 
     scale_color_manual(labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen")) +
      scale_shape_manual(values=c(0,1,15,2,16,17)) +
-     theme(axis.title=element_text(size=12),legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) + 
-    guides(color = guide_legend(title = "Method",override.aes = list(shape=15),order=1,label.theme = element_text(angle = 0, size=10,face = "plain"))) +
-    guides(shape = guide_legend(title = "Species",order=2,label.theme = element_text(angle = 0, size=10,face = "italic"))) +
-  geom_vline(xintercept=1,linetype="dotted",size=1,color="black") +
-  geom_hline(yintercept=0,linetype="dotted",size=1,color="black")
+     theme(axis.title=element_text(size=12),legend.title = element_text(size = 12),legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm")) + 
+    guides(color = guide_legend(title = "Method",override.aes = list(shape=15),legend.title=element_text(size=12),order=1,label.theme = element_text(angle = 0, size=11,face = "plain"))) +
+    guides(shape = guide_legend(title = "Species",legend.title=element_text(size=12),order=2,label.theme = element_text(angle = 0, size=12,face = "italic"))) +
+  theme(axis.text.y=element_text(size=11)) +
+  theme(axis.text.x=element_text(size=11)) +
+  
+  geom_vline(xintercept=1,linetype="dotted",linewidth=1,color="black") +
+  geom_hline(yintercept=0,linetype="dotted",linewidth=1,color="black")
   
 
 print(refratio_biplot)

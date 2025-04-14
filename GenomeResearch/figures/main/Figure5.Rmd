@@ -63,8 +63,10 @@ psauron_plot <- annotations %>% filter(group!="heliconines") %>% ggplot(aes(x=sp
     scale_fill_manual(labels=methodlabels,values=c("yellow3","orange","brown4", "red","coral3", "lightskyblue", "royalblue3","darkorchid3", "magenta","gray72","green3","seagreen")) + 
 theme_classic() +
 theme(legend.text.align = 0) + 
-theme(legend.text=element_text(size=10)) +
-theme(axis.text.x=element_text(angle=90, size=10,hjust=1,vjust=0.32,face="italic")) + 
+theme(legend.text=element_text(size=12)) +
+theme(axis.text.x=element_text(angle=90, size=12,hjust=1,vjust=0.32,face="italic")) + 
+theme(axis.text.y=element_text(size=11)) + 
+theme(axis.title.y=element_text(size=12)) +
 ylab("Psauron score") +
 xlab("") + 
 geom_vline(xintercept=1.5,linetype="dotted",size=0.2) +

@@ -63,15 +63,15 @@ method_labels <- c(expression(Scallop[HISAT2]),expression(Scallop[STAR]),
 
 ```{r}
 utrratio_toblastxfrac_plot <- data4sp %>% ggplot() + 
-      geom_point(mapping=aes(y=PcentTscriptsUtrBlastx,x=PredUtrCdsRatio/RefMedianUtrCdsRatio,color=method,shape=species)) +
+      geom_point(mapping=aes(y=PcentTscriptsUtrBlastx,x=PredUtrCdsRatio/RefMedianUtrCdsRatio,color=method,shape=species),size=2.2) +
       xlab("Asssembler UTR-to-CDS ratio/NCBI UTR-to-CDS ratio") +
       ylab("% transcripts with UTR BLASTX hits") +
       scale_color_manual(labels=method_labels,values=c("lightskyblue", "royalblue3","darkorchid3", "magenta")) +
-     guides(color = guide_legend(title = "Method",order=1,label.theme = element_text(angle = 0, size=8,face = "plain"))) +
-     guides(shape = guide_legend(title = "Species",order=2,label.theme = element_text(angle = 0, size=8,face = "italic"))) +
+     guides(color = guide_legend(title = "Method",order=1,label.theme = element_text(angle = 0, size=10,face = "plain"))) +
+     guides(shape = guide_legend(title = "Species",order=2,label.theme = element_text(angle = 0, size=10,face = "italic"))) +
      theme(legend.text.align = 0,legend.spacing.y = unit(0.15, "cm"),legend.key.size= unit(0.5, "cm"))  +
-     theme(text = element_text(size=9)) +
-  geom_text(x=1.97,y=35,label=expression(paste("Pearson's ",rho,"=0.68, p=0.0010")),size=2.7)
+     theme(text = element_text(size=10)) +
+  geom_text(x=1.9,y=35,label=expression(paste("Pearson's ",rho,"=0.68, p=0.0010")),size=3.2)
 
 print(utrratio_toblastxfrac_plot)
 ggsave(file="Figure8.tiff",width=5,height=3.5)
