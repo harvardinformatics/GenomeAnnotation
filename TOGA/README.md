@@ -4,7 +4,7 @@ In cases where there is a reasonably high-quality annotation for a species close
 In our TOGA workflow, we begin with a WGA created with Cactus, following our recommended best practice documented [here](https://github.com/harvardinformatics/GenomeAnnotation-WholeGenomeAlignment). Running TOGA requires that a genome with a high quality anotation is part of the WGA, and that a number of files be generated. A potentially confusing part of the workflow is naming conventions for the reference annotation species and the species to which annotations are being tranferred ... the confusion being that they vary among the tools in the workflow! Thus, we are explicit about what gets called what in various steps in the workflow.
 
 ## 1. Create bed file of target genome chromosome lengths
-In this step, the "target" genome is that to which we are lifting over annotations from a reference (source). We use a a python script [WriteChromLengthBedFromFasta.py](https://github.com/harvardinformatics/AnnotationTOGA/blob/main/utilities/WriteChromLengthBedFromFasta.py) to create this file. This script uses a fasta parser from the [Biopython](https://biopython.org/) python package. We highly recommend using an Anaconda or comparable python distribution that allows you to create conda environments. Assuming this version of python is in your path, you can create a biopython conda environment as follows:
+In this step, the "target" genome is that to which we are lifting over annotations from a reference (source). We use a a python script [WriteChromLengthBedFromFasta.py](https://github.com/harvardinformatics/AnnotationTOGA/blob/main/workflow/scripts/WriteChromLengthBedFromFasta.py) to create this file. This script uses a fasta parser from the [Biopython](https://biopython.org/) python package. We highly recommend using an Anaconda or comparable python distribution that allows you to create conda environments. Assuming this version of python is in your path, you can create a biopython conda environment as follows:
 ```
 conda create -n biopython -c anaconda biopython
 ```
@@ -52,7 +52,7 @@ conda deactivate
 ``` 
 
 ### 4c. Create CDS-only annotation bed file
-To do this, we have created a python script that takes the CDS isoform table and the reference annotation bed file as the first and second command line arguments. [FilterReferenceAnnotationBedForCDS.py](https://github.com/harvardinformatics/AnnotationTOGA/blob/main/utilities/FilterReferenceAnnotationBedForCDS.py) can be run as follows:
+To do this, we have created a python script that takes the CDS isoform table and the reference annotation bed file as the first and second command line arguments. [FilterReferenceAnnotationBedForCDS.py](https://github.com/harvardinformatics/AnnotationTOGA/blob/main/workflow/scripts/FilterReferenceAnnotationBedForCDS.py) can be run as follows:
 ```
 python FilterReferenceAnnotationBedForCDS.py human_CDS_isoforms.tsv human.bed
 ```
@@ -152,7 +152,7 @@ target_isoforms=$6 # tsv file with CDS gene and transcript id as columns
 ```
 
 ## 10. Filter annotation.bed file
-The output of TOGA is the *annotation.bed* file. This file contains predictions for which ortholog classification was not possible, indicative that they are likely to be of poor quality. Thus, we filter out these annotations with [FilterTogaAnnotationBedFile.py](https://github.com/harvardinformatics/AnnotationTOGA/blob/main/utilities/FilterTogaAnnotationBedFile.py) as follows:
+The output of TOGA is the *annotation.bed* file. This file contains predictions for which ortholog classification was not possible, indicative that they are likely to be of poor quality. Thus, we filter out these annotations with [FilterTogaAnnotationBedFile.py](https://github.com/harvardinformatics/AnnotationTOGA/blob/main/workflow/scripts/FilterTogaAnnotationBedFile.py) as follows:
 
 ```bash
 python FilterTogaAnnotationBedFile.py -bedin annotation.bed -orthotable orthology_classification.tsv
@@ -175,7 +175,7 @@ gffread filtered_annotation.gtf filtered_annotation.gff3
 ```
 
 ## 12. Add gene features to TOGA gff3
-There are, by definition, no gene features in the annotation.bed file, but we can use the orthology_classification.tsv table to add them to th filtered_annotation.gff3 file we have created, enabling downstream tools that require parent features, e.g. expression analyses. We do this with [AddGeneFeatureToTogaGff3.py](https://github.com/harvardinformatics/AnnotationTOGA/blob/main/utilities/AddGeneFeatureToTogaGff3.py). Genes in TOGA are labelled as "regions".
+There are, by definition, no gene features in the annotation.bed file, but we can use the orthology_classification.tsv table to add them to th filtered_annotation.gff3 file we have created, enabling downstream tools that require parent features, e.g. expression analyses. We do this with [AddGeneFeatureToTogaGff3.py](https://github.com/harvardinformatics/AnnotationTOGA/blob/main/workflow/scripts/AddGeneFeatureToTogaGff3.py). Genes in TOGA are labelled as "regions".
 
 ```bash
 python AddGeneFeatureToTogaGff3.py -gff3 filtered_annotation.gff3 -ortho-table orthology_classification.tsv
